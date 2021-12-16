@@ -1,0 +1,66 @@
+version: '3'
+
+services:
+
+
+    mosquitto:
+        container_name: mqtt
+        image: eclipse-mosquitto
+        network_mode: host
+        ports:
+        - 1883:1883
+        - 8883:8883
+        volumes:
+        - ./mosquitto/conf:/mosquitto/conf
+        - ./mosquitto/data:/mosquitto/data
+        - ./mosquitto/log:/mosquitto/log
+        restart: unless-stopped
+
+    ts-compiler:
+        image:                   harmish/typescript
+        volumes:
+            -                    ./src/frontend/ts:/workspace 
+            -                    ./src/frontend/js:/output 
+        command:                 "tsc --project /workspace --outDir /output --watch --pretty true"
+
+    mysql-server:
+        image:                   mysql:5.7
+        hostname:                mysql-server
+        environment:
+            MYSQL_ROOT_PASSWORD: userpass
+        volumes:
+            -                    ./db/dumps:/docker-entrypoint-initdb.d
+            -                    ./db/data:/var/lib/mysql
+        networks:
+            -                    NurseSystem-net
+
+    mysql-admin:
+        image:                   phpmyadmin/phpmyadmin
+        environment: 
+            PMA_HOST:            mysql-server
+            PMA_PORT:            3306
+            MYSQL_ROOT_PASSWORD: userpass
+        networks:
+            -                    NurseSystem-net
+        depends_on:
+            -                    mysql-server
+        ports:
+            -                    "8001:80"
+
+    node-backend:
+        image:                   abassi/nodejs-server:10.0-dev
+        volumes:
+            -                    ./src/backend:/home/node/app/src
+            -                    ./src/frontend:/home/node/app/static
+            -                    ./src/tools:/home/node/app/tools
+        networks:
+            -                    NurseSystem-net
+        depends_on:
+            -                    mysql-admin
+        ports: 
+            -                    "8000:3000"
+        command:                 bash -c "npm install mqtt --save && nodemon /home/node/app/src/index.js"
+
+networks:
+    NurseSystem-net:
+        driver:                  bridge
