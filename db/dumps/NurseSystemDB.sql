@@ -32,9 +32,11 @@ SET time_zone = "+00:00";
 -- Table structure for table `Person`
 --
 
-CREATE TABLE `Person` (
+CREATE TABLE `User` (
   `id` int(11) NOT NULL,
-  `name` varchar(64) NOT NULL,
+  `username` varchar(64) NOT NULL,
+  `firstname` varchar(64) NOT NULL,
+  `lastname` varchar(64) NOT NULL,
   `occupation` varchar(128) NOT NULL,
   `state` int(11) NOT NULL,
   `password` int(11) NOT NULL
@@ -44,13 +46,13 @@ CREATE TABLE `Person` (
 -- Dumping data for table `Devices`
 --
 
-INSERT INTO `Person` (`id`, `name`, `occupation`, `state`, `password`) VALUES
-(1, 'Jose laurm', 'administrador', 1, 1234),
-(2, 'Arnaldo Alba', 'médico', 0, 5463),
-(3, 'Bruno Bele', 'médico', 1, 6789),
-(4, 'Carlos Car', 'enfermero', 1, 1111),
-(5, 'Damian Desantics', 'enfermero', 1, 2222),
-(6, 'Ernestina Esmeralda', 'enfermera', 0, 3333);
+INSERT INTO `User` (`id`, `username`,`firstname`,`lastname`, `occupation`, `state`, `password`) VALUES
+(1, 'Josesito','Jose', 'laurm', 'administrador', 1, 1234),
+(2, 'Arnaldito','Arnaldo',' Alba', 'médico', 0, 5463),
+(3, 'Brunito','Bruno',' Bele', 'médico', 1, 6789),
+(4, 'Carlitos','Carlos',' Car', 'enfermero', 1, 1111),
+(5, 'Damiancito','Damian',' Desantics', 'enfermero', 1, 2222),
+(6, 'Ernestinita','Ernestina',' Esmeralda', 'enfermera', 0, 3333);
 
 --
 -- Indexes for dumped tables
@@ -59,7 +61,7 @@ INSERT INTO `Person` (`id`, `name`, `occupation`, `state`, `password`) VALUES
 --
 -- Indexes for table `Devices`
 --
-ALTER TABLE `Person`
+ALTER TABLE `User`
   ADD PRIMARY KEY (`id`);
 
 --

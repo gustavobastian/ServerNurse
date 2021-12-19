@@ -61,6 +61,8 @@ var client = mqtt.connect(MQTT_ADDR, {
     })
 */
 //=======[ Main module code ]==================================================
-
-
+app.listen(PORT, function(req, res) {
+    
+  console.log("NodeJS API running correctly");
+});
 //=======[ End of file ]=======================================================
