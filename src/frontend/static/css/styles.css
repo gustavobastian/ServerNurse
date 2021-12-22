@@ -9,15 +9,13 @@ body {
     color: brown;
     font-size:20px !important;
 }
-.mybutton{
-    background-color:rgb(92, 46, 243) !important;
-    color:white !important;
-}
-.myHelpbutton{
-    background-color:#124580 !important;
-    color:white !important;
-}
+
 
 main {
     flex: 1 0 auto;
+}
+
+
+#sendButton{
+    background-color:#2196F3  !important;
 }

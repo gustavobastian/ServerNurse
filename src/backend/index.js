@@ -70,7 +70,8 @@ app.post('/users/',function(req,res){
   
   if(req.body.pass>1000){response="admin";}
   else if(req.body.pass>100){response="medical";}
-  else {response="nurse";}
+  else if(req.body.pass!=0) {response="nurse";}
+  else {response="error";}
 
  
   res.send(response).status(200);  

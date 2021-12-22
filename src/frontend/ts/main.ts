@@ -90,8 +90,21 @@ class mainWindow implements EventListenerObject,PostResponseListener {
 }
 
 window.onload = function(){
-    let principal= new mainWindow("Principal","inLog");
-    let form=document.getElementById("log-form");
-    makeLogForm(principal);
+    let principal= new mainWindow("Principal","inAdmin");
+    
+    if(principal.mode=="inAdmin")
+            {
+                makeAdminPage(principal);                
+            }
+            else if(principal.mode=="inMedical")
+            {
+                makeMedicalPage(principal);
+            }
+            else if(principal.mode=="inNurse")
+            {
+                makeNursePage(principal);
+            }
+
+    
     
 }

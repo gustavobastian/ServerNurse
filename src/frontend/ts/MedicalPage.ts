@@ -5,14 +5,15 @@ function makeMedicalPage(myMain:mainWindow){
     <div class="nav-wrapper">
         <a href="#!" class="brand-logo left" style="margin-left: 15px;">Surix system</a>
         <ul id="nav-mobile" class="right" style="margin-right: 15px;">
-        <!--<li><a href="#">LOGOUT</a></li>-->
+        <!--<li><a href="#">LOGOUT</a></li>
         <li><button class="myLogout" id="myLogout">LOGOUT</button></li>
-        </ul>        
+        </ul>     -->   
     
     </div>
     </nav>
     <div>            
-    <h3>Medical</h3>    
+    <h3>Medical</h3>   
+    <button id="myLogout" class= "btn-large  waves-effect waves-dark" style="width:100%;background-color:gray;">LOGOUT</button> 
     </div>` ;
     page.innerHTML =content;
     let button_logout = myMain.getElement("myLogout");
