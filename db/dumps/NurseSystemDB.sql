@@ -134,6 +134,7 @@ CREATE TABLE `Messages` (
   `userIdLastName` varchar(255) NOT NULL,
   `userIdSender` int(255) NOT NULL,
   `pacientId` varchar(255) NOT NULL,
+  `content`varchar(255) NOT NULL,
   `dateTime` timestamp DEFAULT CURRENT_TIMESTAMP ,  
   `audiolink` char(255),  
   `userTableId` int(11),
