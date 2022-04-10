@@ -200,14 +200,6 @@ INSERT INTO `Pacient` (`pacientId`, `firstName`,`lastName`,`BedId`,`notesTableId
 
 
 
-/*
-
-*/
-
-
-
-
-
 
 --
 -- AUTO_INCREMENT for dumped tables

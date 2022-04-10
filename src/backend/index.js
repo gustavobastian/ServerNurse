@@ -80,7 +80,6 @@ var client = mqtt.connect(MQTT_ADDR, {
 app.post('/users/',function(req,res){
   
   let idAb=0;//req.params.id;
-  let response="hello";
   console.log(req.body);
   
   if(req.body.pass>1000){response="admin";}
