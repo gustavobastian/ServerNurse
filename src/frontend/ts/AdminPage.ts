@@ -1,35 +1,7 @@
 
 function makeAdminPage(myMain:mainWindow){
     let page=document.getElementById("Panel Admin");    
-    let pageAside=document.getElementById("plantillaLateral"); 
     
-    
-    let contentLateral=` 
-    <section>
-    <aside>
-    <button type="button">Boton1</button>
-    <br>
-    <button type="button">Boton2</button>
-    <br>
-    <button type="button">Boton3</button>
-    <br>
-    </aside>
-        <article>
-        <p>Hola como estas jugando</p>
-        </article>
-    <aside>
-    <button type="button">Boton1</button>
-    <br>
-    <button type="button">Boton2</button>
-    <br>
-    <button type="button">Boton3</button>
-    <br>
-    </aside>
-
-    </section>
-    `;
-    pageAside.innerHTML =contentLateral;
-
     let content=` 
        
     <div>

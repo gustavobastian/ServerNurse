@@ -90,7 +90,8 @@ class mainWindow implements EventListenerObject,PostResponseListener {
 }
 
 window.onload = function(){
-    let principal= new mainWindow("Principal","inAdmin");
+    let principal= new mainWindow("Principal","inLog");
+    console.log("here");
     
     if(principal.mode=="inAdmin")
             {
@@ -104,6 +105,14 @@ window.onload = function(){
             {
                 makeNursePage(principal);
             }
+            else if(principal.mode=="inLog")
+            {
+                closeMedicalPage(principal);
+                closeNursePage(principal);
+                closeAdminPage(principal);
+                makeLogForm(principal); 
+            }
+
 
     
     

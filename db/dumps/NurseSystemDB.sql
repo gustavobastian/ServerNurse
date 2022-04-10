@@ -141,72 +141,72 @@ CREATE TABLE `Messages` (
   PRIMARY KEY (`messageId`)    
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+
 --
--- Dumping data for table ``
+-- Dumping example data
 --
-/*
-INSERT INTO `Pacient` (`idPacient`, `firstName`,`lastName`,`BedId`,`idNotesTable`,`idUserTable`) VALUES
-(1, "Pedro","Pasculli",1,1,1 ),
-(2, "Oscar", "Rugger",2,1,2),
-(3, "Diego", "Armando",3,1,3),
-(4, "Hector", "Almandoz",4,2,4),
-(5, "Adalberto", "Minapolo",5,2,5),
-(6, "Jupiano", "Saturnito",6,2,6);
-ALTER TABLE `Pacient`
-  ADD PRIMARY KEY (`idPacient`);
-*/
-
-/*
-INSERT INTO `NotesTable` (`idNotesTable`, `idNota`) VALUES
-(1,2),
-(2,1);
-ALTER TABLE `NotesTable`
-  ADD PRIMARY KEY (`idNotesTable`);
-*/
-
-/*
-INSERT INTO `Notes` (`idNotes`, `note`,`state`) VALUES
-(1,"dormir a las 22","activa"),
-(2,"tomar remedio a las 12","activa");
-
-ALTER TABLE `Notes`
-  ADD PRIMARY KEY (`idNotes`);
-*/
-
-/*
-INSERT INTO `UserTable` (`idUserTable`, `idPacient`,`idUser`) VALUES
-(1,2,1),
-(1,2,3),
-(1,2,4),
-(2,1,1);
-*/
 
 
 --
 -- Dumping data for table `bed`
 --
-/*
-INSERT INTO `bed` (`bedId`, `roomId`,`callerId`,`floorId`) VALUES
-(1, 1, 1,0),
-(2, 1, 2,0),
-(3, 2, 3,0),
-(4, 2, 4,0),
-(5, 3, 5,0),
-(6, 3, 6,0);
 
-*/
+INSERT INTO `Bed` (`bedId`, `roomId`,`callerId`,`floorId`) VALUES
+(1, 1, 1,0),
+(2, 1, 2,0);
+
+
+
 --
 -- Dumping data for table `user`
 --
-/*
-INSERT INTO `User` (`id`, `username`,`firstname`,`lastname`, `occupation`, `state`, `password`) VALUES
+INSERT INTO `User` (`userId`, `username`,`firstname`,`lastname`, `occupation`, `state`, `password`) VALUES
 (1, 'Josesito','Jose', 'laurm', 'administrador', 1, 1234),
 (2, 'Arnaldito','Arnaldo',' Alba', 'médico', 0, 5463),
-(3, 'Brunito','Bruno',' Bele', 'médico', 1, 6789),
-(4, 'Carlitos','Carlos',' Car', 'enfermero', 1, 1111),
-(5, 'Damiancito','Damian',' Desantics', 'enfermero', 1, 2222),
-(6, 'Ernestinita','Ernestina',' Esmeralda', 'enfermera', 0, 3333);
+(3, 'Carlitos','Carlos',' Car', 'enfermero', 1, 1111);
+
+
+
+--
+-- Table structure for pacient notes
+--
+INSERT INTO `Notes` (`notesId`, `note`,`state`) VALUES
+(1,"dormir a las 22","activa"),
+(2,"tomar remedio a las 12","activa");
+
+--
+-- Dumping data for table `userTable`
+--
+
+INSERT INTO `UsersTable` (`userTableId`, `userId`) VALUES
+(1,1),
+(2,1);
+
+
+INSERT INTO `NotesTable` (`notesTableId`, `noteId`) VALUES
+(1,1),
+(2,2);
+--
+-- Dumping data for table `pacient`
+--
+
+INSERT INTO `Pacient` (`pacientId`, `firstName`,`lastName`,`BedId`,`notesTableId`,`userTableId`) VALUES
+(1, "Pedro","Pasculli",1,1,1 ),
+(2, "Oscar", "Rugger",2,1,2);
+
+
+
+
+
+
+
+/*
+
 */
+
+
+
+
 
 
 --

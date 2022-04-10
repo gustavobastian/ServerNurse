@@ -3,9 +3,9 @@
 var PORT    = 3000;
 
 var express = require('express');
-const connection = require('./mysql-connector');
+//const connection = require('./mysql-connector');
 var app     = express();
-var utils   = require('./mysql-connector');
+//var utils   = require('./mysql-connector');
 
 var mqtt=require('mqtt');
 
@@ -16,6 +16,21 @@ app.use(express.static('/home/node/app/static/'));
 // to parse received data
 var bodyParser = require('body-parser');
 const { request } = require('express');
+
+
+// looking for router
+
+var routerPacient = express = require('./routes/pacient');
+var routerUser = express = require('./routes/user');
+var routerMessages = express = require('./routes/messages');
+var routerNotes = express = require('./routes/notes');
+var routerBeds = express = require('./routes/beds');
+
+app.use('/api/pacient',routerPacient);
+app.use('/api/user',routerUser);
+app.use('/api/messages',routerMessages);
+app.use('/api/notes',routerNotes);
+app.use('/api/beds',routerBeds);
 
 
 var MQTT_TOPIC = "test";
