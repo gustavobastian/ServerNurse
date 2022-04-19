@@ -6,6 +6,9 @@ var express = require('express');
 //const connection = require('./mysql-connector');
 var app     = express();
 //var utils   = require('./mysql-connector');
+var cors = require('cors');
+var corsOptions={origin:'*' , optionsSuccessStatus:200};
+
 
 var mqtt=require('mqtt');
 
@@ -13,6 +16,9 @@ var mqtt=require('mqtt');
 app.use(express.json()); 
 // to serve static files
 app.use(express.static('/home/node/app/static/'));
+//for letting api to work with cors
+app.use(cors(corsOptions));
+
 // to parse received data
 var bodyParser = require('body-parser');
 const { request } = require('express');
