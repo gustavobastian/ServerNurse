@@ -60,20 +60,6 @@ CREATE TABLE `Bed` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
-
---
--- Table Notes
--- This is a simple note for the pacient. Each Note can be in one of three states= "inUse", "old", "sometimes"
---
-
-CREATE TABLE `Notes` (
-  `notesId` int(11) NOT NULL,
-  `note` varchar(250),
-  `state` varchar(250),
-  PRIMARY KEY (`notesId`),
-  UNIQUE KEY (`notesId` ASC)  
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
 --
 -- Table structure for table `Notes Table`
 -- This table contains the link to the notes for each pacient
@@ -81,12 +67,28 @@ CREATE TABLE `Notes` (
 
 
 CREATE TABLE `NotesTable` (
-  `notesTableId` int(11) NOT NULL,
-  `noteId` int(11),
+  `notesTableId` int(11) NOT NULL,  
   PRIMARY KEY (`notesTableId`),
-  UNIQUE INDEX (`notesTableId` ASC),
-  FOREIGN KEY (`noteId`)  REFERENCES Notes(notesId)       
+  UNIQUE INDEX (`notesTableId` ASC)  
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
+
+--
+-- Table Notes
+-- This is a simple note for the pacient. Each Note can be in one of two states= "activada", "desactivada"
+--
+
+CREATE TABLE `Notes` (
+  `notesId` int(11) NOT NULL,
+  `note` varchar(250),
+  `state` varchar(250),
+  `notesTableId` int(11) NOT NULL,
+  PRIMARY KEY (`notesId`),
+  UNIQUE KEY (`notesId` ASC),  
+  FOREIGN KEY (`notesTableId`)  REFERENCES NotesTable(notesTableId)       
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
 
 --
 -- Table structure for table `Users Table`
@@ -94,12 +96,27 @@ CREATE TABLE `NotesTable` (
 --
 
 CREATE TABLE `UsersTable` (
+  `userTableId` int(11) NOT NULL,    
+  PRIMARY KEY (`userTableId`),  
+  UNIQUE KEY  (`userTableId` ASC)  
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
+
+--
+-- Table structure for table `Doctors Table`
+-- This table contains the link to the users asociated with each pacient. Usually the users are Medical personnel.
+--
+
+CREATE TABLE `MedicalTable` (
   `userTableId` int(11) NOT NULL,  
   `userId` int(11),
-  PRIMARY KEY (`userTableId`),  
-  UNIQUE KEY  (`userTableId` ASC),
+  FOREIGN KEY (`userTableId`) REFERENCES UsersTable(userTableId),  
   FOREIGN KEY (`userId`) REFERENCES User(userId)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
+
 
 --
 -- Table structure for table `Pacient`
@@ -165,27 +182,40 @@ INSERT INTO `User` (`userId`, `username`,`firstname`,`lastname`, `occupation`, `
 (2, 'Arnaldito','Arnaldo',' Alba', 'médico', 0, 5463),
 (3, 'Carlitos','Carlos',' Car', 'enfermero', 1, 1111);
 
+--
+-- Dumping data for table `userTable`
+--
+
+INSERT INTO `UsersTable` (`userTableId`) VALUES
+(1),
+(2);
+
+
+
+--
+-- Dumping data for table `MedicalTable`
+--
+
+INSERT INTO `MedicalTable` (`userTableId`, `userId`) VALUES
+(1,1),
+(2,2),
+(2,2)
+;
+
+
+
+INSERT INTO `NotesTable` (`notesTableId`) VALUES
+(1),
+(2);
 
 
 --
 -- Table structure for pacient notes
 --
-INSERT INTO `Notes` (`notesId`,`note`,`state`) VALUES
-(1,"dormir a las 22","activa"),
-(2,"tomar remedio a las 12","activa");
+INSERT INTO `Notes` (`notesId`,`note`,`state`,`notesTableId`) VALUES
+(1,"dormir a las 22","activa",1),
+(2,"tomar remedio a las 12","activa",2);
 
---
--- Dumping data for table `userTable`
---
-
-INSERT INTO `UsersTable` (`userTableId`, `userId`) VALUES
-(1,1),
-(2,1);
-
-
-INSERT INTO `NotesTable` (`notesTableId`, `noteId`) VALUES
-(1,1),
-(2,2);
 --
 -- Dumping data for table `pacient`
 --
@@ -194,9 +224,6 @@ INSERT INTO `Pacient` (`pacientId`, `firstName`,`lastName`,`BedId`,`notesTableId
 (1, "Pedro","Pasculli",1,1,1 ),
 (2, "Oscar", "Rugger",2,1,2);
 
---
--- Dumping data for table `Messages`
---
 
 
 INSERT INTO `Messages` (`messageId`, `userIdLastName`, `userIdSender`, `pacientId`, `content`, `dateTime`, `audiolink`, `userTableId`) VALUES ('1', '1', '1', '1', 'Se levanto bien', CURRENT_TIMESTAMP, NULL, '1');
