@@ -50,9 +50,7 @@ services:
     node-backend:
         image:                   abassi/nodejs-server:10.0-dev
         volumes:
-            -                    ./src/backend:/home/node/app/src
-            -                    ./src/frontend:/home/node/app/static
-            -                    ./src/tools:/home/node/app/tools
+            -                    ./src/backend:/home/node/app/src            
         networks:
             -                    NurseSystem-net
         depends_on:

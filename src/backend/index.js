@@ -15,7 +15,7 @@ var mqtt=require('mqtt');
 // to parse application/json
 app.use(express.json()); 
 // to serve static files
-app.use(express.static('/home/node/app/static/'));
+
 //for letting api to work with cors
 app.use(cors(corsOptions));
 

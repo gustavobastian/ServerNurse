@@ -24,4 +24,13 @@ routerUser.get('/:id', function(req, res) {
     });
 });
 
+
+//API for adding new  notes of a pacient by bedId
+routerUser.post('/', function(req, res) {
+    let request=(req.body);
+
+    console.log(req.body);
+    res.send(OK);
+});
+
 module.exports = routerUser;

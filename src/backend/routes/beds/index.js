@@ -13,17 +13,58 @@ routerBeds.get('/', function(req, res) {
     });
 });
 //API for gettin active notes of a pacient by bedId
-routerBeds.get('/pacient/:id', function(req, res) {
+routerBeds.get('/pacient/notes/:id', function(req, res) {
     idAb=req.params.id;   
     //pool.query('Select * from Bed as b JOIN Pacient AS p ON b.bedId=p.bedId JOIN NotesTable AS n ON p.notesTableId=n.notesTableId JOIN Notes AS nn ON n.noteId= n.noteId where b.bedId='+idAb, function(err, result, fields) {
         //pool.query(`Select * from Bed as b JOIN Pacient AS p ON b.bedId=p.bedId where b.bedId=`+idAb,   function(err, result, fields) {
-      pool.query('Select firstname,lastname, note from Bed as b JOIN Pacient AS p ON b.bedId=p.bedId JOIN NotesTable AS n ON p.notesTableId=n.notesTableId JOIN Notes AS nn ON n.noteId= n.noteId WHERE nn.state= "activa" AND b.bedId='+idAb, function(err, result, fields) {      
+      pool.query('Select noteId,firstname,lastname,note, state from Bed as b JOIN Pacient AS p ON b.bedId=p.bedId JOIN NotesTable AS n ON p.notesTableId=n.notesTableId JOIN Notes AS nn ON n.noteId= n.noteId WHERE nn.state= "activa" AND b.bedId='+idAb, function(err, result, fields) {      
         if (err) {
             res.send(err).status(400);
             return;
         }
         res.send(result);
     });
+});
+
+
+//API for post active notes of a pacient by bedId 
+/**
+ * params body: example 1:{[{"noteId":"1"},{"state":"desactivada"}]}, example 2:[{"noteId":"1"},{"state":"activada"}]
+ */
+routerBeds.post('/pacient/notes/activation/:id', function(req, res) {
+    idAb=req.params.id;
+    let noteId= req.body[0].noteId;
+    let newState= req.body[1].state;  
+    console.log(req.body[0].noteId);
+    if (newState == "activa")
+        {
+         pool.query('UPDATE Notes SET state = "activa" WHERE notesId=?',[noteId],function(err, result, fields){
+            if (err) {
+                res.send(err).status(400);
+                return;
+            }        
+            res.send(result)
+        })}
+    else if (newState == "desactiva")    
+    {pool.query('UPDATE Notes SET state = "desactiva" WHERE notesId=?',[noteId],function(err, result, fields){
+        if (err) {
+            res.send(err).status(400);
+            return;
+        }    
+        res.send(result)
+    })}
+    else {
+        res.send("state not valid")};
+    
+  
+});
+
+//API for adding new bed notes of a pacient by bedId
+routerBeds.post('/', function(req, res) {
+    let request=(req.body);
+
+    console.log(req.body);
+    res.send(OK);
 });
 
 module.exports = routerBeds;
