@@ -22,9 +22,9 @@ routerMessages.get('/info', function(req, res) {
         res.send(result);
     });
 });
-//Inserta un nuevo mensaje en la base de datos
+//Inserts a new message into the database
 /**
- * formato del body del mensaje
+ * body format:
  * [{"messageId":2,
  * "userIdLastName":1,
  * "userIdSender":1,

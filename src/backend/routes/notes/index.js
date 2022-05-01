@@ -13,7 +13,7 @@ routerNotes.get('/', function(req, res) {
     });
 });
 
-//API for adding new  notes of a pacient by bedId
+//API for adding new  notes for a pacient pacient by 
 routerNotes.post('/', function(req, res) {
     let request=(req.body);
 

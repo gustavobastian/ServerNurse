@@ -2,7 +2,7 @@ var express = require('express');
 var routerUser = express.Router();
 var pool = require('../../mysql');
 
-//Devuelve un array de Usuarios
+//API for getting all users information
 routerUser.get('/', function(req, res) {
     pool.query('Select * from User', function(err, result, fields) {
         if (err) {
@@ -13,6 +13,7 @@ routerUser.get('/', function(req, res) {
     });
 });
 
+//API for getting a user information
 routerUser.get('/:id', function(req, res) {
     idAb=req.params.id;    
     pool.query('Select * from User where userId = ?',idAb, function(err, result, fields) {

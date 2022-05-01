@@ -2,7 +2,7 @@ var express = require('express');
 var routerPacient = express.Router();
 var pool = require('../../mysql');
 
-//Devuelve un array de Pacientes
+//API for getting all Pacients information
 routerPacient.get('/', function(req, res) {
     pool.query('Select * from Pacient', function(err, result, fields) {
         if (err) {
@@ -13,6 +13,7 @@ routerPacient.get('/', function(req, res) {
     });
 });
 
+//API for getting all  information for a single pacient
 routerPacient.get('/:id', function(req, res) {
     idAb=req.params.id;   
     pool.query('Select * from Pacient where pacientId = ?',idAb, function(err, result, fields) {
@@ -24,12 +25,47 @@ routerPacient.get('/:id', function(req, res) {
     });
 });
 
-//API for adding new  Pacient of a pacient by bedId
-routerPacient.post('/', function(req, res) {
-    let request=(req.body);
 
+//API for adding new  Pacient
+/**
+ * body format:
+ * [{"pacientId":2, 
+ * "firstname":"peter",
+ * "lastname":"Frant",
+ * "bedId":"3",
+ * "notesTableId":"1",
+ * "userTableId":"1"}]
+ */
+
+routerPacient.post('/', function(req, res) {
     console.log(req.body);
-    res.send(OK);
+        
+    let pacientId=req.body[0].pacientId;
+    let firstname=req.body[0].firstname;
+    let lastname=req.body[0].lastname;
+    let bedId= (req.body[0].bedId);
+    let notesTableId=(req.body[0].notesTableId);
+    let usersTableId = (req.body[0].usersTableId);    
+    
+
+    console.log(pacientId);
+    console.log(firstname);
+    console.log(lastname);
+    console.log(bedId);
+    console.log(notesTableId);
+    console.log(usersTableId);
+
+    pool.query(
+        'INSERT INTO Pacient (`pacientId`, `firstName`, `lastName`, `bedId`, `notesTableId`, `userTableId`) \
+        VALUES (?,?,?,?,?,?)',[pacientId,firstname,lastname,bedId,notesTableId,usersTableId], function(err, result, fields) {
+        if (err) {
+            res.send(err).status(400);
+            return;
+        }
+        res.send(result).status(202);
+    });
+
+    //res.send().status(202);
 });
 
 module.exports = routerPacient;
