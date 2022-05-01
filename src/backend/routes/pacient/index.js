@@ -46,14 +46,7 @@ routerPacient.post('/', function(req, res) {
     let bedId= (req.body[0].bedId);
     let notesTableId=(req.body[0].notesTableId);
     let usersTableId = (req.body[0].usersTableId);    
-    
 
-    console.log(pacientId);
-    console.log(firstname);
-    console.log(lastname);
-    console.log(bedId);
-    console.log(notesTableId);
-    console.log(usersTableId);
 
     pool.query(
         'INSERT INTO Pacient (`pacientId`, `firstName`, `lastName`, `bedId`, `notesTableId`, `userTableId`) \
@@ -66,6 +59,52 @@ routerPacient.post('/', function(req, res) {
     });
 
     //res.send().status(202);
+});
+
+
+//API for editing a Pacient
+/**
+ * body format:
+ * [{
+ * [{"pacientId":2, 
+ * "firstname":"peter",
+ * "lastname":"Frant",
+ * "bedId":"3",
+ * "notesTableId":"1",
+ * "userTableId":"1"}]
+ */
+
+ routerPacient.put('/:id', function(req, res) {
+    
+
+    
+    let pacientId=parseInt(req.params.id);
+    let firstname=req.body[0].firstname;
+    let lastname=req.body[0].lastname;
+    let bedId= (req.body[0].bedId);
+    let notesTableId=(req.body[0].notesTableId);
+    let usersTableId = (req.body[0].usersTableId);    
+
+     
+
+    pool.query(
+        'UPDATE Pacient SET\
+        `firstname` = ?, \
+        `lastname` = ?, \
+        `bedId` = ?, \
+        `notesTableId` = ?, \
+        `userTableId`= ? \
+         WHERE \
+         `Pacient`.`pacientId` = ?;',[firstname,lastname,bedId,notesTableId,usersTableId,pacientId], function(err, result, fields) {
+        if (err) {
+            res.send(err).status(400);
+            return;
+        }
+        res.send(result).status(202);
+    });
+
+    
+    //res.send(OK);
 });
 
 module.exports = routerPacient;
