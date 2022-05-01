@@ -71,7 +71,7 @@ CREATE TABLE `Notes` (
   `note` varchar(250),
   `state` varchar(250),
   PRIMARY KEY (`notesId`),
-  UNIQUE KEY (`notesId` ASC)   
+  UNIQUE KEY (`notesId` ASC)  
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
@@ -170,7 +170,7 @@ INSERT INTO `User` (`userId`, `username`,`firstname`,`lastname`, `occupation`, `
 --
 -- Table structure for pacient notes
 --
-INSERT INTO `Notes` (`notesId`, `note`,`state`) VALUES
+INSERT INTO `Notes` (`notesId`,`note`,`state`) VALUES
 (1,"dormir a las 22","activa"),
 (2,"tomar remedio a las 12","activa");
 
@@ -194,10 +194,12 @@ INSERT INTO `Pacient` (`pacientId`, `firstName`,`lastName`,`BedId`,`notesTableId
 (1, "Pedro","Pasculli",1,1,1 ),
 (2, "Oscar", "Rugger",2,1,2);
 
+--
+-- Dumping data for table `Messages`
+--
 
 
-
-
+INSERT INTO `Messages` (`messageId`, `userIdLastName`, `userIdSender`, `pacientId`, `content`, `dateTime`, `audiolink`, `userTableId`) VALUES ('1', '1', '1', '1', 'Se levanto bien', CURRENT_TIMESTAMP, NULL, '1');
 
 
 

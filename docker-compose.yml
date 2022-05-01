@@ -16,12 +16,6 @@ services:
         - ./mosquitto/log:/mosquitto/log
         restart: unless-stopped
 
-    ts-compiler:
-        image:                   harmish/typescript
-        volumes:
-            -                    ./src/frontend/ts:/workspace 
-            -                    ./src/frontend/js:/output 
-        command:                 "tsc --project /workspace --outDir /output --watch --pretty true"
 
     mysql-server:
         image:                   mysql:5.7

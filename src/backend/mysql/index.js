@@ -1,6 +1,6 @@
 var mysql = require('mysql');
 var configMysql = {
-    connectionLimit: 10,
+    connectionLimit: 100,
     host     : 'mysql-server',
     port     : '3306',
     user     : 'root',
