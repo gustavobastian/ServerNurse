@@ -91,10 +91,7 @@ routerUser.put('/:id', function(req, res) {
     let state = req.body[0].state;
     let password = req.body[0].password;
     
-    //UPDATE Notes SET state = "activa" WHERE notesId=?
-  /*  console.log(userId);
-    console.log(occupation);
-    console.log(lastname);*/
+   
 
     pool.query(
         'UPDATE User SET\
@@ -116,4 +113,29 @@ routerUser.put('/:id', function(req, res) {
     
     //res.send(OK);
 });
+
+
+//API for deleting user
+/**
+ * body format: 
+ * any
+ */
+ routerUser.delete('/:id', function(req, res) {
+    console.log(req.body);
+    console.log(req.body[0].messageId);
+    let userId=parseInt(req.params.id);
+        
+    pool.query(
+        'DELETE FROM User \
+        WHERE \
+         `User`.`userId` = ?;',[userId], function(err, result, fields) {
+        if (err) {
+            res.send(err).status(400);
+            return;
+        }
+        res.send(result).status(202);
+    });
+
+});
+
 module.exports = routerUser;

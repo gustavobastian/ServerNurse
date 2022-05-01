@@ -2,7 +2,7 @@ var express = require('express');
 var routerBeds = express.Router();
 var pool = require('../../mysql');
 
-//Devuelve un array de beds
+//Returns all beds from the hospital
 routerBeds.get('/', function(req, res) {
     pool.query('Select * from Bed', function(err, result, fields) {
         if (err) {
@@ -59,12 +59,87 @@ routerBeds.post('/pacient/notes/activation/:id', function(req, res) {
   
 });
 
-//API for adding new bed notes of a pacient by bedId
-routerBeds.post('/', function(req, res) {
-    let request=(req.body);
-
+//API for adding new beds 
+/**
+ * body format:
+ * [{"bedId":2,
+ * "roomId":1,
+ * "callerId":1,
+ * "floorId":"1"}]
+ */
+ routerBeds.post('/', function(req, res) {
     console.log(req.body);
-    res.send(OK);
+    console.log(req.body[0].messageId);
+    let bedId=req.body[0].bedId;
+    let roomId=req.body[0].roomId;
+    let callerId=req.body[0].callerId;
+    let floorId = req.body[0].floorId;
+    
+    
+    pool.query(
+        'INSERT INTO Bed(`bedId`, `roomId`, `callerId`, `floorId`) \
+        VALUES (?,?,?,?)',[bedId,roomId,callerId,floorId], function(err, result, fields) {
+        if (err) {
+            res.send(err).status(400);
+            return;
+        }
+        res.send(result).status(202);
+    });
+    
+    //res.status(202);
+
+});
+
+//API for editing beds 
+/**
+ * body format: 
+ * [{"roomId":"2", "callerId":"17", "floorId":"1"}]
+ */
+ routerBeds.put('/:id', function(req, res) {
+    console.log(req.body);
+    console.log(req.body[0].messageId);
+    let bedId=parseInt(req.params.id);
+    let roomId=parseInt(req.body[0].roomId);
+    let callerId=parseInt(req.body[0].callerId);
+    let floorId =parseInt( req.body[0].floorId);
+        
+    pool.query(
+        'UPDATE Bed SET \
+        `roomId` = ?,   \
+        `callerId` = ?, \
+        `floorId` = ? \
+        WHERE \
+         `Bed`.`bedId` = ?;',[roomId,callerId,floorId, bedId], function(err, result, fields) {
+        if (err) {
+            res.send(err).status(400);
+            return;
+        }
+        res.send(result).status(202);
+    });
+
+});
+
+//API for deleting beds
+/**
+ * body format: 
+ * [{"roomId":"2", "callerId":"17", "floorId":"1"}]
+ */
+ routerBeds.delete('/:id', function(req, res) {
+    console.log(req.body);
+    console.log(req.body[0].messageId);
+    let bedId=parseInt(req.params.id);
+        
+    pool.query(
+        'DELETE FROM Bed \
+        WHERE \
+         `Bed`.`bedId` = ?;',[bedId], function(err, result, fields) {
+        if (err) {
+            res.send(err).status(400);
+            return;
+        }
+        res.send(result).status(202);
+    });
+
 });
 
 module.exports = routerBeds;

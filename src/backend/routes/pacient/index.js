@@ -107,4 +107,27 @@ routerPacient.post('/', function(req, res) {
     //res.send(OK);
 });
 
+
+//API for deleting Pacient
+/**
+ * body format: 
+ * any
+ */
+ routerPacient.delete('/:id', function(req, res) {
+    console.log(req.body);
+    console.log(req.body[0].messageId);
+    let pacientId=parseInt(req.params.id);
+        
+    pool.query(
+        'DELETE FROM Pacient \
+        WHERE \
+         `Pacient`.`pacientId` = ?;',[pacientId], function(err, result, fields) {
+        if (err) {
+            res.send(err).status(400);
+            return;
+        }
+        res.send(result).status(202);
+    });
+
+});
 module.exports = routerPacient;
