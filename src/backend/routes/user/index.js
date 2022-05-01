@@ -67,11 +67,52 @@ routerUser.post('/', function(req, res) {
 });
 
 
+//API for editing a user
+/**
+ * body format:
+ * [{
+ * "username":"peter",
+ * "firstname":"peter",
+ * "lastname":"Frant",
+ * "occupation":"medico",
+ * "state":"1",
+ * "password":"123456"}]
+ */
 
-routerUser.put('/', function(req, res) {
-    let request=(req.body);
+routerUser.put('/:id', function(req, res) {
+    
 
-    console.log(req.body);
-    res.send(OK);
+    let userId= parseInt(req.params.id); 
+    let username=req.body[0].username;
+    let firstname=req.body[0].firstname;
+    let lastname=req.body[0].lastname;
+    let occupation=req.body[0].occupation;
+    let state = req.body[0].state;
+    let password = req.body[0].password;
+    
+    //UPDATE Notes SET state = "activa" WHERE notesId=?
+  /*  console.log(userId);
+    console.log(occupation);
+    console.log(lastname);*/
+
+    pool.query(
+        'UPDATE User SET\
+        `username` = ?,   \
+        `firstname` = ?, \
+        `lastname` = ?, \
+        `occupation` = ?, \
+        `state` = ?, \
+        `password`= ? \
+         WHERE \
+         `User`.`userId` = ?;',[username,firstname,lastname,occupation,state,password,userId], function(err, result, fields) {
+        if (err) {
+            res.send(err).status(400);
+            return;
+        }
+        res.send(result).status(202);
+    });
+
+    
+    //res.send(OK);
 });
 module.exports = routerUser;
