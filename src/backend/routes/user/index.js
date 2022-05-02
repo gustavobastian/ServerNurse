@@ -29,8 +29,7 @@ routerUser.get('/:id', function(req, res) {
 //API for adding new  user
 /**
  * body format:
- * [{"userId":2,
- * "username":"peter",
+ * [{"username":"peter",
  * "firstname":"peter",
  * "lastname":"Frant",
  * "occupation":"medico",
@@ -40,8 +39,7 @@ routerUser.get('/:id', function(req, res) {
 routerUser.post('/', function(req, res) {
     
     console.log(req.body);
-    console.log(req.body[0].messageId);
-    let userId=req.body[0].userId;
+    console.log(req.body[0].messageId);    
     let username=req.body[0].username;
     let firstname=req.body[0].firstname;
     let lastname=req.body[0].lastname;
@@ -55,8 +53,8 @@ routerUser.post('/', function(req, res) {
     console.log(lastname);*/
 
     pool.query(
-        'INSERT INTO User(`userId`, `username`, `firstname`, `lastname`, `occupation`, `state`, `password`) \
-        VALUES (?,?,?,?,?,?,?)',[userId,username,firstname,lastname,occupation,state,password], function(err, result, fields) {
+        'INSERT INTO User( `username`, `firstname`, `lastname`, `occupation`, `state`, `password`) \
+        VALUES (?,?,?,?,?,?)',[username,firstname,lastname,occupation,state,password], function(err, result, fields) {
         if (err) {
             res.send(err).status(400);
             return;

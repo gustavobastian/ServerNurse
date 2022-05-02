@@ -4,7 +4,7 @@ var pool = require('../../mysql');
 
 //Returns all users tables from the hospital
 routerUsersTable.get('/', function(req, res) {
-    pool.query('Select * from routerUsersTable', function(err, result, fields) {
+    pool.query('Select * from UsersTable', function(err, result, fields) {
         if (err) {
             res.send(err).status(400);
             return;
@@ -14,4 +14,4 @@ routerUsersTable.get('/', function(req, res) {
 });
 
 
-module.exports = routerBeds;
+module.exports = routerUsersTable;

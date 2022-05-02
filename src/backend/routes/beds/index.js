@@ -62,23 +62,21 @@ routerBeds.post('/pacient/notes/activation/:id', function(req, res) {
 //API for adding new beds 
 /**
  * body format:
- * [{"bedId":2,
- * "roomId":1,
+ * [{"roomId":1,
  * "callerId":1,
  * "floorId":"1"}]
  */
  routerBeds.post('/', function(req, res) {
     console.log(req.body);
-    console.log(req.body[0].messageId);
-    let bedId=req.body[0].bedId;
+    console.log(req.body[0].messageId);    
     let roomId=req.body[0].roomId;
     let callerId=req.body[0].callerId;
     let floorId = req.body[0].floorId;
     
     
     pool.query(
-        'INSERT INTO Bed(`bedId`, `roomId`, `callerId`, `floorId`) \
-        VALUES (?,?,?,?)',[bedId,roomId,callerId,floorId], function(err, result, fields) {
+        'INSERT INTO Bed(`roomId`, `callerId`, `floorId`) \
+        VALUES (?,?,?)',[roomId,callerId,floorId], function(err, result, fields) {
         if (err) {
             res.send(err).status(400);
             return;
@@ -122,7 +120,7 @@ routerBeds.post('/pacient/notes/activation/:id', function(req, res) {
 //API for deleting beds
 /**
  * body format: 
- * [{"roomId":"2", "callerId":"17", "floorId":"1"}]
+ * any
  */
  routerBeds.delete('/:id', function(req, res) {
     console.log(req.body);

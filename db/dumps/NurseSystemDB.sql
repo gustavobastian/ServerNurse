@@ -34,7 +34,7 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `User` (
-  `userId` int(11) NOT NULL,
+  `userId` int(11) NOT NULL AUTO_INCREMENT,
   `username` varchar(64) NOT NULL,
   `firstname` varchar(64) NOT NULL,
   `lastname` varchar(64) NOT NULL,
@@ -51,7 +51,7 @@ CREATE TABLE `User` (
 -- This table has information of the instrument and the place where the bed is.
 
 CREATE TABLE `Bed` (
-  `bedId` int(11) NOT NULL ,
+  `bedId` int(11) NOT NULL AUTO_INCREMENT,
   `roomId` int(11) NOT NULL,
   `callerId` int(11) NOT NULL,
   `floorId` int(11) NOT NULL,  
@@ -80,7 +80,7 @@ CREATE TABLE `NotesTable` (
 --
 
 CREATE TABLE `Notes` (
-  `notesId` int(11) NOT NULL,
+  `notesId` int(11) NOT NULL AUTO_INCREMENT,
   `note` varchar(250),
   `state` varchar(250),
   `notesTableId` int(11) NOT NULL,
@@ -109,6 +109,7 @@ CREATE TABLE `UsersTable` (
 --
 
 CREATE TABLE `MedicalTable` (
+  `MedicalTableId` int(11) NOT NULL,  
   `userTableId` int(11) NOT NULL,  
   `userId` int(11),
   FOREIGN KEY (`userTableId`) REFERENCES UsersTable(userTableId),  
@@ -130,8 +131,8 @@ CREATE TABLE `Pacient` (
   `firstName` varchar(255) NOT NULL,
   `lastName` varchar(255) NOT NULL,
   `bedId` int(11) ,  
-  `notesTableId` int(11) NOT NULL,  
-  `userTableId` int(11) NOT NULL,
+  `notesTableId` int(11),  
+  `userTableId` int(11),
   PRIMARY KEY (`pacientId`),  
   FOREIGN KEY (`bedId`)  REFERENCES Bed(bedId), 
   FOREIGN KEY (`notesTableId`)  REFERENCES NotesTable(notesTableId),   
@@ -168,19 +169,19 @@ CREATE TABLE `Messages` (
 -- Dumping data for table `bed`
 --
 
-INSERT INTO `Bed` (`bedId`, `roomId`,`callerId`,`floorId`) VALUES
-(1, 1, 1,0),
-(2, 1, 2,0);
+INSERT INTO `Bed` (`roomId`,`callerId`,`floorId`) VALUES
+(1, 1,0),
+(1, 2,0);
 
 
 
 --
 -- Dumping data for table `user`
 --
-INSERT INTO `User` (`userId`, `username`,`firstname`,`lastname`, `occupation`, `state`, `password`) VALUES
-(1, 'Josesito','Jose', 'laurm', 'administrador', 1, 1234),
-(2, 'Arnaldito','Arnaldo',' Alba', 'médico', 0, 5463),
-(3, 'Carlitos','Carlos',' Car', 'enfermero', 1, 1111);
+INSERT INTO `User` (`username`,`firstname`,`lastname`, `occupation`, `state`, `password`) VALUES
+('Josesito','Jose', 'laurm', 'administrador', 1, 1234),
+('Arnaldito','Arnaldo',' Alba', 'médico', 0, 5463),
+( 'Carlitos','Carlos',' Car', 'enfermero', 1, 1111);
 
 --
 -- Dumping data for table `userTable`
@@ -196,10 +197,10 @@ INSERT INTO `UsersTable` (`userTableId`) VALUES
 -- Dumping data for table `MedicalTable`
 --
 
-INSERT INTO `MedicalTable` (`userTableId`, `userId`) VALUES
-(1,1),
-(2,2),
-(2,2)
+INSERT INTO `MedicalTable` (`MedicalTableId`,`userTableId`, `userId`) VALUES
+(1,1,1),
+(2,2,1),
+(3,2,2)
 ;
 
 
@@ -212,9 +213,9 @@ INSERT INTO `NotesTable` (`notesTableId`) VALUES
 --
 -- Table structure for pacient notes
 --
-INSERT INTO `Notes` (`notesId`,`note`,`state`,`notesTableId`) VALUES
-(1,"dormir a las 22","activa",1),
-(2,"tomar remedio a las 12","activa",2);
+INSERT INTO `Notes` (`note`,`state`,`notesTableId`) VALUES
+("dormir a las 22","activa",1),
+("tomar remedio a las 12","activa",2);
 
 --
 -- Dumping data for table `pacient`

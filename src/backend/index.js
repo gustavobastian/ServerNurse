@@ -31,12 +31,16 @@ var routerUser = express = require('./routes/user');
 var routerMessages = express = require('./routes/messages');
 var routerNotes = express = require('./routes/notes');
 var routerBeds = express = require('./routes/beds');
+var routerUsersTable = express = require('./routes/usersTable');
+var routerMedicalTable = express = require('./routes/medicalTable');
 
 app.use('/api/pacient',routerPacient);
 app.use('/api/user',routerUser);
 app.use('/api/messages',routerMessages);
 app.use('/api/notes',routerNotes);
 app.use('/api/beds',routerBeds);
+app.use('/api/usersTable',routerUsersTable);
+app.use('/api/medicalTable',routerMedicalTable);
 
 
 var MQTT_TOPIC = "test";
