@@ -97,6 +97,14 @@ Example:
 DELETE method:
 * "localhost:8000/api/pacient/:id": used for removing a user information from the database.
 
+### Messaging Management
+GET methods:
+* "localhost:8000/api/messages/": returns the last 100 messages saved in the database in JSON format.
+Example of return:
+[{"messageId":1,"userIdLastName":"1","userIdSender":1,"pacientId":"1","content":"Se levanto bien","dateTime":"2022-05-01T23:36:03.000Z","audiolink":null,"userTableId":1}]
+* "localhost:8000/api/messages/info": returns the last 100 messages saved in the database in JSON format with information of the sender.
+Example of return:
+[{"messageId":1,"firstname":"Jose","lastname":"laurm","pacientId":"1","content":"Se levanto bien"}]
 
 
 based in https://github.com/gotoiot/app-fullstack-base
