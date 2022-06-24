@@ -29,24 +29,33 @@ routerUser.get('/:id', function(req, res) {
 //API for adding new  user
 /**
  * body format:
- * [{"username":"peter",
+ * {"username":"peter",
  * "firstname":"peter",
  * "lastname":"Frant",
  * "occupation":"medico",
  * "state":"1",
- * "password":"123456"}]
+ * "password":"123456"}
  */
 routerUser.post('/', function(req, res) {
-    
+    console.log("here");
     console.log(req.body);
-    console.log(req.body[0].messageId);    
+    let d= JSON.stringify(req.body);
+    console.log("body:"+d);  
+    let user= JSON.parse(d); 
+    console.log("user:"+user._username);
+    /*console.log(req.body[0].messageId);    
     let username=req.body[0].username;
     let firstname=req.body[0].firstname;
     let lastname=req.body[0].lastname;
     let occupation=req.body[0].occupation;
     let state = req.body[0].state;
-    let password = req.body[0].password;
-    
+    let password = req.body[0].password;*/
+    let username=user._username;
+    let firstname=user._firstname;
+    let lastname=user._lastname;
+    let occupation=user._occupation;
+    let state = user._state;
+    let password = user._password;
 
   /*  console.log(userId);
     console.log(occupation);
@@ -69,25 +78,28 @@ routerUser.post('/', function(req, res) {
 //API for editing a user
 /**
  * body format:
- * [{
+ * {
  * "username":"peter",
  * "firstname":"peter",
  * "lastname":"Frant",
  * "occupation":"medico",
  * "state":"1",
- * "password":"123456"}]
+ * "password":"123456"}
  */
 
 routerUser.put('/:id', function(req, res) {
-    
+    let d= JSON.stringify(req.body);
+    //console.log("body:"+d);  
+    let user= JSON.parse(d); 
+    //console.log("user:"+user.username);
 
     let userId= parseInt(req.params.id); 
-    let username=req.body[0].username;
-    let firstname=req.body[0].firstname;
-    let lastname=req.body[0].lastname;
-    let occupation=req.body[0].occupation;
-    let state = req.body[0].state;
-    let password = req.body[0].password;
+    let username=user.username;
+    let firstname=user.firstname;
+    let lastname=user.lastname;
+    let occupation=user.occupation;
+    let state = user.state;
+    let password = user.password;
     
    
 
@@ -109,7 +121,7 @@ routerUser.put('/:id', function(req, res) {
     });
 
     
-    //res.send(OK);
+   // res.send(202);
 });
 
 
