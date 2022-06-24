@@ -12,6 +12,19 @@ routerBeds.get('/', function(req, res) {
         res.send(result);
     });
 });
+
+//Returns all beds from the hospital
+routerBeds.get('/:id', function(req, res) {
+    idAb=req.params.id;   
+    pool.query('Select * from Bed where bedId=?',[idAb], function(err, result, fields) {
+        if (err) {
+            res.send(err).status(400);
+            return;
+        }
+        res.send(result);
+    });
+});
+
 //API for gettin active notes of a pacient by bedId
 routerBeds.get('/pacient/notes/:id', function(req, res) {
     idAb=req.params.id;   
