@@ -45,7 +45,7 @@ GET methods:
 `[{"userId":1,"username":"Josesito","firstname":"Jose","lastname":"laurm","occupation":"administrador","state":1,"password":"1234"}]` 
 
 POST methods:
-* "localhost:8000/api/user/": returns all the users registered in the system in JSON format.
+* "localhost:8000/api/user/": used for adding a new user to the system, needs users information in the body parameter.
 Body example:  
 [{"username":"peter",
  "firstname":"peter",
@@ -68,6 +68,36 @@ Example:
 
 DELETE method:
 * "localhost:8000/api/user/:id": used for removing a user information from the database.
+
+### Pacient Management
+GET methods:
+* "localhost:8000/api/pacient/": returns all the pacients registered in the system in JSON format.
+* "localhost:8000/api/pacient/:id": returns the user's information registered in the system in JSON format. Example: 
+`[{"pacientId":1,"firstName":"Pedro","lastName":"Pasculli","bedId":1,"notesTableId":1,"userTableId":1}]` 
+
+POST methods:
+* "localhost:8000/api/pacient/": used for adding a new pacient to the system, needs the pacient information in the body of the message.
+Body example:  
+ [{"pacientId":2, 
+  "firstname":"peter",
+  "lastname":"Frant",
+  "bedId":"3",
+  "notesTableId":"1",
+  "userTableId":"1"}]
+PUT methods:
+* "localhost:8000/api/pacient/:id": used for editing a pacient information: needs information passed by the body parameter in JSON format.
+Example:   
+ [{"firstname":"peter",
+  "lastname":"Frant",
+  "bedId":"3",
+  "notesTableId":"1",
+  "userTableId":"1"}]
+
+
+DELETE method:
+* "localhost:8000/api/pacient/:id": used for removing a user information from the database.
+
+
 
 based in https://github.com/gotoiot/app-fullstack-base
 by Agustin Bassi https://github.com/agustinBassi ,Ernesto Gigliotti https://github.com/ernesto-g and Brian Ducca https://github.com/brianducca
