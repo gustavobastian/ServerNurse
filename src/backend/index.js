@@ -1,16 +1,21 @@
 //=======[ Settings, Imports & Data ]==========================================
 
 var PORT    = 3000;
-
+var mqtt=require('mqtt');
 var express = require('express');
 //const connection = require('./mysql-connector');
 var app     = express();
 //var utils   = require('./mysql-connector');
+
+var mqttClientLocal = require('./mqtt/mqtt');
+
 var cors = require('cors');
 var corsOptions={origin:'*' , optionsSuccessStatus:200};
 
 
-var mqtt=require('mqtt');
+
+var MQTT_TOPIC = "test";
+
 
 // to parse application/json
 app.use(express.json()); 
@@ -43,27 +48,6 @@ app.use('/api/usersTable',routerUsersTable);
 app.use('/api/medicalTable',routerMedicalTable);
 
 
-var MQTT_TOPIC = "test";
-var MQTT_ADDR = "mqtt://localhost";
-var MQTT_PORT = 1883;
-//=======[ Data ]================================
-
-
-
-var client = mqtt.connect('mqtt://localhost:1883');
-client.on('connect', function () {
-    client.subscribe('presence', function (err) {
-      if (!err) {
-        client.publish('presence', 'Hello mqtt')
-      }
-    })
-  })
-  
-  client.on('message', function (topic, message) {
-    // message is Buffer
-    console.log(message.toString())
-    client.end()
-  })
 
 //=======[ MQTT ]================================
 /*
@@ -84,28 +68,14 @@ var client = mqtt.connect(MQTT_ADDR, {
         console.log(err)``
         client.end()
     })
+
 */
 
-//response from server
-app.post('/users/',function(req,res){
-  
-  let idAb=0;//req.params.id;
-  console.log(req.body);
-  
-  if(req.body.pass>1000){response="admin";}
-  else if(req.body.pass>100){response="medical";}
-  else if(req.body.pass!=0) {response="nurse";}
-  else {response="error";}
 
- 
-  res.send(response).status(200);  
-
-  res.end();
-});
 
 //=======[ Main module code ]==================================================
 app.listen(PORT, function(req, res) {
-    
+  
   console.log("NodeJS API running correctly");
 });
 //=======[ End of file ]=======================================================

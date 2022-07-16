@@ -180,8 +180,8 @@ INSERT INTO `Bed` (`roomId`,`callerId`,`floorId`) VALUES
 --
 INSERT INTO `User` (`username`,`firstname`,`lastname`, `occupation`, `state`, `password`) VALUES
 ('Josesito','Jose', 'laurm', 'administrador', 1, 1234),
-('Arnaldito','Arnaldo',' Alba', 'médico', 0, 5463),
-( 'Carlitos','Carlos',' Car', 'enfermero', 1, 1111);
+('Arnaldito','Arnaldo',' Alba', 'doctor', 0, 5463),
+( 'Carlitos','Carlos',' Car', 'nurse', 1, 1111);
 
 --
 -- Dumping data for table `userTable`
