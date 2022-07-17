@@ -37,6 +37,7 @@ client.on('connect', function () {
   })
 })
 
+//API for making changes in database or ask for data
 function loginHere(c){
   console.log(c.toString()); 
   //client.publish('/User/Info', c) ;
@@ -54,12 +55,12 @@ function loginHere(c){
     //var response= "{idNumber:"+result[0].userId+",mode:"+result[0].occupation+"}";
     var response = JSON.stringify(response_conform);
     console.log(response);
-    client.publish('/User/System', response);  
+    client.publish('/User/System/response', response);  
   });
 }
 
-function getPacientInfo(pacientId){
-  console.log("here");
+function getPacientInfoBed(bedId){
+  console.log("bedId");
  /* console.log(c.toString()); 
   //client.publish('/User/Info', c) ;
   pool.query('Select * from User WHERE username=?',[c], function(err, result, fields) {
@@ -80,21 +81,68 @@ function getPacientInfo(pacientId){
   });*/
 }
 
+/**
+ * Function that returns the pacient information to topic
+ * @param {*} pacientId :number that identifies the pacient
+ */
+function getPacientInfoPacientId(pacientId){
+  console.log("pacient:"+pacientId);
+  
+  let topic= "/Pacient/"+pacientId+"/info";
+  pool.query('Select * from Pacient where pacientId = ?',pacientId, function(err, result, fields) {
+    if (err) {
+        console.log("error")
+        return;
+    }
+    //console.log(result)
+    client.publish(topic, JSON.stringify(result));  
+  });  
+  
+   
+}
 
+/**
+ * Function that returns the pacient notes to topic
+ * @param {*} pacientId :number that identifies the pacient
+ */
+ function getPacientNotesPacientId(pacientId){
+  console.log("pacient:"+pacientId);
+  // system sending last 2 notes only
+  let topic= "/Pacient/"+pacientId+"/notes";
+  pool.query('SELECT DISTINCT notesId,note,state FROM `Notes` as n JOIN `NotesTable` as nt JOIN `Pacient` as p WHERE n.notesTableId = nt.notesTableId AND pacientId = ? ORDER BY notesId DESC LIMIT 2',pacientId, function(err, result, fields) {
+    if (err) {
+        console.log("error")
+        return;
+    }
+   // console.log(result)
+     client.publish(topic, JSON.stringify(result));  
+  });
+  
+}
+
+
+/**
+ * Functions for subscribe to topics and reroute to api functions
+*/
 client.on('message', function (topic, message,packet) {
   // message is Buffer
   console.log(packet, packet.payload.toString()); 
   let message_data=JSON.parse(message);
   console.log(JSON.parse(message));
+  console.log("***********************************");
+  console.log(topic);
+  console.log("***********************************");
   console.log(message_data._content); 
 
-  if(message_data._content==="log in"){
+  if(message_data._type=== 1){
     loginHere(message_data._username)
   }
-  if(message_data._command=== 2){
-    getPacientInfo(message_data._bedId);
+  /*if(message_data._command=== 8){
+    getPacientInfoBed(message_data._bedId);
+  }*/
+  if((message_data._type=== 2)){//&&(topic==="pacient")){
+    getPacientInfoPacientId(message_data._content);
   }
-  
   //client.end()
 })
 
