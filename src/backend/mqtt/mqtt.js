@@ -13,7 +13,7 @@ var pool = require('../mysql');
 
 
 
-var client = mqtt.connect('ws://192.168.1.100:9001');
+var client = mqtt.connect('ws://192.168.1.101:9001');
 /*client.on('connect', function () {
     client.subscribe('presence', function (err) {
       if (!err) {
@@ -33,6 +33,12 @@ client.on('connect', function () {
   client.subscribe('/User/general', function (err) {
     if (!err) {
       client.publish('/User/Info', 'Bienvenidos al sistema enfermera')
+    }
+  })
+  client.subscribe('/Pacient/#', function (err) {
+    if (!err) {
+      console.log("ok");
+      //client.publish('/Pacient/Info', 'Bienvenidos al sistema enfermera')
     }
   })
 })
@@ -107,9 +113,11 @@ function getPacientInfoPacientId(pacientId){
  */
  function getPacientNotesPacientId(pacientId){
   console.log("pacient:"+pacientId);
-  // system sending last 2 notes only
+  // system publising last 2 notes only
   let topic= "/Pacient/"+pacientId+"/notes";
-  pool.query('SELECT DISTINCT notesId,note,state FROM `Notes` as n JOIN `NotesTable` as nt JOIN `Pacient` as p WHERE n.notesTableId = nt.notesTableId AND pacientId = ? ORDER BY notesId DESC LIMIT 2',pacientId, function(err, result, fields) {
+  pool.query('SELECT DISTINCT notesId,note,state \
+  FROM `Notes` as n JOIN `NotesTable` as nt JOIN `Pacient` as p \
+  WHERE n.notesTableId = nt.notesTableId AND p.notesTableId = nt.notesTableId AND pacientId = ? ORDER BY notesId DESC LIMIT 2',pacientId, function(err, result, fields) {
     if (err) {
         console.log("error")
         return;
@@ -119,6 +127,60 @@ function getPacientInfoPacientId(pacientId){
   });
   
 }
+/**
+ * Function that put a note on the pacient
+ * @param {*} pacientId :number that identifies the pacient
+ */
+ function setPacientNotesPacientId(pacientId, note){
+  console.log("pacient:"+pacientId);
+  console.log("note:"+note);
+  // system publising last 2 notes only
+  /*let topic= "/Pacient/"+pacientId+"/notes";
+  pool.query('SELECT DISTINCT notesId,note,state FROM `Notes` as n JOIN `NotesTable` as nt JOIN `Pacient` as p WHERE n.notesTableId = nt.notesTableId AND pacientId = ? ORDER BY notesId DESC LIMIT 2',pacientId, function(err, result, fields) {
+    if (err) {
+        console.log("error")
+        return;
+    }
+   // console.log(result)
+     client.publish(topic, JSON.stringify(result));  
+  });*/
+  pool.getConnection(function(err, connection) {
+    connection.beginTransaction(function(err) {
+        if (err) {                  //Transaction Error (Rollback and release connection)
+            connection.rollback(function() {
+              console.log("aqui no estoy")
+                connection.release();
+                //Failure
+            });
+        } else {
+            console.log("aqui estoy")
+            connection.query('INSERT INTO `Notes` (`note`,`state`,`notesTableId`)\
+            VALUES (?,?,?)', [note,"activa",pacientId], function(err, results) {
+                if (err) {          //Query Error (Rollback and release connection)
+                    console.log(err);
+                    connection.rollback(function() {
+                        connection.release();
+                        //Failure
+                    });
+                } else {
+                    connection.commit(function(err) {
+                        if (err) {
+                            connection.rollback(function() {
+                                connection.release();
+                                //Failure
+                            });
+                        } else {
+                            connection.release();
+                            //Success
+                        }
+                    });
+                }
+            });
+        }
+      });
+    });    
+}
+
 
 
 /**
@@ -140,8 +202,16 @@ client.on('message', function (topic, message,packet) {
   /*if(message_data._command=== 8){
     getPacientInfoBed(message_data._bedId);
   }*/
-  if((message_data._type=== 2)){//&&(topic==="pacient")){
+  if((message_data._type=== 2)){//&&(topic==="Pacient/#")){
     getPacientInfoPacientId(message_data._content);
+  }
+  if((message_data._type=== 5)){//&&(topic==="Pacient/#")){
+    getPacientNotesPacientId(message_data._content);
+  }
+  if((message_data._type=== 3)){//&&(topic==="Pacient/#")){
+    console.log("escribiendo nota");
+    setPacientNotesPacientId(1,message_data._content);
+    
   }
   //client.end()
 })
