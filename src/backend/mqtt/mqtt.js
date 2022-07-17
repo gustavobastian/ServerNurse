@@ -58,7 +58,8 @@ function loginHere(c){
   });
 }
 
-function getPacientIngo(pacientId){
+function getPacientInfo(pacientId){
+  console.log("here");
  /* console.log(c.toString()); 
   //client.publish('/User/Info', c) ;
   pool.query('Select * from User WHERE username=?',[c], function(err, result, fields) {
@@ -89,6 +90,9 @@ client.on('message', function (topic, message,packet) {
 
   if(message_data._content==="log in"){
     loginHere(message_data._username)
+  }
+  if(message_data._command=== 2){
+    getPacientInfo(message_data._bedId);
   }
   
   //client.end()
