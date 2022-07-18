@@ -96,12 +96,13 @@ function getPacientInfoPacientId(pacientId){
   
   let topic= "/Pacient/"+pacientId+"/info";
   pool.query('Select * from Pacient where pacientId = ?',pacientId, function(err, result, fields) {
-    if (err) {
+    if (err || result.length==0) {
         console.log("error")
-        return;
+        client.publish(topic, JSON.stringify("Error"));          
     }
     //console.log(result)
-    client.publish(topic, JSON.stringify(result));  
+    else{
+    client.publish(topic, JSON.stringify(result));  }
   });  
   
    
@@ -118,12 +119,14 @@ function getPacientInfoPacientId(pacientId){
   pool.query('SELECT DISTINCT notesId,note,state \
   FROM `Notes` as n JOIN `NotesTable` as nt JOIN `Pacient` as p \
   WHERE n.notesTableId = nt.notesTableId AND p.notesTableId = nt.notesTableId AND pacientId = ? ORDER BY notesId DESC LIMIT 2',pacientId, function(err, result, fields) {
-    if (err) {
+    if (err|| result.length==0) {
         console.log("error")
-        return;
+        client.publish(topic, JSON.stringify("Error"));          
+        
     }
+    else{
    // console.log(result)
-     client.publish(topic, JSON.stringify(result));  
+     client.publish(topic, JSON.stringify(result));  }
   });
   
 }
