@@ -1,6 +1,8 @@
 const { json } = require('express');
 var mqtt=require('mqtt');
 
+var BedsList2 = require('../Beds/bed-monitoring');
+
 var MQTT_TOPIC = "test";
 //var MQTT_ADDR = "mqtt://localhost";
 //var MQTT_PORT = 1883;
@@ -11,37 +13,64 @@ var pool = require('../mysql');
 
 
 
+/**
+ * playing with bedlist
+ */
+ //BedsList2=new BedsList();
+ BedsList=new BedsList2();
+ BedsList.addBed(1);
+ BedsList.addBed(2);
+ BedsList.addBed(3);
+ BedsList.addBed(4);
+ BedsList.addBed(7);
+ BedsList.addBed(6);
 
+/**
+ * Connecting to MQTT broker
+ */ 
 
 var client = mqtt.connect('ws://192.168.1.101:9001');
-/*client.on('connect', function () {
-    client.subscribe('presence', function (err) {
-      if (!err) {
-        client.publish('presence', 'Hello mqtt')
-      }
-    })
-  })
-  
-  client.on('message', function (topic, message) {
-    // message is Buffer
-    console.log(message.toString())
-    client.end()
-  })
-*/
 //listening to  messages
 client.on('connect', function () {
   client.subscribe('/User/general', function (err) {
     if (!err) {
-      client.publish('/User/Info', 'Bienvenidos al sistema enfermera')
+    //  client.publish('/User/Info', 'Bienvenidos al sistema enfermera')
     }
   })
   client.subscribe('/Pacient/#', function (err) {
-    if (!err) {
-      console.log("ok");
+    if (!err) {      
       //client.publish('/Pacient/Info', 'Bienvenidos al sistema enfermera')
     }
   })
+  client.subscribe('/Beds/#', function (err) {
+    if (!err) {      
+      //client.publish('/Pacient/Info', 'Bienvenidos al sistema enfermera')
+    }
+  })
+
+  //Publish beds initial state
+  setInterval(publishBedStates, 10000);
+/*
+  let topic= "/Beds/status";
+  var response = BedsList.getBedStats();
+  client.publish(topic, response);  
+  */
+  
 })
+
+/**
+ * Function that publishes the state of each bed in the broker
+ * @param {}  
+ */
+ function publishBedStates(){
+ // console.log("publishing state");
+  let topic= "/Beds/status";
+  var response = BedsList.getBedStats();
+  client.publish(topic, response);  
+  
+ }
+
+
 
 //API for making changes in database or ask for data
 function loginHere(c){
@@ -65,26 +94,34 @@ function loginHere(c){
   });
 }
 
-function getPacientInfoBed(bedId){
-  console.log("bedId");
- /* console.log(c.toString()); 
-  //client.publish('/User/Info', c) ;
-  pool.query('Select * from User WHERE username=?',[c], function(err, result, fields) {
-    if (err) {
-        console.log(error)
-        return;
-    }
-    console.log(result);
-    //client.publish('/User/Info', JSON.parse(c));  
-    //var d= JSON.parse(result);
 
-    ///User/System/{"idNumber":1,"mode":"doctor"}
-    let response_conform={idNumber:result[0].userId, mode:result[0].occupation};
-    //var response= "{idNumber:"+result[0].userId+",mode:"+result[0].occupation+"}";
-    var response = JSON.stringify(response_conform);
-    console.log(response);
-    client.publish('/User/System', response);  
-  });*/
+/**
+ * function that gets all the beds with pacients of a particular doctor
+ */
+
+ function getListOfBeds(message){
+  console.log("Doctor:"+message);
+  let topiclocal= "/User/"+message+"/Beds";
+  pool.query('\
+  SELECT DISTINCT bedId,pacientId \
+  FROM `Pacient` as p JOIN `MedicalTable` as Mt JOIN `User` as u JOIN `UsersTable` as uT \
+  WHERE p.userTableId = uT.userTableId AND Mt.userTableId=uT.userTableId  AND u.userId = Mt.userId AND u.username=? \
+  ',[message], function(err, result, fields) {
+    if (err || result.length==0) {
+        console.log("error")
+        client.publish(topiclocal, JSON.stringify("Error"));          
+    }
+    //console.log(result)
+    else{
+    client.publish(topiclocal, JSON.stringify(result));  }
+  });  
+
+ }
+
+
+
+function getPacientInfoBed(bedId){
+  console.log("bedId"); 
 }
 
 /**
@@ -135,18 +172,8 @@ function getPacientInfoPacientId(pacientId){
  * @param {*} pacientId :number that identifies the pacient
  */
  function setPacientNotesPacientId(pacientId, note){
-  console.log("pacient:"+pacientId);
-  console.log("note:"+note);
-  // system publising last 2 notes only
-  /*let topic= "/Pacient/"+pacientId+"/notes";
-  pool.query('SELECT DISTINCT notesId,note,state FROM `Notes` as n JOIN `NotesTable` as nt JOIN `Pacient` as p WHERE n.notesTableId = nt.notesTableId AND pacientId = ? ORDER BY notesId DESC LIMIT 2',pacientId, function(err, result, fields) {
-    if (err) {
-        console.log("error")
-        return;
-    }
-   // console.log(result)
-     client.publish(topic, JSON.stringify(result));  
-  });*/
+  //console.log("pacient:"+pacientId);
+  //console.log("note:"+note);  
   pool.getConnection(function(err, connection) {
     connection.beginTransaction(function(err) {
         if (err) {                  //Transaction Error (Rollback and release connection)
@@ -185,22 +212,78 @@ function getPacientInfoPacientId(pacientId){
 }
 
 
+/**
+ * Function that publish the bed info to topic
+ * @param {*} bedId :number that identifies the pacient
+ */
+ function getBedInfo(bedId){
+  console.log("bed:"+JSON.parse(bedId));
+  // system publising last 2 notes only
+  let topic= "/Beds/"+bedId+"/info";
+
+  pool.query('SELECT *  \
+  FROM `Bed` as b \
+  WHERE b.bedId = ?',[bedId], function(err, result, fields) {
+    if (err|| result.length==0) {
+        console.log("error")
+        client.publish(topic, JSON.stringify("Error"));          
+        
+    }
+    else{
+   // console.log(result)
+     client.publish(topic, JSON.stringify(result));  }
+  });
+  
+}
+
+
+/**
+ * Function that publish the pacient id to topic
+ * @param {*} bedId :number that identifies the pacient
+ */
+ function getBedPacientInfo(bedId){
+  console.log("bed:"+JSON.parse(bedId));
+  // system publising last 2 notes only
+  let topic= "/Beds/"+bedId+"/Pacient";
+
+  pool.query('SELECT pacientId  \
+  FROM `Bed` as b JOIN `Pacient` as P\
+  USING (bedId) \
+  WHERE b.bedId = ?',[bedId], function(err, result, fields) {
+    if (err|| result.length==0) {
+        console.log("error")
+        client.publish(topic, JSON.stringify("Error"));          
+        
+    }
+    else{
+   // console.log(result)
+     client.publish(topic, JSON.stringify(result));  }
+  });
+  
+}
 
 /**
  * Functions for subscribe to topics and reroute to api functions
 */
 client.on('message', function (topic, message,packet) {
   // message is Buffer
-  console.log(packet, packet.payload.toString()); 
+  //console.log(packet, packet.payload.toString()); 
   let message_data=JSON.parse(message);
-  console.log(JSON.parse(message));
-  console.log("***********************************");
+  /*console.log(JSON.parse(message));
+  /*console.log("***********************************");
   console.log(topic);
   console.log("***********************************");
-  console.log(message_data._content); 
+  console.log(message_data._content); */
+
+  //received an alarm from a caller device, update state of bed
+  if(topic==="/Beds/caller-events"){
+    //message_content {"_bedId":2,"_content":"alert","_time":"today","_username":"system"}
+    BedsList.setStatus(message_data._bedId,2);
+  }
 
   if(message_data._type=== 1){
     loginHere(message_data._username)
+    
   }
   /*if(message_data._command=== 8){
     getPacientInfoBed(message_data._bedId);
@@ -213,12 +296,27 @@ client.on('message', function (topic, message,packet) {
   }
   if((message_data._type=== 3)){//&&(topic==="Pacient/#")){
     console.log("escribiendo nota");
-    setPacientNotesPacientId(1,message_data._content);
-    
+    setPacientNotesPacientId(1,message_data._content);    
   }
+  if((message_data._type=== 8)){//&&(topic==="Pacient/#")){
+    console.log("bedInfo");
+    getBedInfo(message_data._content);    
+  }
+  if((message_data._type=== 9)){//&&(topic==="Pacient/#")){
+    console.log("listofBeds");
+    getListOfBeds(message_data._content);    
+  }
+  if((message_data._type=== 10)){//&&(topic==="Pacient/#")){
+    console.log("pacient_from_bed");
+    
+    getBedPacientInfo(message_data._content);    
+  }
+  
+  
   //client.end()
+  
+  
 })
-
 
 
   module.exports = client;
