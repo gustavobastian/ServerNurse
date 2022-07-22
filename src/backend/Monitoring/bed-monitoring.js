@@ -6,13 +6,12 @@ var pool = require('../mysql/index');
  * status==2 with a call
  * status==3 accepted call
  * status==4 in progress
- * status==5 done=>1
+ * status==5 with message
+ * status==6 done=>1
  */
- class  BedsList  {
-    
+ class  BedsList  {    
     constructor() {
-         this.bedlist=[{id:0,st:0}];                
-        
+         this.bedlist=[{id:0,st:0}];                        
     }
   /**
    * This function adds a bed to the status list, it is used only when adding a bed

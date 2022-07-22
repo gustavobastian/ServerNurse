@@ -1,7 +1,8 @@
 const { json } = require('express');
 var mqtt=require('mqtt');
 
-var BedsList2 = require('../Beds/bed-monitoring');
+var BedsList = require('../Monitoring/Bed-mon');
+var UserList = require('../Monitoring/User-mon');
 
 var MQTT_TOPIC = "test";
 //var MQTT_ADDR = "mqtt://localhost";
@@ -16,8 +17,7 @@ var pool = require('../mysql');
 /**
  * playing with bedlist
  */
- //BedsList2=new BedsList();
- BedsList=new BedsList2();
+ 
  BedsList.addBed(1);
  BedsList.addBed(2);
  BedsList.addBed(3);
@@ -25,11 +25,19 @@ var pool = require('../mysql');
  BedsList.addBed(7);
  BedsList.addBed(6);
 
+ UserList.addUser(1);
+ UserList.addUser(2);
+ UserList.addUser(3);
+ UserList.addUser(4);
+ UserList.addUser(5);
+ UserList.addUser(6);
+ 
+
 /**
  * Connecting to MQTT broker
  */ 
 
-var client = mqtt.connect('ws://192.168.1.101:9001');
+var client = mqtt.connect('ws://192.168.1.100:9001');
 //listening to  messages
 client.on('connect', function () {
   client.subscribe('/User/general', function (err) {
@@ -72,18 +80,16 @@ client.on('connect', function () {
 
 
 
-//API for making changes in database or ask for data
-function loginHere(c){
-  console.log(c.toString()); 
+//API for logging
+function loginHere(username){
+  console.log(username.toString()); 
   //client.publish('/User/Info', c) ;
-  pool.query('Select * from User WHERE username=?',[c], function(err, result, fields) {
+  pool.query('Select * from User WHERE username=?',[username], function(err, result, fields) {
     if (err) {
         console.log(error)
         return;
     }
     console.log(result);
-    //client.publish('/User/Info', JSON.parse(c));  
-    //var d= JSON.parse(result);
 
     ///User/System/{"idNumber":1,"mode":"doctor"}
     let response_conform={idNumber:result[0].userId, mode:result[0].occupation};
@@ -91,6 +97,42 @@ function loginHere(c){
     var response = JSON.stringify(response_conform);
     console.log(response);
     client.publish('/User/System/response', response);  
+    client.publish('/User/'+username+'/response', response);  
+
+    //client.publish('/User/Info', JSON.parse(c));  
+    //var d= JSON.parse(result);
+    let data=result[0].userId;
+    console.log("data:"+data);
+    UserList.setStatus(data,1);
+    //check if user is logged
+    UserList.printUserList();
+    //
+  });
+}
+
+//API for loggout
+function loginOut(username){
+  //console.log(username.toString()); 
+  //client.publish('/User/Info', c) ;
+  pool.query('Select * from User WHERE username=?',[username], function(err, result, fields) {
+    if (err) {
+        console.log(error)
+        return;
+    }
+    console.log(result);
+
+    ///User/System/{"idNumber":1,"mode":"doctor"}
+    let response_conform={idNumber:result[0].userId, mode:"ok"};
+    //var response= "{idNumber:"+result[0].userId+",mode:"+result[0].occupation+"}";
+    var response = JSON.stringify(response_conform);
+    console.log(response);
+    client.publish('/User/'+username+'/response', response);  
+   
+    
+    let data=result[0].userId;
+    console.log("data:"+data);
+    UserList.setStatus(data,0);
+
   });
 }
 
@@ -258,7 +300,32 @@ function getPacientInfoPacientId(pacientId){
     else{
    // console.log(result)
      client.publish(topic, JSON.stringify(result));  }
-  });
+  });  
+}
+
+/**
+ * Function that compares qr
+ * @param {*} bedId :number that identifies the pacient
+ */
+ function compareQR(message,_bedId){
+  console.log("bed:"+JSON.parse(bedId));
+  BedsList.setStatus(_bedId,3);
+  // system publising last 2 notes only
+  /*let topic= "/Beds/"+bedId+"/Pacient";
+
+  pool.query('SELECT pacientId  \
+  FROM `Bed` as b JOIN `Pacient` as P\
+  USING (bedId) \
+  WHERE b.bedId = ?',[bedId], function(err, result, fields) {
+    if (err|| result.length==0) {
+        console.log("error")
+        client.publish(topic, JSON.stringify("Error"));          
+        
+    }
+    else{
+   // console.log(result)
+     client.publish(topic, JSON.stringify(result));  }
+  });  */
   
 }
 
@@ -285,18 +352,24 @@ client.on('message', function (topic, message,packet) {
     loginHere(message_data._username)
     
   }
+  if(message_data._type=== 2){
+    loginOut(message_data._username)    
+  }
+
   /*if(message_data._command=== 8){
     getPacientInfoBed(message_data._bedId);
   }*/
-  if((message_data._type=== 2)){//&&(topic==="Pacient/#")){
+  
+  
+  if((message_data._type=== 3)){//&&(topic==="Pacient/#")){
+    console.log("escribiendo nota");
+    setPacientNotesPacientId(1,message_data._content);    
+  }
+  if((message_data._type=== 4)){//&&(topic==="Pacient/#")){
     getPacientInfoPacientId(message_data._content);
   }
   if((message_data._type=== 5)){//&&(topic==="Pacient/#")){
     getPacientNotesPacientId(message_data._content);
-  }
-  if((message_data._type=== 3)){//&&(topic==="Pacient/#")){
-    console.log("escribiendo nota");
-    setPacientNotesPacientId(1,message_data._content);    
   }
   if((message_data._type=== 8)){//&&(topic==="Pacient/#")){
     console.log("bedInfo");
@@ -311,11 +384,11 @@ client.on('message', function (topic, message,packet) {
     
     getBedPacientInfo(message_data._content);    
   }
-  
-  
-  //client.end()
-  
-  
+  if((message_data._type=== 11)){//&&(topic==="Pacient/#")){
+    console.log("get QR");
+    
+    compareQR(message_data._content,message_data._bedId);        
+  }    
 })
 
 

@@ -2,16 +2,43 @@ var express = require('express');
 var routerUser = express.Router();
 var pool = require('../../mysql');
 
+var UserList = require('../../Monitoring/User-mon');
+
+
+//filling the userList
+pool.query('Select * from User', function(err, result, fields) {
+    if (err) {
+        res.send(err).status(400);
+        return;
+    }
+    result.forEach(element => {
+        UserList.addUser(element.userId);
+    });    
+    //UserList.printUserList();
+   
+});
+
+
 //API for getting all users information
 routerUser.get('/', function(req, res) {
+    
     pool.query('Select * from User', function(err, result, fields) {
         if (err) {
             res.send(err).status(400);
             return;
-        }
+        }        
+        UserList.printUserList();
         res.send(result);
     });
 });
+
+
+//API for getting the list of userStates
+routerUser.get('/state', function(req, res) {
+    
+        let result=UserList.getUserStats();
+        res.send(result);
+    });
 
 //API for getting a user information
 routerUser.get('/:id', function(req, res) {
@@ -45,7 +72,7 @@ routerUser.post('/', function(req, res) {
     console.log("user:"+user._username);
     /*console.log(req.body[0].messageId);    
     let username=req.body[0].username;
-    let firstname=req.body[0].firstname;
+    let firstname=req.body[0].firsstname;
     let lastname=req.body[0].lastname;
     let occupation=req.body[0].occupation;
     let state = req.body[0].state;
