@@ -67,7 +67,7 @@ CREATE TABLE `Bed` (
 
 
 CREATE TABLE `NotesTable` (
-  `notesTableId` int(11) NOT NULL,  
+  `notesTableId` int(11) NOT NULL AUTO_INCREMENT,  
   PRIMARY KEY (`notesTableId`),
   UNIQUE INDEX (`notesTableId` ASC)  
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;

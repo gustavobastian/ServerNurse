@@ -58,11 +58,6 @@ client.on('connect', function () {
 
   //Publish beds initial state
   setInterval(publishBedStates, 10000);
-/*
-  let topic= "/Beds/status";
-  var response = BedsList.getBedStats();
-  client.publish(topic, response);  
-  */
   
 })
 
@@ -80,7 +75,9 @@ client.on('connect', function () {
 
 
 
-//API for logging
+/***
+ * Functions that sets the status of the user in 1 and sends to the app the mode of use
+ */
 function loginHere(username){
   console.log(username.toString()); 
   //client.publish('/User/Info', c) ;
@@ -96,7 +93,7 @@ function loginHere(username){
     //var response= "{idNumber:"+result[0].userId+",mode:"+result[0].occupation+"}";
     var response = JSON.stringify(response_conform);
     console.log(response);
-    client.publish('/User/System/response', response);  
+    //client.publish('/User/System/response', response);  
     client.publish('/User/'+username+'/response', response);  
 
     //client.publish('/User/Info', JSON.parse(c));  
@@ -110,20 +107,19 @@ function loginHere(username){
   });
 }
 
-//API for loggout
+/***
+ * Functions that sets the status of the user in 0 and response ok to the app
+ */
 function loginOut(username){
-  //console.log(username.toString()); 
-  //client.publish('/User/Info', c) ;
   pool.query('Select * from User WHERE username=?',[username], function(err, result, fields) {
     if (err) {
         console.log(error)
         return;
-    }
-    console.log(result);
+    }   
 
-    ///User/System/{"idNumber":1,"mode":"doctor"}
+
     let response_conform={idNumber:result[0].userId, mode:"ok"};
-    //var response= "{idNumber:"+result[0].userId+",mode:"+result[0].occupation+"}";
+
     var response = JSON.stringify(response_conform);
     console.log(response);
     client.publish('/User/'+username+'/response', response);  
@@ -138,10 +134,12 @@ function loginOut(username){
 
 
 /**
- * function that gets all the beds with pacients of a particular doctor
+ * function that gets all the beds with pacients of a specified  doctor 
+ * @param {message}: username of the doctor
  */
 
  function getListOfBeds(message){
+  console.log("Aqui:"+message);
   console.log("Doctor:"+message);
   let topiclocal= "/User/"+message+"/Beds";
   pool.query('\
@@ -152,19 +150,12 @@ function loginOut(username){
     if (err || result.length==0) {
         console.log("error")
         client.publish(topiclocal, JSON.stringify("Error"));          
-    }
-    //console.log(result)
+    }    
     else{
     client.publish(topiclocal, JSON.stringify(result));  }
   });  
 
  }
-
-
-
-function getPacientInfoBed(bedId){
-  console.log("bedId"); 
-}
 
 /**
  * Function that returns the pacient information to topic
@@ -210,7 +201,7 @@ function getPacientInfoPacientId(pacientId){
   
 }
 /**
- * Function that put a note on the pacient
+ * Function that put a note on the pacient(saves it to the database)
  * @param {*} pacientId :number that identifies the pacient
  */
  function setPacientNotesPacientId(pacientId, note){
@@ -377,7 +368,7 @@ client.on('message', function (topic, message,packet) {
   }
   if((message_data._type=== 9)){//&&(topic==="Pacient/#")){
     console.log("listofBeds");
-    getListOfBeds(message_data._content);    
+    getListOfBeds(message_data._username);    
   }
   if((message_data._type=== 10)){//&&(topic==="Pacient/#")){
     console.log("pacient_from_bed");

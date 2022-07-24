@@ -79,12 +79,12 @@ routerBeds.post('/pacient/notes/activation/:id', function(req, res) {
  * "callerId":1,
  * "floorId":"1"}]
  */
- routerBeds.post('/', function(req, res) {
-    console.log(req.body);
-    console.log(req.body[0].messageId);    
-    let roomId=req.body[0].roomId;
-    let callerId=req.body[0].callerId;
-    let floorId = req.body[0].floorId;
+ routerBeds.post('/', function(req, res) {    
+    console.log(req.body);    
+    console.log(JSON.stringify(req.body));       
+    let roomId=parseInt(req.body.roomId);
+    let callerId=parseInt(req.body.callerId);
+    let floorId =parseInt( req.body.floorId);
     
     
     pool.query(
@@ -107,12 +107,12 @@ routerBeds.post('/pacient/notes/activation/:id', function(req, res) {
  * [{"roomId":"2", "callerId":"17", "floorId":"1"}]
  */
  routerBeds.put('/:id', function(req, res) {
-    console.log(req.body);
-    console.log(req.body[0].messageId);
+    console.log(req.body);    
+    console.log(JSON.stringify(req.body));   
     let bedId=parseInt(req.params.id);
-    let roomId=parseInt(req.body[0].roomId);
-    let callerId=parseInt(req.body[0].callerId);
-    let floorId =parseInt( req.body[0].floorId);
+    let roomId=parseInt(req.body.roomId);
+    let callerId=parseInt(req.body.callerId);
+    let floorId =parseInt( req.body.floorId);
         
     pool.query(
         'UPDATE Bed SET \
@@ -136,8 +136,7 @@ routerBeds.post('/pacient/notes/activation/:id', function(req, res) {
  * any
  */
  routerBeds.delete('/:id', function(req, res) {
-    console.log(req.body);
-    console.log(req.body[0].messageId);
+    console.log(req.body);    
     let bedId=parseInt(req.params.id);
         
     pool.query(

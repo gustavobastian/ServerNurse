@@ -25,9 +25,9 @@ var pool = require('../mysql/index');
      * @returns 
      */
     printUserList(){
-         this.UserList.forEach(element => {
+       /*  this.UserList.forEach(element => {
             console.log("id:"+element.id,"|st:"+element.st);
-        });
+        });*/
         return 1;
     }
     /**

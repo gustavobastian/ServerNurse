@@ -115,10 +115,11 @@ routerUser.post('/', function(req, res) {
  */
 
 routerUser.put('/:id', function(req, res) {
+    console.log("altering pacient")
     let d= JSON.stringify(req.body);
-    //console.log("body:"+d);  
+    console.log("body:"+d);  
     let user= JSON.parse(d); 
-    //console.log("user:"+user.username);
+    console.log("user:"+user.username);
 
     let userId= parseInt(req.params.id); 
     let username=user.username;

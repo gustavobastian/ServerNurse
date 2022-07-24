@@ -27,9 +27,9 @@ var pool = require('../mysql/index');
      * @returns 
      */
     printBedlist(){
-         this.bedlist.forEach(element => {
+     /*    this.bedlist.forEach(element => {
             console.log("id:"+element.id,"|st:"+element.st);
-        });
+        });*/
         return 1;
     }
     /**
