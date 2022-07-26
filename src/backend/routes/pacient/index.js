@@ -229,8 +229,7 @@ routerPacient.post('/', async function(req, res) {
  * any
  */
  routerPacient.delete('/:id', function(req, res) {
-    console.log(req.body);
-    console.log(req.body[0].messageId);
+    console.log(req.body);    
     let pacientId=parseInt(req.params.id);
         
     pool.query(

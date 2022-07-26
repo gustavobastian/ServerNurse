@@ -80,6 +80,7 @@ routerBeds.post('/pacient/notes/activation/:id', function(req, res) {
  * "floorId":"1"}]
  */
  routerBeds.post('/', function(req, res) {    
+    console.log("req:"+JSON.stringify(req.body))
     console.log(req.body);    
     console.log(JSON.stringify(req.body));       
     let roomId=parseInt(req.body.roomId);
