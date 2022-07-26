@@ -1,7 +1,7 @@
 //=======[ Settings, Imports & Data ]==========================================
 
 var PORT    = 3000;
-
+var mqtt=require('mqtt')
 var express = require('express');
 //const connection = require('./mysql-connector');
 var app     = express();
@@ -15,7 +15,8 @@ var cors = require('cors');
 var corsOptions={origin:'*' , optionsSuccessStatus:200};
 
 
-
+var mqttClientLocal = require('./mqtt/mqtt')
+var MQTT_TOPIC = "test"
 
 
 
