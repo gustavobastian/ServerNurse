@@ -13,26 +13,6 @@ var MQTT_PORT = 9001;
 var pool = require('../mysql');
 
 
-
-/**
- * playing with bedlist
- */
- 
- BedsList.addBed(1);
- BedsList.addBed(2);
- BedsList.addBed(3);
- BedsList.addBed(4);
- BedsList.addBed(7);
- BedsList.addBed(6);
-
- UserList.addUser(1);
- UserList.addUser(2);
- UserList.addUser(3);
- UserList.addUser(4);
- UserList.addUser(5);
- UserList.addUser(6);
- 
-
 /**
  * Connecting to MQTT broker
  */ 
@@ -338,20 +318,20 @@ client.on('message', function (topic, message,packet) {
     //message_content {"_bedId":2,"_content":"alert","_time":"today","_username":"system"}
     BedsList.setStatus(message_data._bedId,2);
   }
-
+  /**
+   * login/logout functions
+   * TODO: check passwords
+   */
   if(message_data._type=== 1){
-    loginHere(message_data._username)
-    
+    loginHere(message_data._username)    
   }
   if(message_data._type=== 2){
     loginOut(message_data._username)    
   }
 
-  /*if(message_data._command=== 8){
-    getPacientInfoBed(message_data._bedId);
-  }*/
-  
-  
+  /**
+   *Asking/editing Pacients  information/notes
+   **/  
   if((message_data._type=== 3)){//&&(topic==="Pacient/#")){
     console.log("escribiendo nota");
     setPacientNotesPacientId(1,message_data._content);    
@@ -362,10 +342,17 @@ client.on('message', function (topic, message,packet) {
   if((message_data._type=== 5)){//&&(topic==="Pacient/#")){
     getPacientNotesPacientId(message_data._content);
   }
+
+  /**
+   *Asking bed info... for nurses
+   **/  
   if((message_data._type=== 8)){//&&(topic==="Pacient/#")){
     console.log("bedInfo");
     getBedInfo(message_data._content);    
   }
+  /**
+   * Ask for beds for the current doctor
+   */
   if((message_data._type=== 9)){//&&(topic==="Pacient/#")){
     console.log("listofBeds");
     getListOfBeds(message_data._username);    
@@ -375,6 +362,9 @@ client.on('message', function (topic, message,packet) {
     
     getBedPacientInfo(message_data._content);    
   }
+  /**
+   * Received a QR, check it and update the status of the bed
+   */
   if((message_data._type=== 11)){//&&(topic==="Pacient/#")){
     console.log("get QR");
     

@@ -1,20 +1,22 @@
 //=======[ Settings, Imports & Data ]==========================================
 
 var PORT    = 3000;
-var mqtt=require('mqtt');
+
 var express = require('express');
 //const connection = require('./mysql-connector');
 var app     = express();
 //var utils   = require('./mysql-connector');
+var BedsList = require('./Monitoring/Bed-mon');
+var UserList = require('./Monitoring/User-mon');
 
-var mqttClientLocal = require('./mqtt/mqtt');
+
 
 var cors = require('cors');
 var corsOptions={origin:'*' , optionsSuccessStatus:200};
 
 
 
-var MQTT_TOPIC = "test";
+
 
 
 // to parse application/json
@@ -49,27 +51,19 @@ app.use('/api/medicalTable',routerMedicalTable);
 
 
 
-//=======[ MQTT ]================================
-/*
-var client = mqtt.connect(MQTT_ADDR, {
-    port: MQTT_PORT,
-    clientId: 'bgtestnodejs232323',
-    protocolId: 'MQIsdp',
-    protocolVersion: 3,
-    connectTimeout: 1000,
-    debug: true
-  });
+//=======[ Initialization of beds and user States]================================
 
-    client.on("connect",function(){	
-        console.log("connected");
-    });
 
-    client.on('error', function (err) {
-        console.log(err)``
-        client.end()
-    })
-
-*/
+/**
+ * playing with bedlist
+ */
+ 
+ BedsList.addBed(1);
+ BedsList.addBed(2);
+ BedsList.addBed(3);
+ BedsList.addBed(4);
+ BedsList.addBed(7);
+ BedsList.addBed(6);
 
 
 

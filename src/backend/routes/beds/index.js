@@ -1,8 +1,34 @@
 var express = require('express');
 var routerBeds = express.Router();
 var pool = require('../../mysql');
+var BedsList = require('../../Monitoring/Bed-mon');
 
-//Returns all beds from the hospital
+
+//filling the bedList
+pool.query('Select * from Bed', function(err, result, fields) {
+    if (err) {
+        console.log("Error")
+        return;
+    }
+    result.forEach(element => {
+        BedsList.addBed(element.userId);
+    });    
+    //UserList.printUserList();
+   
+});
+
+/**
+ * Send to client all beds status information
+*/
+routerBeds.get('/state/', function(req, res) {    
+    var response = BedsList.getBedStats();
+    
+    res.send(response);
+ });
+
+/**
+ * Send to client all beds information
+*/
 routerBeds.get('/', function(req, res) {
     pool.query('Select * from Bed', function(err, result, fields) {
         if (err) {
@@ -13,7 +39,9 @@ routerBeds.get('/', function(req, res) {
     });
 });
 
-//Returns all beds from the hospital
+/**
+ * return selected bed info 
+ */
 routerBeds.get('/:id', function(req, res) {
     idAb=req.params.id;   
     pool.query('Select * from Bed where bedId=?',[idAb], function(err, result, fields) {
