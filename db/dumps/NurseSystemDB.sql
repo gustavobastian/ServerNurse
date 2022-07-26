@@ -47,7 +47,7 @@ CREATE TABLE `User` (
 
 
 --
--- Table structure for table `bed`
+-- Table structure for table `Bed`
 -- This table has information of the instrument and the place where the bed is.
 
 CREATE TABLE `Bed` (
@@ -58,6 +58,20 @@ CREATE TABLE `Bed` (
    PRIMARY KEY (`bedId`),
    UNIQUE INDEX (`bedId` ASC)  
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
+--
+-- Table structure for table `QRbed`
+-- This table has information of the QR of a bed
+
+CREATE TABLE `QRbed` (
+  `QRId` int(11) NOT NULL AUTO_INCREMENT,
+  `bedId` int(11),
+  `QR` varchar (250) NOT NULL,  
+   PRIMARY KEY (`QRId`),
+   UNIQUE INDEX (`QRId` ASC)  
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
 
 
 --

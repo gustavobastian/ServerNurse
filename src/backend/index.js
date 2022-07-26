@@ -57,15 +57,7 @@ app.use('/api/medicalTable',routerMedicalTable);
 
 /**
  * playing with bedlist
- */
- 
- BedsList.addBed(1);
- BedsList.addBed(2);
- BedsList.addBed(3);
- BedsList.addBed(4);
- BedsList.addBed(7);
- BedsList.addBed(6);
-
+ */ 
 
 
 //=======[ Main module code ]==================================================

@@ -38,6 +38,8 @@ client.on('connect', function () {
 
   //Publish beds initial state
   setInterval(publishBedStates, 10000);
+  //Publish users state
+  setInterval(publishUserStates, 10000);
   
 })
 
@@ -52,6 +54,19 @@ client.on('connect', function () {
   client.publish(topic, response);  
   
  }
+
+/**
+ * Function that publishes the state of each user in the broker
+ * @param {}  
+ */
+ function publishUserStates(){
+  // console.log("publishing state");
+   let topic= "/User/status";
+   var response = UserList.getUserStats();
+   client.publish(topic, response);  
+   
+  }
+ 
 
 
 
@@ -279,24 +294,24 @@ function getPacientInfoPacientId(pacientId){
  * @param {*} bedId :number that identifies the pacient
  */
  function compareQR(message,_bedId){
-  console.log("bed:"+JSON.parse(bedId));
-  BedsList.setStatus(_bedId,3);
-  // system publising last 2 notes only
-  /*let topic= "/Beds/"+bedId+"/Pacient";
+  //console.log("bed:"+JSON.parse(bedId));
+  console.log(message);
+  console.log(JSON.stringify(_bedId));
 
-  pool.query('SELECT pacientId  \
-  FROM `Bed` as b JOIN `Pacient` as P\
-  USING (bedId) \
-  WHERE b.bedId = ?',[bedId], function(err, result, fields) {
+  pool.query('SELECT QR  \
+  FROM `QRbed` as b \
+  WHERE b.bedId = ?',[_bedId], function(err, result, fields) {
     if (err|| result.length==0) {
         console.log("error")
         client.publish(topic, JSON.stringify("Error"));          
         
     }
-    else{
-   // console.log(result)
-     client.publish(topic, JSON.stringify(result));  }
-  });  */
+    else{    
+          if(message==JSON.stringify(result[0].QR)){console.log("Any")}
+          BedsList.setStatus(_bedId,4);  
+          }
+  });
+
   
 }
 
@@ -310,12 +325,14 @@ client.on('message', function (topic, message,packet) {
   /*console.log(JSON.parse(message));
   /*console.log("***********************************");
   console.log(topic);
-  console.log("***********************************");
-  console.log(message_data._content); */
+  console.log("***********************************");*/
+  /*console.log(message_data._content); 
+  console.log(message_data._bedId); */
 
   //received an alarm from a caller device, update state of bed
   if(topic==="/Beds/caller-events"){
     //message_content {"_bedId":2,"_content":"alert","_time":"today","_username":"system"}
+    //console.log(JSON.stringify(message_data));
     BedsList.setStatus(message_data._bedId,2);
   }
   /**
@@ -347,29 +364,63 @@ client.on('message', function (topic, message,packet) {
    *Asking bed info... for nurses
    **/  
   if((message_data._type=== 8)){//&&(topic==="Pacient/#")){
-    console.log("bedInfo");
+    //console.log("bedInfo");
     getBedInfo(message_data._content);    
   }
   /**
    * Ask for beds for the current doctor
    */
   if((message_data._type=== 9)){//&&(topic==="Pacient/#")){
-    console.log("listofBeds");
+    //console.log("listofBeds");
     getListOfBeds(message_data._username);    
   }
   if((message_data._type=== 10)){//&&(topic==="Pacient/#")){
-    console.log("pacient_from_bed");
+    //console.log("pacient_from_bed");
     
     getBedPacientInfo(message_data._content);    
   }
+
   /**
    * Received a QR, check it and update the status of the bed
    */
   if((message_data._type=== 11)){//&&(topic==="Pacient/#")){
-    console.log("get QR");
+//    console.log("get QR");
     
     compareQR(message_data._content,message_data._bedId);        
   }    
+  /**
+   * Received a acceptance from nurse... going to room,  update the status of the bed
+   */
+   if((message_data._type=== 12)){//&&(topic==="Pacient/#")){
+    //    console.log("get QR");
+        console.log("going to room");
+        
+        BedsList.setStatus(message_data._bedId,3);          
+      }    
+
+  /**
+   * Received a End of work, check it and update the status of the bed
+   */
+   if((message_data._type=== 13)){
+        console.log("get end of work");
+        BedsList.setStatus(message_data._bedId,1);          
+      }
+  
+  /**
+   * Received a asking Question, check it and update the status of the bed
+   */
+   if((message_data._type=== 14)){
+    console.log("ASK");
+    BedsList.setStatus(message_data._bedId,5);          
+  }    
+  /**
+   * Received a close char, check it and update the status of the bed
+   */
+   if((message_data._type=== 16)){
+    console.log("END ASK");
+    BedsList.setStatus(message_data._bedId,4);          
+  }    
+
 })
 
 

@@ -6,12 +6,13 @@ var BedsList = require('../../Monitoring/Bed-mon');
 
 //filling the bedList
 pool.query('Select * from Bed', function(err, result, fields) {
+    console.log("filling bed status")
     if (err) {
         console.log("Error")
         return;
     }
-    result.forEach(element => {
-        BedsList.addBed(element.userId);
+    result.forEach(element => {        
+        BedsList.addBed(element.bedId);
     });    
     //UserList.printUserList();
    
@@ -21,8 +22,7 @@ pool.query('Select * from Bed', function(err, result, fields) {
  * Send to client all beds status information
 */
 routerBeds.get('/state/', function(req, res) {    
-    var response = BedsList.getBedStats();
-    
+    var response = BedsList.getBedStats();    
     res.send(response);
  });
 
