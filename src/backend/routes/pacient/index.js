@@ -57,7 +57,7 @@ routerPacient.post('/', async function(req, res) {
     
     
     
-
+    //transaction for inserting a new pacient, generating new userTable and new notesTable
 
 
     pool.getConnection(function(err, connection)  {
@@ -71,18 +71,20 @@ routerPacient.post('/', async function(req, res) {
             }
             else
                 {   
-                     connection.query('SELECT notesTableId FROM `NotesTable` ORDER BY notesTableId DESC LIMIT 1',function(err, result){
+                     connection.query('SELECT notesTableId FROM `NotesTable` ORDER BY notesTableId DESC LIMIT 1',function(err, result)
+                     {
                         if (err) {
-                            connection.rollback(function(err){console.log("error 1");connection.release();res.send().status(400);
+                            connection.rollback(function(err){
+                                console.log("error 1");connection.release();res.send().status(400);
                             })                            
                         }       
                         else{
-                            
+                            //generating a new notestable 
                             notesTableId=parseInt(JSON.stringify(result[0].notesTableId))+1;
                             console.log("notesTableId: " + JSON.stringify(notesTableId));
                             output= notesTableId;
                                          
-                                connection.query(
+                                   connection.query(
                                     'INSERT INTO NotesTable (`notesTableId`) \
                                     VALUES (?)',[output], 
                                     function(err, result, fields) {
@@ -98,41 +100,78 @@ routerPacient.post('/', async function(req, res) {
                                                 connection.rollback(function(err){connection.release();console.log("error 3");res.send().status(400); })                            
                                             }
                                         })
-                                        
-                                        connection.query(
-                                            'INSERT INTO Pacient (`pacientId`, `firstName`, `lastName`, `bedId`, `notesTableId`, `userTableId`) \
-                                            VALUES (?,?,?,?,?,?)',[pacientId,firstname,lastname,bedId,notesTableId,usersTableId], 
-                                            function(err, result, fields) {
+                                        //generating a new userTable
+                                        connection.query('SELECT userTableId FROM `UsersTable` ORDER BY userTableId DESC LIMIT 1',function(err, result){
                                             if (err) {
-                                                console.log("error:"+err)
-                                                connection.rollback(function(err){
-                                                    console.log("error 4")
-                                                    connection.release();
-                                                    res.send().status(400);
+                                                connection.rollback(function(err){console.log("error 7");connection.release();res.send().status(400);
                                                 })                            
-                                            }
+                                            }       
                                             else{
-                                                connection.commit(function(err){
-                                                    if(err){
-                                                        connection.rollback(function(err){
-                                                            connection.release();
-                                                            console.log("error 5")
-                                                            res.send().status(400);
-                                                        })                            
-                                                    }
-                                                })
-                                            }        
-                                         });
-                                    
+                                                //generating a new notestable 
+                                                userTableId=parseInt(JSON.stringify(result[0].userTableId))+1;
+                                                console.log("userTableId: " + JSON.stringify(userTableId));
+                                                output= userTableId;
+                                                             
+                                                       connection.query(
+                                                        'INSERT INTO UsersTable (`userTableId`) \
+                                                        VALUES (?)',[output], 
+                                                        function(err, result, fields) {
+                                                        if (err) {
+                                                            console.log("received:" +output);
+                                                            console.log("err:" +err);
+                                                            connection.rollback(function(err){console.log("error 3");connection.release();res.send().status(400);
+                                                            })                            
+                                                        }       
+                                                        else{
+                                                            connection.commit(function(err){
+                                                                if(err){
+                                                                    connection.rollback(function(err){connection.release();console.log("error 3");res.send().status(400); })                            
+                                                                }
+                                                            })
+                                        
+                                                          //after generating the userTable and the notesTable, the put the new pacient  
+
+
+                                                            connection.query(
+                                                                'INSERT INTO Pacient (`pacientId`, `firstName`, `lastName`, `bedId`, `notesTableId`, `userTableId`) \
+                                                                VALUES (?,?,?,?,?,?)',[pacientId,firstname,lastname,bedId,notesTableId,usersTableId], 
+                                                                function(err, result, fields) {
+                                                                if (err) {
+                                                                    console.log("error:"+err)
+                                                                    connection.rollback(function(err){
+                                                                        console.log("error 4")
+                                                                        connection.release();
+                                                                        res.send().status(400);
+                                                                    })                            
+                                                                }
+                                                                else{
+                                                                    connection.commit(function(err){
+                                                                        if(err){
+                                                                            connection.rollback(function(err){
+                                                                                connection.release();
+                                                                                console.log("error 5")
+                                                                                res.send().status(400);
+                                                                            })                            
+                                                                        }
+                                                                    })
+                                                                }        
+                                                            });                                    
+                                                            }
+                                                        });
+                                                
+                                                  }
+                                                });                    
+                                                                                                          
                                     }
-                                    });
-                                    }
-                    })                       
+                                })
+                            };
+                     });
+                    }                       
                      connection.release();                    
-                     res.send().status(202);
-               }
-        }
-    )});
+                     res.send().status(200);
+               })
+            });       
+    
        
     
 });
@@ -140,14 +179,14 @@ routerPacient.post('/', async function(req, res) {
 
 //API for editing a Pacient
 /**
- * body format:
- * [{
+ * body format: * 
  * [{"pacientId":2, 
  * "firstname":"peter",
  * "lastname":"Frant",
  * "bedId":"3",
  * "notesTableId":"1",
- * "userTableId":"1"}]
+ * "userTableId":"1"
+ * }]
  */
 
  routerPacient.put('/:id', function(req, res) {
@@ -202,7 +241,7 @@ routerPacient.post('/', async function(req, res) {
             res.send(err).status(400);
             return;
         }
-        res.send(result).status(202);
+        res.send(result).status(200);
     });
 
 });
