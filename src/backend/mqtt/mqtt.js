@@ -320,7 +320,7 @@ function getPacientInfoPacientId(pacientId){
 */
 client.on('message', function (topic, message,packet) {
   // message is Buffer
-  //console.log(packet, packet.payload.toString()); 
+  console.log(packet, packet.payload.toString()); 
   let message_data=JSON.parse(message);
   /*console.log(JSON.parse(message));
   /*console.log("***********************************");
@@ -418,6 +418,7 @@ client.on('message', function (topic, message,packet) {
    */
    if((message_data._type=== 16)){
     console.log("END ASK");
+    console.log(message_data)
     BedsList.setStatus(message_data._bedId,4);          
   }    
 

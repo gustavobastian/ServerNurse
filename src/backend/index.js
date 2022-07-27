@@ -41,6 +41,7 @@ var routerNotes = express = require('./routes/notes');
 var routerBeds = express = require('./routes/beds');
 var routerUsersTable = express = require('./routes/usersTable');
 var routerMedicalTable = express = require('./routes/medicalTable');
+var routerQR = express = require('./routes/qr');
 
 app.use('/api/pacient',routerPacient);
 app.use('/api/user',routerUser);
@@ -49,6 +50,7 @@ app.use('/api/notes',routerNotes);
 app.use('/api/beds',routerBeds);
 app.use('/api/usersTable',routerUsersTable);
 app.use('/api/medicalTable',routerMedicalTable);
+app.use('/api/QR',routerQR);
 
 
 
