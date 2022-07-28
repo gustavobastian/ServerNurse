@@ -1,6 +1,7 @@
 var express = require('express');
 var routerUser = express.Router();
 var pool = require('../../mysql');
+const bcrypt = require("bcrypt");
 
 var UserList = require('../../Monitoring/User-mon');
 
@@ -63,7 +64,7 @@ routerUser.get('/:id', function(req, res) {
  * "state":"1",
  * "password":"123456"}
  */
-routerUser.post('/', function(req, res) {
+routerUser.post('/', async function(req, res) {
     console.log("here");
     console.log(req.body);
     let d= JSON.stringify(req.body);
@@ -82,8 +83,12 @@ routerUser.post('/', function(req, res) {
     let lastname=user._lastname;
     let occupation=user._occupation;
     let state = user._state;
-    let password = user._password;
+    let password2=user._password;
 
+     
+
+
+     let password = await bcrypt.hash(password2, 12);
   /*  console.log(userId);
     console.log(occupation);
     console.log(lastname);*/
@@ -114,8 +119,8 @@ routerUser.post('/', function(req, res) {
  * "password":"123456"}
  */
 
-routerUser.put('/:id', function(req, res) {
-    console.log("altering pacient")
+routerUser.put('/:id', async function(req, res) {
+    console.log("altering User")
     let d= JSON.stringify(req.body);
     console.log("body:"+d);  
     let user= JSON.parse(d); 
@@ -127,7 +132,11 @@ routerUser.put('/:id', function(req, res) {
     let lastname=user.lastname;
     let occupation=user.occupation;
     let state = user.state;
-    let password = user.password;
+    let password2 =user.password;
+    
+    //hashing password
+    let password = await bcrypt.hash(password2, 12);
+
     
    
 
@@ -145,7 +154,8 @@ routerUser.put('/:id', function(req, res) {
             res.send(err).status(400);
             return;
         }
-        res.send(result).status(202);
+        else{
+        res.send(result).status(202);}
     });
 
     

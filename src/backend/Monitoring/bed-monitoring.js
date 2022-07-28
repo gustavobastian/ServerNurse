@@ -39,9 +39,11 @@ var pool = require('../mysql/index');
      */
     setStatus(bedId,statusP){
         var index=this.bedlist.findIndex(item=>item.id===bedId);       
-        
-        this.bedlist[index].st=statusP;
-        //this.printBedlist();
+        if(index>=0){
+        this.bedlist[index].st=statusP;}
+        else{return}
+
+       this.printBedlist();
    }
    /**
     * Get the current status of the bed

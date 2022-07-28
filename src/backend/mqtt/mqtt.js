@@ -1,6 +1,6 @@
 const { json } = require('express');
 var mqtt=require('mqtt');
-
+const bcrypt = require("bcrypt");
 var BedsList = require('../Monitoring/Bed-mon');
 var UserList = require('../Monitoring/User-mon');
 
@@ -73,15 +73,29 @@ client.on('connect', function () {
 /***
  * Functions that sets the status of the user in 1 and sends to the app the mode of use
  */
-function loginHere(username){
+async function  loginHere(username, password){
   console.log(username.toString()); 
+  let logeado=false;
   //client.publish('/User/Info', c) ;
-  pool.query('Select * from User WHERE username=?',[username], function(err, result, fields) {
+  await pool.query('Select * from User WHERE username=?',[username], function(err, result, fields) {
     if (err) {
         console.log(error)
         return;
     }
     console.log(result);
+
+     bcrypt.compare(password, result.password, (err, resultComp) => {
+         if(resultComp==true)
+         {
+          console.log('logueado');
+          logeado=true;
+         }
+         if(resultComp==false)
+         {
+          console.log('no logueado');
+          logeado=false;
+         }
+     });
 
     ///User/System/{"idNumber":1,"mode":"doctor"}
     let response_conform={idNumber:result[0].userId, mode:result[0].occupation};
@@ -341,7 +355,7 @@ client.on('message', function (topic, message,packet) {
    * 
    */
   if(message_data._type=== 1){	  
-    loginHere(message_data._username)    
+    loginHere(message_data._username, message_data._content)    
   }
   if(message_data._type=== 2){
     loginOut(message_data._username)    
