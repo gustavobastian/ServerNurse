@@ -320,7 +320,7 @@ function getPacientInfoPacientId(pacientId){
 */
 client.on('message', function (topic, message,packet) {
   // message is Buffer
-  console.log(packet, packet.payload.toString()); 
+  //console.log(packet, packet.payload.toString()); 
   let message_data=JSON.parse(message);
   /*console.log(JSON.parse(message));
   /*console.log("***********************************");
@@ -338,8 +338,9 @@ client.on('message', function (topic, message,packet) {
   /**
    * login/logout functions
    * TODO: check passwords
+   * 
    */
-  if(message_data._type=== 1){
+  if(message_data._type=== 1){	  
     loginHere(message_data._username)    
   }
   if(message_data._type=== 2){

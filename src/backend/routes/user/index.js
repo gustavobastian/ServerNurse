@@ -160,7 +160,7 @@ routerUser.put('/:id', function(req, res) {
  */
  routerUser.delete('/:id', function(req, res) {
     console.log(req.body);
-    console.log(req.body[0].messageId);
+    //console.log(req.body[0].messageId);
     let userId=parseInt(req.params.id);
         
     pool.query(

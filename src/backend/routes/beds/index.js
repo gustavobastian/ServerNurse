@@ -5,19 +5,38 @@ var BedsList = require('../../Monitoring/Bed-mon');
 
 
 //filling the bedList
-pool.query('Select * from Bed', function(err, result, fields) {
-    console.log("filling bed status")
-    if (err) {
-        console.log("Error")
+async function fillingBeds(){
+     pool.query('Select * from Bed', function(err, result, fields) {
+        console.log("filling beds")
+        if (err) {
+            console.log("Error");
+            return;
+        }
+        result.forEach(element => {  
+            BedsList.addBed(element.bedId);      
+            
+        });    
         return;
-    }
-    result.forEach(element => {        
-        BedsList.addBed(element.bedId);
-    });    
-    //UserList.printUserList();
-   
-});
+        
+    });
 
+     pool.query('Select bedId from `Pacient`', function(err, result, fields) {
+        console.log("filling bed status")
+        if (err) {
+            console.log("Error")
+            return;
+        }
+        result.forEach(element => {        
+            BedsList.setStatus(element.bedId,1);
+        });    
+        //UserList.printUserList();  
+        return;
+    });
+
+ //   BedsList.printBedlist();  
+}
+
+fillingBeds();
 /**
  * Send to client all beds status information
 */
@@ -110,10 +129,14 @@ routerBeds.post('/pacient/notes/activation/:id', function(req, res) {
  routerBeds.post('/', function(req, res) {    
     console.log("req:"+JSON.stringify(req.body))
     console.log(req.body);    
-    console.log(JSON.stringify(req.body));       
-    let roomId=parseInt(req.body.roomId);
-    let callerId=parseInt(req.body.callerId);
-    let floorId =parseInt( req.body.floorId);
+    let received=(JSON.stringify(req.body));       
+    let received2=JSON.parse(received);
+    
+    let roomId=parseInt(received2.roomId);
+    let callerId=parseInt(received2.callerId);
+    let floorId =parseInt( received2.floorId);
+
+
     
     
     pool.query(
@@ -124,6 +147,7 @@ routerBeds.post('/pacient/notes/activation/:id', function(req, res) {
             return;
         }
         res.send(result).status(202);
+        console.log("done");   
     });
     
     //res.status(202);
