@@ -75,44 +75,65 @@ client.on('connect', function () {
  */
 async function  loginHere(username, password){
   console.log(username.toString()); 
+  password2=password.toString();
+
+  
+  console.log(password2)
   let logeado=false;
+  let response_conform={idNumber:0, mode:99};
   //client.publish('/User/Info', c) ;
   await pool.query('Select * from User WHERE username=?',[username], function(err, result, fields) {
     if (err) {
-        console.log(error)
+        console.log("error:"+err)
+        var response = JSON.stringify(response_conform);
+        console.log(response);
+    //client.publish('/User/System/response', response);  
+        client.publish('/User/'+username+'/response', response); 
         return;
     }
-    console.log(result);
+    else{
+    
+    
+    if(result[0]!=null){ ///I have a user in the database
 
-     bcrypt.compare(password, result.password, (err, resultComp) => {
-         if(resultComp==true)
-         {
-          console.log('logueado');
-          logeado=true;
-         }
-         if(resultComp==false)
-         {
-          console.log('no logueado');
-          logeado=false;
-         }
-     });
+      let estado=UserList.getStatus(result[0].userId)
+      console.log("Estado:"+estado) 
 
-    ///User/System/{"idNumber":1,"mode":"doctor"}
-    let response_conform={idNumber:result[0].userId, mode:result[0].occupation};
-    //var response= "{idNumber:"+result[0].userId+",mode:"+result[0].occupation+"}";
+     if(estado<1){                           ///The user is not already logged
+      bcrypt.compare(password, result[0].password, (err, resultComp) => {
+          if(resultComp==true)
+          {
+            console.log('logueado');
+            UserList.setStatus(result[0].userId,1);
+            ///User/System/{"idNumber":1,"mode":"doctor"}
+      /*     response_conform={idNumber:result[0].userId, mode:result[0].occupation};
+            logeado=true;
+            let data=result[0].userId;
+            console.log("data:"+data);
+            UserList.setStatus(data,1);
+            //check if user is logged
+              UserList.printUserList();*/
+          }
+          if(resultComp==false)
+          {
+            console.log('no logueado');
+            logeado=false;
+          }
+         });
+        }
+
+        if((estado<1)){
+          response_conform={idNumber:result[0].userId, mode:result[0].occupation};//------------------------------>Quitar cuando use el hash
+          }
+    } 
+    
     var response = JSON.stringify(response_conform);
     console.log(response);
-    //client.publish('/User/System/response', response);  
     client.publish('/User/'+username+'/response', response);  
 
-    //client.publish('/User/Info', JSON.parse(c));  
-    //var d= JSON.parse(result);
-    let data=result[0].userId;
-    console.log("data:"+data);
-    UserList.setStatus(data,1);
-    //check if user is logged
-    UserList.printUserList();
-    //
+
+
+    }
   });
 }
 

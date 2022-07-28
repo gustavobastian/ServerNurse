@@ -47,7 +47,7 @@ var pool = require('../mysql/index');
     */
    getStatus(userId){
     var index=this.UserList.findIndex(item=>item.id===userId);           
-    this.UserList[index].st=statusP;
+    return this.UserList[index].st;
     //this.printBedlist();
     }
     /**
