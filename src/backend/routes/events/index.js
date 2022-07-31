@@ -2,10 +2,63 @@ var express = require('express');
 var eventsTable = express.Router();
 var pool = require('../../mysql');
 
+const schedule = require('node-schedule');
+
 
 
 //filling the bedList
 async function fillingScheduledJobs(){
+    console.log("generating scheduled jobs")
+    let type=0;
+    pool.query('Select * from EventsTable', function(err, result, fields) {
+        if (err) {
+            console.log(error);
+            return;
+        }
+        if(result!=null )
+        {
+            
+        result.forEach(element => {
+            console.log(JSON.stringify(element)    );
+            console.log(element.datetime)
+            let data = element.datetime;
+            console.log(data.getHours())
+            
+            let hoursL=data.getHours();
+            let minutesL=data.getMinutes();
+            let dateL=data.getDate();
+            let dayL= data.getDay();
+
+            console.log("h:"+hoursL+"|min:"+ minutesL+"|date:"+ dateL+"|dayL:"+ dayL);
+
+            if(element.type=="daily"){
+                    type=1;
+                    const rule= new schedule.RecurrenceRule();
+                    rule.hour=hoursL;
+                    rule.minute=minutesL;
+                    const job = schedule.scheduleJob(rule,function(){
+                        console.log("lauching daily job ");                    
+            
+            })
+            }
+            if(element.type=="weekly"){
+                const job = schedule.scheduleJob({hour:hoursL, minute:minutesL,dayOfWeek:dayL}, function(){
+                    console.log("lauching weekly job ");                    
+            })    
+            if(element.type=="monthly"){
+                        const rule= new schedule.RecurrenceRule();
+                        rule.hour=hoursL;
+                        rule.minute=minutesL;
+                        rule.date=dateL;
+                        type=3;}            
+            
+            }    
+        });        
+
+        }
+       
+    });
+
      /*pool.query('Select * from Bed', function(err, result, fields) {
         console.log("filling beds")
         if (err) {
@@ -36,7 +89,7 @@ async function fillingScheduledJobs(){
  //   BedsList.printBedlist();  */
 }
 
-//fillingBeds();
+fillingScheduledJobs();
 /**
  * Send to client all beds status information
 */
@@ -75,55 +128,8 @@ eventsTable.get('/:id', function(req, res) {
     });
 });
 
-//API for gettin active notes of a pacient by bedId
-/*
-routerBeds.get('/pacient/notes/:id', function(req, res) {
-    idAb=req.params.id;   
-    //pool.query('Select * from Bed as b JOIN Pacient AS p ON b.bedId=p.bedId JOIN NotesTable AS n ON p.notesTableId=n.notesTableId JOIN Notes AS nn ON n.noteId= n.noteId where b.bedId='+idAb, function(err, result, fields) {
-        pool.query(`Select * from Bed as b JOIN Pacient AS p ON b.bedId=p.bedId where b.bedId=?`,[idAb],   function(err, result, fields) {
-      //pool.query('Select notesId,firstname,lastname,note, state from Bed as b JOIN Pacient AS p ON b.bedId=p.bedId JOIN NotesTable AS n ON p.notesTableId=n.notesTableId JOIN Notes AS nn ON n.noteId= nn.notesId WHERE nn.state= "activa" AND b.bedId=?',[idAb], function(err, result, fields) {      
-        if (err) {
-            res.send(err).status(400);
-            return;
-        }
-        res.send(result);
-    });
-});
 
 
-//API for post active notes of a pacient by bedId 
-/**
- * params body: example 1:{[{"noteId":"1"},{"state":"desactivada"}]}, example 2:[{"noteId":"1"},{"state":"activada"}]
- */
-/*
-routerBeds.post('/pacient/notes/activation/:id', function(req, res) {
-    idAb=req.params.id;
-    let noteId= req.body[0].noteId;
-    let newState= req.body[1].state;  
-    console.log(req.body[0].noteId);
-    if (newState == "activa")
-        {
-         pool.query('UPDATE Notes SET state = "activa" WHERE notesId=?',[noteId],function(err, result, fields){
-            if (err) {
-                res.send(err).status(400);
-                return;
-            }        
-            res.send(result)
-        })}
-    else if (newState == "desactiva")    
-    {pool.query('UPDATE Notes SET state = "desactiva" WHERE notesId=?',[noteId],function(err, result, fields){
-        if (err) {
-            res.send(err).status(400);
-            return;
-        }    
-        res.send(result)
-    })}
-    else {
-        res.send("state not valid")};
-    
-  
-});
-*/
 //API for adding new Events 
 /**
  *{"pacientId":1,
@@ -133,24 +139,28 @@ routerBeds.post('/pacient/notes/activation/:id', function(req, res) {
  *}
  */
 
- eventsTable.post('/', function(req, res) {    
+ eventsTable.post('/', function(req, res) { 
+    console.log(" post event"   )
     console.log("req:"+JSON.stringify(req.body))
     console.log(req.body);    
     let received=(JSON.stringify(req.body));       
     let received2=JSON.parse(received);
     
-    let pacientId=parseInt(received2.pacientId);
-    let stringTime=(received2.dateTime);
-    let type =( received2.type);
-    let note =( received2.note);
-    
+    let pacientId=parseInt(received2._pacientId);
+    let date_int=(received2._dateTime);
+    let stringTime=JSON.parse(date_int);
+    let type =( received2._type);
+    console.log("tipo:"+type);
+    let note =( received2._note);
+    console.log("nota:"+note);
+    //console.log("datetime:"+JSON.parse(stringTime));
 
     pool.query(
         'INSERT INTO EventsTable(`pacientId`, `type`, `dateTime`, `note`) \
         VALUES (?,?,?,?)',[pacientId,type,stringTime,note], function(err, result, fields) {
         if (err) {
             res.send(err).status(400);
-            console.log("error");   
+            console.log("error"+err);   
             return;
         }
         res.send(result).status(202);
@@ -172,6 +182,7 @@ routerBeds.post('/pacient/notes/activation/:id', function(req, res) {
  */
 
  eventsTable.put('/:id', function(req, res) {
+    console.log("put event"   )
     console.log(req.body);    
     console.log(JSON.stringify(req.body));   
     let eventId=(req.params.id);
