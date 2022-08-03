@@ -2,6 +2,30 @@ var express = require('express');
 var routerMedicalTable = express.Router();
 var pool = require('../../mysql');
 
+
+
+//adding a Medical to tables from the hospital
+	/**
+	 * body format:
+	 * [{"userTableId":1,
+	 * "userId":2}]
+	 */
+
+routerMedicalTable.post('/', function(req, res) {
+	console.log(req.body);
+    let received= JSON.stringify(req.body);
+    console.log("firstname rev:"+received);
+	/*let d=
+    /*pool.query('Select * from MedicalTable', function(err, result, fields) {
+        if (err) {
+            res.send(err).status(400);
+            return;
+        }
+        res.send(result);
+    });*/
+});
+
+
 //Returns all users tables from the hospital
 routerMedicalTable.get('/', function(req, res) {
     pool.query('Select * from MedicalTable', function(err, result, fields) {

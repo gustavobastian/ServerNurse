@@ -6,6 +6,22 @@ var pool = require('../../mysql');
 
 
 /**
+ * return selected all qrs
+ * 
+ */
+
+ routerQR.get('/', function(req, res) {    
+    pool.query('SELECT * FROM `QRbed` ORDER BY QRbed.QRId DESC  ', function(err, result, fields) {
+        if (err) {
+            res.send(err).status(400);
+            return;
+        }
+        res.send(result);
+    });
+    //res.send(["Funciona"]);
+});
+
+/**
  * return selected qr info 
  * @params: id bedID
  */
@@ -34,62 +50,22 @@ routerQR.get('/:id', function(req, res) {
   //  console.log(JSON.stringify(req.body));   
    
     let qr=req.body.QR;
-   // console.log("Qr:"+qr);
+    console.log("Qr:"+qr);
 
-    pool.getConnection(function(err, connection)  {
-        if (err) {return;}            
-        connection.beginTransaction(function(err){
-            if(err){
-                connection.roolback(function(err){
-                    connection.release();
-                    res.send().status(400);
-                });
-            }
-            else
-                {   
-                     connection.query('SELECT bedId FROM `Bed` ORDER BY bedId DESC LIMIT 1',function(err, result)
-                     {
-                        if (err) {
-                            connection.rollback(function(err){
-                                console.log("error 1");connection.release();res.send().status(400);
-                            })                            
-                        }       
-                        else{
-                              bedId=result[0].bedId;
-                            connection.query(
-                                'INSERT INTO QRbed(`bedId`, `QR`) \
-                                VALUES (?,?)',[bedId,qr], function(err, result, fields) {
-                                if (err) {
-                                    connection.roolback(function(err){
-                                        console.log("error 2");
-                                        connection.release();
-                                        res.send().status(400);
-                                        });
-                                    }
-                                else{
-                                res.send(result.bedId).status(202);
-                                }
-                                
-                            });
-                            
-                        }
-                });        
-            }
-        });
-        connection.release();
-    });        
-    //check for last created bed, in order to get their id
-    /*
+
+	bedId=0;
+    pool.query(
+    'INSERT INTO QRbed(`bedId`, `QR`) \
+    VALUES (?,?)',[bedId,qr], function(err, result, fields) {
+    if (err) {
+		console.log("error 2");
+		 res.send("error2").status(400);
+    }
+    else{res.send(result.bedId).status(202);}
+	});        
+       
+               
     
-    connection.query(
-        'INSERT INTO QRbed(`bedId`, `QR`) \
-        VALUES (?,?)',[bedId,QR], function(err, result, fields) {
-        if (err) {
-            res.send(err).status(400);
-            return;
-        }
-        res.send(result).status(202);
-    });*/
 
     res.status(200);
 
@@ -104,14 +80,16 @@ routerQR.get('/:id', function(req, res) {
  routerQR.put('/:id', function(req, res) {
     console.log(req.body);    
     console.log(JSON.stringify(req.body));   
-    let bedId=parseInt(req.params.id);
+    let qrId=parseInt(req.params.id);
+    let bedId=parseInt(req.body.bedId);
     let qr=req.body.QR;
    console.log("Qr:"+qr);
         
     pool.query(
         'UPDATE QRbed SET \
+        `bedId` = ?   \
         `QR` = ?   \
-        WHERE `QRbed`.`bedId` = ?;',[qr, bedId], function(err, result, fields) {
+        WHERE `QRbed`.`qrId` = ?;',[bedID,qr,qrId], function(err, result, fields) {
         if (err) {
             res.send(err).status(400);
             return;

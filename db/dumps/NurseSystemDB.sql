@@ -72,6 +72,22 @@ CREATE TABLE `QRbed` (
    UNIQUE INDEX (`QRId` ASC)  
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+--
+-- Table structure for table `EventsTable`
+-- This table has information scheduled events for pacients
+--  type parameter can be "oneshot", "daily", "weekly" or "monthly
+--
+
+CREATE TABLE `EventsTable` (
+  `eventId` int(11) NOT NULL AUTO_INCREMENT,
+  `pacientId` int(11) NOT NULL,
+  `datetime` timestamp NOT NULL,  
+  `type` varchar(10) NOT NULL,
+  `note` varchar(255),
+   PRIMARY KEY (`eventId`),
+   UNIQUE INDEX (`eventId` ASC)  
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
 
 
 --
@@ -123,9 +139,11 @@ CREATE TABLE `UsersTable` (
 --
 
 CREATE TABLE `MedicalTable` (
-  `MedicalTableId` int(11) NOT NULL,  
+  `MedicalTableId` int(11) NOT NULL AUTO_INCREMENT,  
   `userTableId` int(11) NOT NULL,  
   `userId` int(11),
+  PRIMARY KEY (`MedicalTableId`),
+  UNIQUE KEY (`MedicalTableId` ASC), 
   FOREIGN KEY (`userTableId`) REFERENCES UsersTable(userTableId),  
   FOREIGN KEY (`userId`) REFERENCES User(userId)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;

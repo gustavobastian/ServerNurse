@@ -12,7 +12,7 @@ async function fillingScheduledJobs(){
     let type=0;
     pool.query('Select * from EventsTable', function(err, result, fields) {
         if (err) {
-            console.log(error);
+            console.log(err);
             return;
         }
         if(result!=null )

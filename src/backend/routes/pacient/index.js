@@ -25,7 +25,12 @@ routerPacient.get('/:id', function(req, res) {
     });
 });
 
-
+/*
+ * query for getting doctors from pacient id
+ * SELECT userId, username from `Pacient` as p JOIN `MedicalTable` as MT JOIN `User` as us ON p.userTableId=MT.userTableId AND MT.userId=us.userID Where p.pacientId=1;
+ * 
+ * */
+ 
 //API for adding new  Pacient
 /**
  * body format:
