@@ -222,7 +222,7 @@ function getPacientInfoPacientId(pacientId){
   let topic= "/Pacient/"+pacientId+"/notes";
    pool.query('SELECT DISTINCT notesId,note,state \
   FROM `Notes` as n JOIN `NotesTable` as nt JOIN `Pacient` as p \
-  WHERE n.notesTableId = nt.notesTableId AND p.notesTableId = nt.notesTableId AND pacientId = ? ORDER BY notesId DESC LIMIT 2',pacientId, function(err, result, fields) {
+  WHERE n.notesTableId = nt.notesTableId AND p.notesTableId = nt.notesTableId AND pacientId = ? ORDER BY notesId DESC ',pacientId, function(err, result, fields) {
     if (err || result.length==0) {
         console.log("error:",err)
         client.publish(topic, JSON.stringify("Error"));          
@@ -235,6 +235,25 @@ function getPacientInfoPacientId(pacientId){
   
 }
 
+/**
+ * Function that returns the pacient notes to topic
+ * @param {*} notesId :number that identifies the pacient
+ */
+  function deletePacientNotesNotesId(notesId){
+  console.log("noteId:"+(notesId._content));
+  console.log("deleting:");
+  // system publising last 2 notes only
+  
+   pool.query('DELETE FROM Notes WHERE `Notes`.`notesId` = ?', [notesId._content], function(err, result, fields) {
+    if (err || result.length==0) {
+        console.log("error:",err)           
+    }
+    else{
+    console.log(result)  
+  }}); 
+  
+  
+}
 
 /**
  * Function that put a note on the pacient(saves it to the database)
@@ -422,6 +441,7 @@ client.on('message', function (topic, message,packet) {
     console.log("escribiendo nota");
     let d= topic.split('/')
     //console.log("pacientID:"+d[2])
+    if(d[2]==null){return;}
     setPacientNotesPacientId(d[2],message_data._content);    
   }
   if((message_data._type=== 4)){//&&(topic==="Pacient/#")){
@@ -500,6 +520,15 @@ client.on('message', function (topic, message,packet) {
     console.log("ASKing list of doctors");
     console.log(message_data)
     getBedMedicalTableInfo(message_data._bedId);    
+  }    
+  
+  /**
+   * removin pacient notes
+   */
+   if((message_data._type=== 18)){
+    console.log("removing pacient note");
+    console.log(message_data)
+    deletePacientNotesNotesId(message_data);    
   }    
 
 })
