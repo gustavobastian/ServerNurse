@@ -195,10 +195,12 @@ function loginOut(username){
 function getPacientInfoPacientId(pacientId){
   console.log("pacient:"+pacientId);
   
+  
+  
   let topic= "/Pacient/"+pacientId+"/info";
   pool.query('Select * from Pacient where pacientId = ?',pacientId, function(err, result, fields) {
     if (err || result.length==0) {
-        console.log("error")
+        console.log("error:",err)
         client.publish(topic, JSON.stringify("Error"));          
     }
     //console.log(result)
@@ -213,15 +215,16 @@ function getPacientInfoPacientId(pacientId){
  * Function that returns the pacient notes to topic
  * @param {*} pacientId :number that identifies the pacient
  */
- function getPacientNotesPacientId(pacientId){
-  console.log("pacient:"+pacientId);
+  function getPacientNotesPacientId(pacientId){
+  console.log("pacient:"+(pacientId));
+  console.log("asking for notes:");
   // system publising last 2 notes only
   let topic= "/Pacient/"+pacientId+"/notes";
-  pool.query('SELECT DISTINCT notesId,note,state \
+   pool.query('SELECT DISTINCT notesId,note,state \
   FROM `Notes` as n JOIN `NotesTable` as nt JOIN `Pacient` as p \
   WHERE n.notesTableId = nt.notesTableId AND p.notesTableId = nt.notesTableId AND pacientId = ? ORDER BY notesId DESC LIMIT 2',pacientId, function(err, result, fields) {
-    if (err|| result.length==0) {
-        console.log("error")
+    if (err || result.length==0) {
+        console.log("error:",err)
         client.publish(topic, JSON.stringify("Error"));          
         
     }
@@ -388,11 +391,11 @@ client.on('message', function (topic, message,packet) {
   //console.log(packet, packet.payload.toString()); 
   let message_data=JSON.parse(message);
   /*console.log(JSON.parse(message));*/
-  /*console.log("***********************************");
+  console.log("***********************************");
   console.log(topic);
   console.log("***********************************");
   console.log(message_data._content); 
-  console.log(message_data._bedId); */
+  console.log(message_data._bedId); 
 
   //received an alarm from a caller device, update state of bed
   if(topic==="/Beds/caller-events"){
@@ -417,12 +420,16 @@ client.on('message', function (topic, message,packet) {
    **/  
   if((message_data._type=== 3)){//&&(topic==="Pacient/#")){
     console.log("escribiendo nota");
-    setPacientNotesPacientId(1,message_data._content);    
+    let d= topic.split('/')
+    //console.log("pacientID:"+d[2])
+    setPacientNotesPacientId(d[2],message_data._content);    
   }
   if((message_data._type=== 4)){//&&(topic==="Pacient/#")){
-    getPacientInfoPacientId(message_data._content);
+	console.log("asking info")  
+    getPacientInfoPacientId((message_data._content));
   }
   if((message_data._type=== 5)){//&&(topic==="Pacient/#")){
+	  console.log("asking notes")  
     getPacientNotesPacientId(message_data._content);
   }
 
