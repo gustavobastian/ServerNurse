@@ -169,20 +169,21 @@ function loginOut(username){
  */
 
  function getListOfBeds(message){
-  console.log("Aqui:"+message);
-  console.log("Doctor:"+message);
+  //console.log("Aqui:"+message);
+  //console.log("Doctor:"+message);
   let topiclocal= "/User/"+message+"/Beds";
   pool.query('\
   SELECT DISTINCT bedId,pacientId \
   FROM `Pacient` as p JOIN `MedicalTable` as Mt JOIN `User` as u JOIN `UsersTable` as uT \
-  WHERE p.userTableId = uT.userTableId AND Mt.userTableId=uT.userTableId  AND u.userId = Mt.userId AND u.username=? \
+  WHERE p.userTableId = uT.userTableId AND Mt.userTableId=uT.userTableId  AND u.userId = Mt.userId AND u.userId=? \
   ',[message], function(err, result, fields) {
     if (err || result.length==0) {
-        console.log("error")
+        console.log("error-asking for beds")
+        console.log("error:"+err)
         client.publish(topiclocal, JSON.stringify("Error"));          
     }    
     else{
-    client.publish(topiclocal, JSON.stringify(result));  }
+    client.publish(topiclocal, JSON.stringify(result)); }
   });  
 
  }
@@ -230,6 +231,8 @@ function getPacientInfoPacientId(pacientId){
   });
   
 }
+
+
 /**
  * Function that put a note on the pacient(saves it to the database)
  * @param {*} pacientId :number that identifies the pacient
@@ -306,7 +309,7 @@ function getPacientInfoPacientId(pacientId){
  */
  function getBedPacientInfo(bedId){
   console.log("bed:"+JSON.parse(bedId));
-  // system publising last 2 notes only
+  
   let topic= "/Beds/"+bedId+"/Pacient";
 
   pool.query('SELECT pacientId  \
@@ -323,6 +326,33 @@ function getPacientInfoPacientId(pacientId){
      client.publish(topic, JSON.stringify(result));  }
   });  
 }
+/**
+ * Function that publish the medical Table id to topic
+ * @param {*} bedId :number that identifies the pacient
+ * Message form:
+ * {"_bedId":1,"_content":"consulta lista MDT"
+ * ,"_time":"today","_username":"system","_type":17}
+ */
+ function getBedMedicalTableInfo(bedId){
+  console.log("bed:"+JSON.parse(bedId));
+  
+  let topic= "/Beds/"+bedId+"/MDT";
+  
+
+  pool.query('SELECT User.lastname, User.userId from   \
+  MedicalTable JOIN Pacient USING (userTableId) \
+  JOIN User USING (userId) \
+  WHERE `Pacient`.`bedId`= ?',[bedId], function(err, result, fields) {
+    if (err|| result.length==0) {
+        console.log("error")
+        client.publish(topic, JSON.stringify("Error"));       
+        
+    }
+    else{
+   // console.log(result)
+     client.publish(topic, JSON.stringify(result));  }
+  });  
+}
 
 /**
  * Function that compares qr
@@ -331,7 +361,7 @@ function getPacientInfoPacientId(pacientId){
  function compareQR(message,_bedId){
   //console.log("bed:"+JSON.parse(bedId));
   console.log(message);
-  console.log(JSON.stringify(_bedId));
+  console.log(JSON.stringify(_bedId)); 
 
   pool.query('SELECT QR  \
   FROM `QRbed` as b \
@@ -357,11 +387,11 @@ client.on('message', function (topic, message,packet) {
   // message is Buffer
   //console.log(packet, packet.payload.toString()); 
   let message_data=JSON.parse(message);
-  /*console.log(JSON.parse(message));
+  /*console.log(JSON.parse(message));*/
   /*console.log("***********************************");
   console.log(topic);
-  console.log("***********************************");*/
-  /*console.log(message_data._content); 
+  console.log("***********************************");
+  console.log(message_data._content); 
   console.log(message_data._bedId); */
 
   //received an alarm from a caller device, update state of bed
@@ -406,9 +436,8 @@ client.on('message', function (topic, message,packet) {
   /**
    * Ask for beds for the current doctor
    */
-  if((message_data._type=== 9)){//&&(topic==="Pacient/#")){
-    //console.log("listofBeds");
-    getListOfBeds(message_data._username);    
+  if((message_data._type=== 9)){//&&(topic==="Pacient/#")){    
+    getListOfBeds(message_data._content);    
   }
   if((message_data._type=== 10)){//&&(topic==="Pacient/#")){
     //console.log("pacient_from_bed");
@@ -456,6 +485,14 @@ client.on('message', function (topic, message,packet) {
     console.log("END ASK");
     console.log(message_data)
     BedsList.setStatus(message_data._bedId,4);          
+  } 
+  /**
+   * Ask for list of medicalTable
+   */
+   if((message_data._type=== 17)){
+    console.log("ASKing list of doctors");
+    console.log(message_data)
+    getBedMedicalTableInfo(message_data._bedId);    
   }    
 
 })

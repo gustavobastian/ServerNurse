@@ -37,7 +37,7 @@ routerMedicalTable.post('/', function(req, res) {
 
 //Returns all users tables from the hospital
 routerMedicalTable.get('/', function(req, res) {
-    pool.query('Select * from MedicalTable', function(err, result, fields) {
+    pool.query('Select * from MedicalTable ORDER BY medicalTableId DESC', function(err, result, fields) {
         if (err) {
             res.send(err).status(400);
             return;

@@ -154,7 +154,7 @@ routerPacient.post('/', async function(req, res) {
                                                                         if(err){
                                                                             connection.rollback(function(err){
                                                                                 connection.release();
-                                                                                console.log("error 5")
+                                                                                console.log("error 5 ")
                                                                                 res.send().status(400);
                                                                             })                            
                                                                         }
