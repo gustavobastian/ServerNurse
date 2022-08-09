@@ -263,6 +263,17 @@ INSERT INTO `Messages` (`messageId`, `userIdLastName`, `userIdSender`, `pacientI
 
 
 
+CREATE TABLE `NurseSystemDB`.`LogEvents` (
+  `logEventId` INT NOT NULL AUTO_INCREMENT ,
+   `type` INT NOT NULL ,
+   `init` DATETIME NOT NULL ,
+   `finish` DATETIME NOT NULL ,
+   `pacientId` INT NOT NULL ,
+   `userId` INT NOT NULL ,
+   `Note` VARCHAR(255) NOT NULL ,
+   `Note2` VARCHAR(255) NOT NULL ,
+    PRIMARY KEY (`logEventId`)) ENGINE = InnoDB;
+
 --
 -- AUTO_INCREMENT for dumped tables
 --

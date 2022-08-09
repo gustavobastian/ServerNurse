@@ -442,6 +442,7 @@ client.on('message', function (topic, message,packet) {
     let d= topic.split('/')
     //console.log("pacientID:"+d[2])
     if(d[2]==null){return;}
+    if(message_data._content==""){return;}
     setPacientNotesPacientId(d[2],message_data._content);    
   }
   if((message_data._type=== 4)){//&&(topic==="Pacient/#")){
