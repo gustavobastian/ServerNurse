@@ -51,7 +51,7 @@ services:
             -                    mysql-admin
         ports: 
             -                    "8000:3000"
-        command:                 bash -c "npm set registry https://registry.npmjs.org/ && npm install mqtt bcrypt node-schedule --save  && sleep 50  && nodemon /home/node/app/src/index.js"
+        command:                 bash -c "npm set registry https://registry.npmjs.org/ && npm install --save mqtt bcrypt node-schedule --save  && sleep 50  && nodemon /home/node/app/src/index.js"
 
 networks:
     NurseSystem-net:

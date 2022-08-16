@@ -36,9 +36,9 @@ client.on('connect', function () {
     }
   })
 
-  //Publish beds initial state
+  //task that will publish beds state each second
   setInterval(publishBedStates, 10000);
-  //Publish users state
+  //task that will publish users state each second
   setInterval(publishUserStates, 10000);
   
 })
@@ -49,6 +49,9 @@ client.on('connect', function () {
  */
  function publishBedStates(){
  // console.log("publishing state");
+  var now = new Date();
+ // convert date to a string in UTC timezone format:
+   console.log(now.toUTCString());
   let topic= "/Beds/status";
   var response = BedsList.getBedStats();
   client.publish(topic, response);  
@@ -131,7 +134,7 @@ async function  loginHere(username, password){
     console.log(response);
     client.publish('/User/'+username+'/response', response);  
 
-
+    publishUserStates();
 
     }
   });
@@ -158,7 +161,7 @@ function loginOut(username){
     let data=result[0].userId;
     console.log("data:"+data);
     UserList.setStatus(data,0);
-
+    publishUserStates();
   });
 }
 
@@ -487,14 +490,15 @@ client.on('message', function (topic, message,packet) {
   console.log("***********************************");
   console.log(topic);
   console.log("***********************************");
-  console.log(message_data._content); 
-  console.log(message_data._bedId); 
+  //console.log(message_data._content); 
+  //console.log(message_data._bedId); 
 
   //received an alarm from a caller device, update state of bed
   if(topic==="/Beds/caller-events"){
     //message_content {"_bedId":2,"_content":"alert","_time":"today","_username":"system"}
     //console.log(JSON.stringify(message_data));
     BedsList.setStatus(message_data._bedId,2);
+    publishBedStates();
     saveNewEvent(1,message_data._bedId,"system","","");
   }
   /**
@@ -563,7 +567,8 @@ client.on('message', function (topic, message,packet) {
     //    console.log("get QR");
         console.log("going to room");
         
-        BedsList.setStatus(message_data._bedId,3);          
+        BedsList.setStatus(message_data._bedId,3);    
+        publishBedStates();      
       }    
 
   /**
@@ -571,7 +576,8 @@ client.on('message', function (topic, message,packet) {
    */
    if((message_data._type=== 13)){
         console.log("get end of work");
-        BedsList.setStatus(message_data._bedId,1);  
+        BedsList.setStatus(message_data._bedId,1); 
+        publishBedStates(); 
         saveNewEvent(3,message_data._bedId,"system","","");        
       }
   
@@ -580,7 +586,8 @@ client.on('message', function (topic, message,packet) {
    */
    if((message_data._type=== 14)){
     console.log("ASK");
-    BedsList.setStatus(message_data._bedId,5);          
+    BedsList.setStatus(message_data._bedId,5); 
+    publishBedStates();         
   }    
   /**
    * Received a close char, check it and update the status of the bed
@@ -588,7 +595,8 @@ client.on('message', function (topic, message,packet) {
    if((message_data._type=== 16)){
     console.log("END ASK");
     console.log(message_data)
-    BedsList.setStatus(message_data._bedId,4);          
+    BedsList.setStatus(message_data._bedId,4);    
+    publishBedStates();      
   } 
   /**
    * Ask for list of medicalTable

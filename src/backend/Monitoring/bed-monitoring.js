@@ -6,7 +6,7 @@ var pool = require('../mysql/index');
  * status==2 with a call
  * status==3 accepted call
  * status==4 in progress
- * status==5 with message
+ * status==5 calendar
  * status==6 done=>1
  */
  class  BedsList  {    
