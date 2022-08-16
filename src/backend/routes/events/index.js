@@ -3,7 +3,7 @@ var eventsTable = express.Router();
 var pool = require('../../mysql');
 
 const schedule = require('node-schedule');
-var mqttClientLocal = require('../../mqtt/mqtt')
+var client = require ('../../mqtt/mqtt')
 var BedsList = require('../../Monitoring/Bed-mon');
 
 
@@ -38,55 +38,64 @@ async function fillingScheduledJobs(){
                 }
                 //console.log(result)
                 else{
-                bedID=result[0].bedId;    
+                        bedID=result[0].bedId;    
 
-            if(element.type=="daily"){
-                    console.log("creating daily job")
-                    type=1;
-                    const rule= new schedule.RecurrenceRule();
-                    rule.hour=hoursL;
-                    rule.minute=minutesL;
+                        if(element.type=="daily"){
+                                console.log("creating daily job")
+                                type=1;
+                                const rule= new schedule.RecurrenceRule();
+                                rule.hour=hoursL;
+                                rule.minute=minutesL;
+                                
+                                    
+                                    console.log("bed calendario:"+bedID);
+                                    const job = schedule.scheduleJob(rule,function(){
+                                        console.log("lauching daily job ");  
+                                        console.log("Bed:"+bedID);  
+                                        console.log("Note:"+element.note);  
+                                        BedsList.setStatus(bedID,9)
+                                        client.publish("/Beds/"+bedID+"/Notes", JSON.stringify(element.note));                  
+                                    })                   
+                            }
+                        if(element.type=="weekly"){
+                            console.log("creating weekly job")
+                            const rule= new schedule.RecurrenceRule();
+                            rule.hour=hoursL;
+                            rule.minute=minutesL;
+                            rule.dayOfWeek=dayL;
+                            const job = schedule.scheduleJob(rule, function(){
+                                console.log("lauching weekly job ");                        
+                                console.log("Bed:"+element.bedId);  
+                                console.log("Note:"+element.note);  
+                                BedsList.setStatus(bedID,9)
+
+                        }) }  
+                        if(element.type=="monthly"){
+                            console.log("creating monthly job")
+                                    const rule= new schedule.RecurrenceRule();
+                                    rule.hour=hoursL;
+                                    rule.minute=minutesL;
+                                    rule.date=dateL;
+                            
+                                    type=3;
+                                    const job = schedule.scheduleJob(rule, function(){
+                                        console.log("lauching monthly job ");                        
+                                        console.log("Bed:"+element.bedId);  
+                                        console.log("Note:"+element.note);  
+                                        BedsList.setStatus(bedID,9)
                     
-                        
-                        console.log("bed calendario:"+bedID);
-                        const job = schedule.scheduleJob(rule,function(){
-                            console.log("lauching daily job ");  
-                            console.log("Bed:"+bedID);  
-                            console.log("Note:"+element.note);  
-                            //client.publish(topic, JSON.stringify(result));                  
-                        })                   
-                }
-            if(element.type=="weekly"){
-                console.log("creating weekly job")
-                const rule= new schedule.RecurrenceRule();
-                rule.hour=hoursL;
-                rule.minute=minutesL;
-                rule.dayOfWeek=dayL;
-                const job = schedule.scheduleJob(rule, function(){
-                    console.log("lauching weekly job ");                        
-                    console.log("Bed:"+element.bedId);  
-                    console.log("Note:"+element.note);  
+                                }) }    
+                                
+                                
+                    }
+                })           
 
-            }) }  
-            if(element.type=="monthly"){
-                console.log("creating monthly job")
-                        const rule= new schedule.RecurrenceRule();
-                        rule.hour=hoursL;
-                        rule.minute=minutesL;
-                        rule.date=dateL;
-                    console.log("lauching monthly job ");                        
-                    console.log("Bed:"+element.bedId);  
-                    console.log("Note:"+element.note);  
-                        type=3;}            
-            
-                    
-            }           
+            });  
 
-        });  
-
-        })
+        }
+    })
        
-    }});
+    
 }; 
 
      /*pool.query('Select * from Bed', function(err, result, fields) {
@@ -117,7 +126,7 @@ async function fillingScheduledJobs(){
     });
 
  //   BedsList.printBedlist();  */
-}
+//}
 
 fillingScheduledJobs();
 /**

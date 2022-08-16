@@ -473,7 +473,34 @@ else if(typeofEvent==3){
           })
   }});  
 
-}
+  }
+else if(typeofEvent==2){ 
+  console.log("saving event 3");
+  userIdLocal=0;
+  note=note.toString();
+  note2=" ";
+
+  pool.query('SELECT pacientId from   \
+  Pacient  WHERE `Pacient`.`bedId`= ?',[bedId], function(err, result, fields) {
+    if (err|| result.length==0) {
+        console.log("error")
+    }
+    else{
+      let pacientIdLocal=result[0].pacientId;
+    console.log(result[0].pacientId)
+     //client.publish(topic, JSON.stringify(result));  }
+     /**INSERT INTO `LogEvents` (`logEventId`, `type`, `init`, `finish`,
+      *  `pacientId`, `userId`, `Note`, `Note2`)
+      *  VALUES (NULL, '1', '2022-08-10 01:28:30.000000', '2022-08-10 01:28:30.000000', '3', '0', '', '');*/
+     pool.query('INSERT INTO `LogEvents`   \
+          (`type`,`pacientId`,`userId`,`Note`,`Note2`) VALUES(?,?,?,?,?)',[typeofEvent,pacientIdLocal,userIdLocal,'','' ], 
+          function(err, result, fields) {
+          if (err|| result.length==0) {
+              console.log("error",err)
+            }}
+     );
+  }});  
+  }
 
 }
 
@@ -501,6 +528,11 @@ client.on('message', function (topic, message,packet) {
     publishBedStates();
     saveNewEvent(1,message_data._bedId,"system","","");
   }
+ /* if(topic==="/Beds/"){
+    //message_content {"_bedId":2,"_content":"alert","_time":"today","_username":"system"}
+    //console.log(JSON.stringify(message_data));        
+    saveNewEvent(2,,0,message_data,"");
+  }*/
   /**
    * login/logout functions
    * TODO: check passwords
