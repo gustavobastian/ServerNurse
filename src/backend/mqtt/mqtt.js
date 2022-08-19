@@ -399,6 +399,7 @@ function getPacientInfoPacientId(pacientId){
     else{    
           if(message==JSON.stringify(result[0].QR)){console.log("Any")}
           BedsList.setStatus(_bedId,4);  
+          publishBedStates();      
           }
   });
 
@@ -646,6 +647,17 @@ client.on('message', function (topic, message,packet) {
     console.log("removing pacient note");
     console.log(message_data)
     deletePacientNotesNotesId(message_data);    
+  } 
+  
+  
+  /**
+   * removin pacient notes
+   */
+   if((message_data._type=== 19)){
+    console.log("cancelling call");
+    console.log(message_data)
+    BedsList.setStatus(message_data._bedId,2);    
+    publishBedStates();      
   }    
 
 })
