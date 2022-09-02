@@ -173,8 +173,34 @@ function loginOut(username){
 
  function getListOfBeds(message){
   //console.log("Aqui:"+message);
-  //console.log("Doctor:"+message);
+  console.log("Doctor:"+message);/*
   let topiclocal= "/User/"+message+"/Beds";
+  pool.query('\
+  SELECT DISTINCT bedId,pacientId \
+  FROM `Pacient` as p JOIN `MedicalTable` as Mt JOIN `User` as u JOIN `UsersTable` as uT \
+  WHERE p.userTableId = uT.userTableId AND Mt.userTableId=uT.userTableId  AND u.userId = Mt.userId AND u.userId=? \
+  ',[message], function(err, result, fields) {
+    if (err || result.length==0) {
+        console.log("error-asking for beds")
+        console.log("error:"+err)
+        client.publish(topiclocal, JSON.stringify("Error"));          
+    }    
+    else{
+    client.publish(topiclocal, JSON.stringify(result)); }
+  });  */
+
+ }
+ 
+ /**
+ * function that gets all the pacients  of a specified  doctor 
+ * @param {message}: username of the doctor
+ */
+
+ function getPacientsBeds(message){
+  //console.log("Aqui:"+message);
+  console.log("Doctor:"+message);
+  let topiclocal= "/User/"+message+"/Pacients";
+  
   pool.query('\
   SELECT DISTINCT bedId,pacientId \
   FROM `Pacient` as p JOIN `MedicalTable` as Mt JOIN `User` as u JOIN `UsersTable` as uT \
@@ -387,19 +413,27 @@ function getPacientInfoPacientId(pacientId){
   //console.log("bed:"+JSON.parse(bedId));
   console.log(message);
   console.log(JSON.stringify(_bedId)); 
-
+  bedIdLocal=JSON.stringify(_bedId);
+	let topic="/Beds/"+bedIdLocal+"/QRresponse";
   pool.query('SELECT QR  \
   FROM `QRbed` as b \
   WHERE b.bedId = ?',[_bedId], function(err, result, fields) {
     if (err|| result.length==0) {
-        console.log("error")
-        client.publish(topic, JSON.stringify("Error"));          
-        
+        console.log("error")    
+        client.publish(topic, JSON.stringify("Error"));                  
     }
     else{    
-          if(message==JSON.stringify(result[0].QR)){console.log("Any")}
-          BedsList.setStatus(_bedId,4);  
-          publishBedStates();      
+          if(message==JSON.stringify(result[0].QR)){
+			  console.log("QR ok");
+			  client.publish(topic, JSON.stringify("QR OK"));          
+			  }
+			  
+          else{
+			  console.log("QR invalid");			  
+			  client.publish(topic, JSON.stringify("QR invalid"));          
+			  }
+          
+          
           }
   });
 
@@ -577,12 +611,15 @@ client.on('message', function (topic, message,packet) {
    * Ask for beds for the current doctor
    */
   if((message_data._type=== 9)){//&&(topic==="Pacient/#")){    
-    getListOfBeds(message_data._content);    
+	console.log("Doctor:"+message);
+    //getListOfBeds(message_data._content);    
+    getPacientsBeds(message_data._content); 
   }
   if((message_data._type=== 10)){//&&(topic==="Pacient/#")){
     //console.log("pacient_from_bed");
     
     getBedPacientInfo(message_data._content);    
+    
   }
 
   /**

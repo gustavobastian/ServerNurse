@@ -255,9 +255,10 @@ eventsTable.get('/:id', function(req, res) {
  */
 
  eventsTable.delete('/:id', function(req, res) {
-    console.log(req.body);    
+    console.log(req.body);
+    
     let eventId=parseInt(req.params.id);
-        
+    console.log("deleting event:"+eventId)        
     pool.query(
         'DELETE FROM EventsTable        \
         WHERE \
