@@ -425,7 +425,9 @@ function getPacientInfoPacientId(pacientId){
     else{    
           if(message==JSON.stringify(result[0].QR)){
 			  console.log("QR ok");
-			  client.publish(topic, JSON.stringify("QR OK"));          
+			  client.publish(topic, JSON.stringify("QR Ok")); 
+			  BedsList.setStatus(_bedId,4);    
+			               
 			  }
 			  
           else{
@@ -436,13 +438,13 @@ function getPacientInfoPacientId(pacientId){
           
           }
   });
-
+	publishBedStates();  
   
 }
 
-function saveNewEvent(typeofEvent, bedId, userId, note, note2){
+function saveNewEvent(typeofEvent, bedId, username, note, note2){
   console.log("tipo de evento:"+typeofEvent);
-  console.log("userId:"+userId);
+  console.log("username:"+username);
   console.log("Note:"+note2);
 
 
@@ -464,11 +466,8 @@ if(typeofEvent==1){
     else{
       let pacientIdLocal=result[0].pacientId;
     console.log(result[0].pacientId)
-     //client.publish(topic, JSON.stringify(result));  }
-     /**INSERT INTO `LogEvents` (`logEventId`, `type`, `init`, `finish`,
-      *  `pacientId`, `userId`, `Note`, `Note2`)
-      *  VALUES (NULL, '1', '2022-08-10 01:28:30.000000', '2022-08-10 01:28:30.000000', '3', '0', '', '');*/
-     pool.query('INSERT INTO `LogEvents`   \
+     
+    pool.query('INSERT INTO `LogEvents`   \
           (`type`,`pacientId`,`userId`,`Note`,`Note2`) VALUES(?,?,?,?,?)',[typeofEvent,pacientIdLocal,userIdLocal,'','' ], 
           function(err, result, fields) {
           if (err|| result.length==0) {
@@ -484,31 +483,43 @@ else if(typeofEvent==3){
               console.log("error")
           }
           else{
-              pacientLocal=result[0].pacientId;
-              pool.query('SELECT logEventId from  LogEvents \
-              WHERE `LogEvents`.`pacientId`= ? ORDER BY logEventId DESC LIMIT 1',[pacientLocal], function(err, result, fields) {
+            pacientLocal=result[0].pacientId;  
+            pool.query('SELECT userId from   \
+            Users  WHERE `Users`.`username`= ?',[username], function(err, result, fields) {
               if (err|| result.length==0) {
-                  console.log("error1:",err )
+                  console.log("error")
               }
-              else{      
-              logId= result[0].logEventId; 
-              console.log(result[0].logEventId)
-              console.log("closing event log")
-              const isoDate = new Date();
-              const mySQLDateString = isoDate.toJSON().slice(0, 19).replace('T', ' ');
-               if(isNaN(userId)){userIdLocal=0;}   
-               else{userIdLocal=userId;}
-              //UPDATE `LogEvents` SET `finish` = '2022-08-10 01:54:55' WHERE `LogEvents`.`logEventId` = 2;
-              pool.query('UPDATE `LogEvents` SET `finish` =?,`userId`=?, `Note2`=? , `Note`=?  WHERE `LogEvents`.`logEventId` = ?',[mySQLDateString, userIdLocal , note2 , note , logId ], function(err, result, fields) {
-              if (err|| result.length==0) {
-                  console.log("error:",err)
-              }})
+              else{
+                        userId=result[0].userId;  
+                        pool.query('SELECT logEventId from  LogEvents \
+                        WHERE `LogEvents`.`pacientId`= ? ORDER BY logEventId DESC LIMIT 1',[pacientLocal], function(err, result, fields) {
+                        if (err|| result.length==0) {
+                            console.log("error1:",err )
+                        }
+                        else{
+                            logId= result[0].logEventId; 
+                            console.log(result[0].logEventId)
+                            console.log("closing event log")
+                            const isoDate = new Date();
+                            const mySQLDateString = isoDate.toJSON().slice(0, 19).replace('T', ' ');
+                            if(isNaN(userId)){userIdLocal=0;}   
+                            else{userIdLocal=userId;}
+                            //UPDATE `LogEvents` SET `finish` = '2022-08-10 01:54:55' WHERE `LogEvents`.`logEventId` = 2;
+                            pool.query('UPDATE `LogEvents` SET `finish` =?,`userId`=?, `Note2`=? , `Note`=?  WHERE `LogEvents`.`logEventId` = ?',[mySQLDateString, userIdLocal , note2 , note , logId ], function(err, result, fields) {
+                            if (err|| result.length==0) {
+                                console.log("error:",err)
+                            }})
+                          }
+                      }            
               //client.publish(topic, JSON.stringify(result));  
-            }
-          })
-  }});  
+                    )
+              }
+          }
+          )
+        }
 
-  }
+        })      
+      }      
 else if(typeofEvent==2){ 
   console.log("saving event 3");
   userIdLocal=0;
@@ -648,7 +659,7 @@ client.on('message', function (topic, message,packet) {
         console.log("get end of work");
         BedsList.setStatus(message_data._bedId,1); 
         publishBedStates(); 
-        saveNewEvent(3,message_data._bedId,"system","","");        
+        saveNewEvent(3,message_data._bedId,message_data._username,"","");        
       }
   
   /**
