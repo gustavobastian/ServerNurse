@@ -485,7 +485,7 @@ else if(typeofEvent==3){
           else{
             pacientLocal=result[0].pacientId;  
             pool.query('SELECT userId from   \
-            Users  WHERE `Users`.`username`= ?',[username], function(err, result, fields) {
+            User  WHERE `User`.`username`= ?',[username], function(err, result, fields) {
               if (err|| result.length==0) {
                   console.log("error")
               }
