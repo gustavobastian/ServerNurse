@@ -193,6 +193,19 @@ CREATE TABLE `Messages` (
 
 
 --
+-- Table structure for bed priority
+-- 
+--
+
+CREATE TABLE `PriorityTable` (
+  `lineId` int(11) NOT NULL AUTO_INCREMENT,
+  `bedId` int NOT NULL ,
+  `priority` INT NULL DEFAULT NULL,
+  PRIMARY KEY (`lineId`)   
+  ) ENGINE = InnoDB DEFAULT CHARSET=latin1;
+
+
+--
 -- Dumping example data
 --
 

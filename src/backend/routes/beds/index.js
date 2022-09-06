@@ -29,11 +29,11 @@ async function fillingBeds(){
         result.forEach(element => {        
             BedsList.setStatus(element.bedId,1);
         });    
-        //UserList.printUserList();  
+        
         return;
     });
 
- //   BedsList.printBedlist();  
+    BedsList.printBedlist();  
 }
 
 fillingBeds();
@@ -128,15 +128,13 @@ routerBeds.post('/pacient/notes/activation/:id', function(req, res) {
  */
  routerBeds.post('/', function(req, res) {    
     console.log("req:"+JSON.stringify(req.body))
-    console.log(req.body);    
+    console.log(req.body[0]);    
     let received=(JSON.stringify(req.body));       
     let received2=JSON.parse(received);
     
-    let roomId=parseInt(received2.roomId);
-    let callerId=parseInt(received2.callerId);
-    let floorId =parseInt( received2.floorId);
-
-
+    let roomId=parseInt(received2[0].roomId);
+    let callerId=parseInt(received2[0].callerId);
+    let floorId =parseInt( received2[0].floorId);
     
     
     pool.query(
@@ -146,8 +144,21 @@ routerBeds.post('/pacient/notes/activation/:id', function(req, res) {
             res.send(err).status(400);
             return;
         }
+        else{
+        console.log(result.insertId);   
+        bedId=result.insertId;
+        pool.query(
+            'INSERT INTO PriorityTable(`bedId`, `priority`) \
+            VALUES (?,?)',[bedId,0], function(err, result2, fields) {
+            if (err) {
+                res.send(err).status(400);
+                return;
+                }
+            
+            });
+
         res.send(result).status(202);
-        console.log("done");   
+        console.log("done");   }
     });
     
     //res.status(202);
@@ -181,6 +192,9 @@ routerBeds.post('/pacient/notes/activation/:id', function(req, res) {
         res.send(result).status(202);
     });
 
+    
+
+
 });
 
 //API for deleting beds
@@ -189,9 +203,9 @@ routerBeds.post('/pacient/notes/activation/:id', function(req, res) {
  * any
  */
  routerBeds.delete('/:id', function(req, res) {
-    console.log(req.body);    
+    console.log(req.body);        
     let bedId=parseInt(req.params.id);
-        
+// first deleting the bed in bed Table, then in the priority table        
     pool.query(
         'DELETE FROM Bed \
         WHERE \
@@ -200,9 +214,64 @@ routerBeds.post('/pacient/notes/activation/:id', function(req, res) {
             res.send(err).status(400);
             return;
         }
+        else{
+        pool.query(
+            'DELETE FROM PriorityTable\
+            WHERE \
+            `Bed`.`bedId` = ?;',[bedId], function(err, result2, fields) {
+            if (err) {
+                res.send(err).status(400);
+                return;
+            }
+            
+            });
+        }    
         res.send(result).status(202);
     });
 
 });
+
+//API for setting the priority of the bed
+/**
+ * params body: example 1:{[{"priority":"1"}]
+ */
+ routerBeds.put('/priority/:id', function(req, res) {
+    console.log(req.body)
+    let bedId=parseInt(req.params.id);
+    let priority=parseInt(req.body[0].priority);
+    console.log(priority);
+    
+    pool.query(
+        'UPDATE PriorityTable SET \
+        `priority` = ?   \
+        WHERE \
+         `PriorityTable`.`bedId` = ?;',[priority, bedId], function(err, result, fields) {
+        if (err) {
+            res.send(err).status(400);
+            return;
+        }
+        res.send(result).status(202);
+    });
+ });
+
+
+//API for getting the priority of the bed
+/**
+ * 
+ */
+ routerBeds.get('/priority/:id', function(req, res) {
+    let bedId=parseInt(req.params.id);
+    console.log(req.body)
+    pool.query('Select * from PriorityTable where bedId=?',[bedId], function(err, result, fields) {
+        if (err) {
+            res.send(err).status(400);
+            return;
+        }
+        res.send(result).status(202);
+    });
+    
+ });
+
+
 
 module.exports = routerBeds;

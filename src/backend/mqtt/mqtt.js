@@ -101,21 +101,22 @@ async function  loginHere(username, password){
 
       let estado=UserList.getStatus(result[0].userId)
       console.log("Estado:"+estado) 
+      UserList.setStatus(result[0].userId,1);
 
      if(estado<1){                           ///The user is not already logged
       bcrypt.compare(password, result[0].password, (err, resultComp) => {
           if(resultComp==true)
           {
             console.log('logueado');
-            UserList.setStatus(result[0].userId,1);
+            
             ///User/System/{"idNumber":1,"mode":"doctor"}
-      /*     response_conform={idNumber:result[0].userId, mode:result[0].occupation};
+           response_conform={idNumber:result[0].userId, mode:result[0].occupation};
             logeado=true;
             let data=result[0].userId;
             console.log("data:"+data);
             UserList.setStatus(data,1);
             //check if user is logged
-              UserList.printUserList();*/
+              UserList.printUserList();
           }
           if(resultComp==false)
           {
