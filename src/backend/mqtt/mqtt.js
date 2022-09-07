@@ -41,8 +41,8 @@ client.on('connect', function () {
   setInterval(publishBedStates, 10000);
   //task that will publish users state each second
   setInterval(publishUserStates, 10000);
-  //task that will publish beds priorities each second
-  setInterval(publishBedPriorities, 10000);
+  //task that will publish beds priorities each 10 second
+  setInterval(publishBedPriorities, 100000);
   
 })
 
