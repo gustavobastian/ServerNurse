@@ -2,6 +2,8 @@ var express = require('express');
 var routerBeds = express.Router();
 var pool = require('../../mysql');
 var BedsList = require('../../Monitoring/Bed-mon');
+var PriorityList = require('../../Monitoring/P-mon');
+
 
 
 //filling the bedList
@@ -37,6 +39,30 @@ async function fillingBeds(){
 }
 
 fillingBeds();
+
+//filling beds priority list
+
+async function fillingBedPriorities(){
+    pool.query('Select bedId,priority from PriorityTable', function(err, result, fields) {
+       console.log("filling beds priorities")
+       if (err) {
+           console.log("Error");
+           return;
+       }
+       result.forEach(element => {  
+        PriorityList.addBedPriority(element.bedId,element.priority)           
+       });    
+       return;
+       
+   });
+
+    
+   PriorityList.printBedPrioritylist()
+   
+}
+
+fillingBedPriorities();
+
 /**
  * Send to client all beds status information
 */

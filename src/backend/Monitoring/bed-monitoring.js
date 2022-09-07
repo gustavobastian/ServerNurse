@@ -52,7 +52,7 @@ var pool = require('../mysql/index');
     */
    getStatus(bedId){
     var index=this.bedlist.findIndex(item=>item.id===bedId);           
-    this.bedlist[index].st=statusP;
+    return this.bedlist[index].st
     //this.printBedlist();
     }
     /**

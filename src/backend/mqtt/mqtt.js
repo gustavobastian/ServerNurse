@@ -3,6 +3,7 @@ var mqtt=require('mqtt');
 const bcrypt = require("bcrypt");
 var BedsList = require('../Monitoring/Bed-mon');
 var UserList = require('../Monitoring/User-mon');
+var PriorityList = require('../Monitoring/P-mon');
 
 var MQTT_TOPIC = "test";
 //var MQTT_ADDR = "mqtt://localhost";
@@ -40,6 +41,8 @@ client.on('connect', function () {
   setInterval(publishBedStates, 10000);
   //task that will publish users state each second
   setInterval(publishUserStates, 10000);
+  //task that will publish beds priorities each second
+  setInterval(publishBedPriorities, 10000);
   
 })
 
@@ -57,6 +60,21 @@ client.on('connect', function () {
   client.publish(topic, response);  
   
  }
+/**
+ * Function that publishes the priority of each bed in the broker
+ * @param {}  
+ */
+ function publishBedPriorities(){
+  // console.log("publishing state");
+   var now = new Date();
+  // convert date to a string in UTC timezone format:
+    console.log(now.toUTCString());
+   let topic= "/Beds/priorities";
+   
+   var response = PriorityList.getBedPriority();
+   client.publish(topic, response);     
+  }
+ 
 
 /**
  * Function that publishes the state of each user in the broker
