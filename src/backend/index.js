@@ -45,6 +45,7 @@ var routerMedicalTable = express = require('./routes/medicalTable');
 var routerQR = express = require('./routes/qr');
 var routerEvents = express = require('./routes/events');
 var routerLogEvents = express = require('./routes/logEvents');
+var routerStatistics = express = require('./routes/Statistics');
 
 app.use('/api/pacient',routerPacient);
 app.use('/api/user',routerUser);
@@ -56,6 +57,7 @@ app.use('/api/medicalTable',routerMedicalTable);
 app.use('/api/QR',routerQR);
 app.use('/api/events',routerEvents);
 app.use('/api/logEvents',routerLogEvents);
+app.use('/api/Statistics',routerStatistics);
 
 
 //=======[ Initialization of beds and user States]================================
