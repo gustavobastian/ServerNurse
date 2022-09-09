@@ -3,6 +3,10 @@
 var PORT    = 3000;
 var mqtt=require('mqtt')
 var express = require('express');
+var jwt = require('express-jwt');
+
+//require('dotenv').config({path:'./.env'});
+
 //const connection = require('./mysql-connector');
 var app     = express();
 //var utils   = require('./mysql-connector');
@@ -46,6 +50,7 @@ var routerQR = express = require('./routes/qr');
 var routerEvents = express = require('./routes/events');
 var routerLogEvents = express = require('./routes/logEvents');
 var routerStatistics = express = require('./routes/Statistics');
+var routerAuthenticate = express = require('./routes/authenticate');
 
 app.use('/api/pacient',routerPacient);
 app.use('/api/user',routerUser);
@@ -58,6 +63,7 @@ app.use('/api/QR',routerQR);
 app.use('/api/events',routerEvents);
 app.use('/api/logEvents',routerLogEvents);
 app.use('/api/Statistics',routerStatistics);
+app.use('/api/authentication',routerAuthenticate);
 
 
 //=======[ Initialization of beds and user States]================================

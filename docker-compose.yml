@@ -2,21 +2,6 @@ version: '3'
 
 services:
 
- #   mosquitto:
- #       container_name: mqtt
- #       image: eclipse-mosquitto
- #       network_mode: host
- #       ports:
- #       - 1883:1883
- #       - 8883:8883
- #       - 9001:9001
- #       volumes:
- #       - ./mosquitto/conf:/mosquitto/conf
- #       - ./mosquitto/data:/mosquitto/data
- #       - ./mosquitto/log:/mosquitto/log
- #       restart: unless-stopped
-
-
     mysql-server:
         image:                   mysql:5.7
         hostname:                mysql-server
@@ -49,9 +34,11 @@ services:
             -                    NurseSystem-net
         depends_on:
             -                    mysql-admin
+        env_file:
+            -                    .env
         ports: 
             -                    "8000:3000"
-        command:                 bash -c "npm set registry https://registry.npmjs.org/ && npm install --save mqtt bcrypt node-schedule --save  && sleep 50  && nodemon /home/node/app/src/index.js"
+        command:                 bash -c "npm set registry https://registry.npmjs.org/ && npm install --save dotenv mqtt bcrypt express-jwt jsonwebtoken node-schedule --save  && sleep 50  && nodemon /home/node/app/src/index.js"
 
 networks:
     NurseSystem-net:

@@ -4,21 +4,19 @@ const bcrypt = require("bcrypt");
 var BedsList = require('../Monitoring/Bed-mon');
 var UserList = require('../Monitoring/User-mon');
 var PriorityList = require('../Monitoring/P-mon');
+require('dotenv').config({ encoding: 'latin1' })
 
-var MQTT_TOPIC = "test";
-//var MQTT_ADDR = "mqtt://localhost";
-//var MQTT_PORT = 1883;
-var MQTT_ADDR = "ws://localhost";
-var MQTT_PORT = 9001;
+
 //=======[ Data ]================================
 var pool = require('../mysql');
 
-
 /**
+ * 
  * Connecting to MQTT broker
  */ 
 
-var client = mqtt.connect('ws://192.168.1.100:9001');
+
+var client = mqtt.connect(process.env.MQTT_CONNECTION)
 //listening to  messages
 client.on('connect', function () {
   client.subscribe('/User/general', function (err) {
@@ -155,6 +153,9 @@ async function  loginHere(username, password){
 
     publishUserStates();
 
+    setTimeout(publishBedPriorities, 1500);
+
+
     }
   });
 }
@@ -190,24 +191,8 @@ function loginOut(username){
  * @param {message}: username of the doctor
  */
 
- function getListOfBeds(message){
-  //console.log("Aqui:"+message);
-  console.log("Doctor:"+message);/*
-  let topiclocal= "/User/"+message+"/Beds";
-  pool.query('\
-  SELECT DISTINCT bedId,pacientId \
-  FROM `Pacient` as p JOIN `MedicalTable` as Mt JOIN `User` as u JOIN `UsersTable` as uT \
-  WHERE p.userTableId = uT.userTableId AND Mt.userTableId=uT.userTableId  AND u.userId = Mt.userId AND u.userId=? \
-  ',[message], function(err, result, fields) {
-    if (err || result.length==0) {
-        console.log("error-asking for beds")
-        console.log("error:"+err)
-        client.publish(topiclocal, JSON.stringify("Error"));          
-    }    
-    else{
-    client.publish(topiclocal, JSON.stringify(result)); }
-  });  */
-
+ function getListOfBeds(message){  
+  console.log("Doctor:"+message);
  }
  
  /**
@@ -690,12 +675,22 @@ client.on('message', function (topic, message,packet) {
     publishBedStates();         
   }    
   /**
-   * Received a close char, check it and update the status of the bed
+   * Received a close command, check it and update the status of the bed
    */
    if((message_data._type=== 16)){
     console.log("END ASK");
     console.log(message_data)
     BedsList.setStatus(message_data._bedId,4);    
+    publishBedStates();      
+  } 
+
+  /**
+   * Received a asking for help command, check it and update the status of the bed
+   */
+   if((message_data._type=== 44)){
+    console.log("ASK for help");
+    console.log(message_data)
+    BedsList.setStatus(message_data._bedId,6);    
     publishBedStates();      
   } 
   /**
