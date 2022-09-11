@@ -1,11 +1,13 @@
 const express = require('express');
+const util = require('util')
+
 var pool = require('../../mysql');
 var routerAuthenticate = express.Router();
 const jwt = require('jsonwebtoken');
 const bcrypt = require("bcrypt");
 require('dotenv').config({ encoding: 'latin1' })
 
-
+//Based onhttps://www.youtube.com/watch?v=H4v-YOlP7eM&list=PLrAw40DbN0l2gSLR8enPdvJNxExzbt3TF&index=5
 
 console.log("*****************************")
 console.log(process.env.TAG)
@@ -37,11 +39,19 @@ routerAuthenticate.post('/', async function(req, res) {
                await bcrypt.compare(user.password, result[0].password, (err, resultComp)=> {
 
                 if (resultComp==true ) {
-                    var token = jwt.sign(user, JWT_Secret);
-                    res.status(200).send({
+                    var token = jwt.sign(user, process.env.JWT_SECRET,{
+                        expiresIn: process.env.JWT_EXP_TIM
+                    });
+                    const coockiesOptions={
+                        expires: new Date(Date.now()+process.env.JWT_COOK_TIM*24*60*60*1000),
+                        httpOnly: true
+                    }
+                    /*res.status(200).send({
                         signed_user: user,
                         token: token
-                    });
+                    });*/
+                    res.cookie('jwt',token,coockiesOptions);
+                    res.send("auth Ok")
                 } else {
                     res.status(403).send({
                         errorMessage: 'Auth required!'
@@ -57,7 +67,18 @@ routerAuthenticate.post('/', async function(req, res) {
         }
 
     })
-    
 
+
+
+
+//remove logged user
+logout = async(reg,res,next)=>{
+    res.clearCookie('jwt')
+    return next()
+}
+
+routerAuthenticate.get('/logout/', logout,async function(req, res) {   
+    return res.send("logged out")
+}) 
 
 module.exports = routerAuthenticate;

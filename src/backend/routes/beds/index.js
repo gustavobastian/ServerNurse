@@ -3,8 +3,7 @@ var routerBeds = express.Router();
 var pool = require('../../mysql');
 var BedsList = require('../../Monitoring/Bed-mon');
 var PriorityList = require('../../Monitoring/P-mon');
-
-
+var auth = require('../authenticate/index');
 
 //filling the bedList
 async function fillingBeds(){

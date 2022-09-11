@@ -1,9 +1,12 @@
 //=======[ Settings, Imports & Data ]==========================================
-
-var PORT    = 3000;
+require('dotenv').config({ encoding: 'latin1' })
+var PORT    = process.env.PORT_LOCAL;
 var mqtt=require('mqtt')
 var express = require('express');
 var jwt = require('express-jwt');
+var auth = require('./middleware/authentication');
+const cookieParser = require('cookie-parser')
+
 
 //require('dotenv').config({path:'./.env'});
 
@@ -18,7 +21,7 @@ var PriorityList = require('./Monitoring/P-mon');
 
 var cors = require('cors');
 var corsOptions={origin:'*' , optionsSuccessStatus:200};
-
+console.log(PORT)
 
 var mqttClientLocal = require('./mqtt/mqtt')
 var MQTT_TOPIC = "test"
@@ -28,7 +31,7 @@ var MQTT_TOPIC = "test"
 // to parse application/json
 app.use(express.json()); 
 // to serve static files
-
+app.use(cookieParser())
 //for letting api to work with cors
 app.use(cors(corsOptions));
 
@@ -52,18 +55,19 @@ var routerLogEvents = express = require('./routes/logEvents');
 var routerStatistics = express = require('./routes/Statistics');
 var routerAuthenticate = express = require('./routes/authenticate');
 
-app.use('/api/pacient',routerPacient);
-app.use('/api/user',routerUser);
-app.use('/api/messages',routerMessages);
-app.use('/api/notes',routerNotes);
-app.use('/api/beds',routerBeds);
-app.use('/api/usersTable',routerUsersTable);
-app.use('/api/medicalTable',routerMedicalTable);
-app.use('/api/QR',routerQR);
-app.use('/api/events',routerEvents);
-app.use('/api/logEvents',routerLogEvents);
-app.use('/api/Statistics',routerStatistics);
+app.use('/api/pacient',auth.isAuthenticated,routerPacient);
+app.use('/api/user',auth.isAuthenticated,routerUser);
+app.use('/api/messages',auth.isAuthenticated,routerMessages);
+app.use('/api/notes',auth.isAuthenticated,routerNotes);
+app.use('/api/beds',auth.isAuthenticated,routerBeds);
+app.use('/api/usersTable',auth.isAuthenticated,routerUsersTable);
+app.use('/api/medicalTable',auth.isAuthenticated,routerMedicalTable);
+app.use('/api/QR',auth.isAuthenticated,routerQR);
+app.use('/api/events',auth.isAuthenticated,routerEvents);
+app.use('/api/logEvents',auth.isAuthenticated,routerLogEvents);
+app.use('/api/Statistics',auth.isAuthenticated,routerStatistics);
 app.use('/api/authentication',routerAuthenticate);
+
 
 
 //=======[ Initialization of beds and user States]================================
