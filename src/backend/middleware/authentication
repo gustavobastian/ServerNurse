@@ -8,6 +8,16 @@ const bcrypt = require("bcrypt");
 require('dotenv').config({ encoding: 'latin1' })
 //Function that filters request    
 exports.isAuthenticated = async(req, res,next)=> {
+    let authHeader = (req.headers.authorization || '');
+    if (authHeader.startsWith("Bearer ")) {
+        token = authHeader.substring(7, authHeader.length);
+    } else {
+        return res.send({ message: 'No Auth' });
+    }
+    console.log("Test desde el backend, llega en el header " + JSON.stringify(authHeader));    
+
+
+    /*
     if(req.cookies.jwt){
         try {
             const deco=await util.promisify(jwt.verify)(req.cookies.jwt,process.env.JWT_SECRET)
@@ -26,5 +36,18 @@ exports.isAuthenticated = async(req, res,next)=> {
             return next(req,res)
         }
     }
-    else{ res.send("forbidden path")}
+    else{ res.send("forbidden path")}*/
+    if (token) {
+        jwt.verify(token, process.env.JWT_SECRET, function(err) {
+            if (err) {
+                console.log("Alguien cambio el token, no es valido");
+                return res.json({ message: 'Invalid Token' });
+            } else {
+                console.log("Validado el token y todo ok");
+                return next();
+            }
+        });
+    } else {
+        return res.send({ message: 'No token' });
+    }
 }

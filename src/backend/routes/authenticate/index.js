@@ -42,16 +42,16 @@ routerAuthenticate.post('/', async function(req, res) {
                     var token = jwt.sign(user, process.env.JWT_SECRET,{
                         expiresIn: process.env.JWT_EXP_TIM
                     });
-                    const coockiesOptions={
+                    /*const coockiesOptions={
                         expires: new Date(Date.now()+process.env.JWT_COOK_TIM*24*60*60*1000),
                         httpOnly: true
-                    }
-                    /*res.status(200).send({
+                    }*/
+                    res.status(200).send({
                         signed_user: user,
                         token: token
-                    });*/
-                    res.cookie('jwt',token,coockiesOptions);
-                    res.send("auth Ok")
+                    });
+                    //res.cookie('jwt',token,coockiesOptions);
+                    //res.status(200).send()
                 } else {
                     res.status(403).send({
                         errorMessage: 'Auth required!'
@@ -73,7 +73,7 @@ routerAuthenticate.post('/', async function(req, res) {
 
 //remove logged user
 logout = async(reg,res,next)=>{
-    res.clearCookie('jwt')
+    //res.clearCookie('jwt')
     return next()
 }
 

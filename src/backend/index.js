@@ -34,6 +34,8 @@ app.use(express.json());
 app.use(cookieParser())
 //for letting api to work with cors
 app.use(cors(corsOptions));
+//configuring cors for sending credentials at login
+
 
 // to parse received data
 var bodyParser = require('body-parser');
