@@ -24,7 +24,7 @@ routerAuthenticate.post('/', async function(req, res) {
     if (req.body) {
         var user = req.body;
         console.log(user);
-        await pool.query('Select username,password,occupattion from User WHERE username=?',[user.username], async function(err, result, fields) {
+        await pool.query('Select username,password,occupation from User WHERE username=?',[user.username], async function(err, result, fields) {
             if (err) {
                 console.log("error:"+err)
                 var response = JSON.stringify(response_conform);
