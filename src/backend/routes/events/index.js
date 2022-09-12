@@ -185,14 +185,15 @@ eventsTable.get('/:id', function(req, res) {
     let received=(JSON.stringify(req.body));       
     let received2=JSON.parse(received);
     
-    let pacientId=parseInt(received2._pacientId);
-    let date_int=(received2._dateTime);
+    let pacientId=parseInt(received2.pacientId);
+    let date_int=JSON.stringify(received2.dateTime);
     let stringTime=JSON.parse(date_int);
-    let type =( received2._type);
+    let type =( received2.type);
+    console.log("pacientId:"+pacientId);
     console.log("tipo:"+type);
-    let note =( received2._note);
+    let note =( received2.note);
     console.log("nota:"+note);
-    //console.log("datetime:"+JSON.parse(stringTime));
+    console.log("datetime:"+(stringTime));
 
     pool.query(
         'INSERT INTO EventsTable(`pacientId`, `type`, `dateTime`, `note`) \
