@@ -6,7 +6,9 @@ var pool = require('../../mysql');
 //get all single user specialization  
 routerNurseSpecTable.get('/:id', function(req, res) {    
     let idAb=req.params.id;   
-    pool.query('Select * from NurseSpecTable INNER JOIN SpecTable on SpecTable.id = NurseSpecTable.specId  WHERE userId=?',[idAb], function(err, result, fields) {
+    pool.query('Select NurseSpecTable.nurseSpecId, SpecTable.Name, NurseSpecTable.specId  \
+    from NurseSpecTable INNER JOIN SpecTable on SpecTable.id= NurseSpecTable.specId \
+    WHERE userId=?',[idAb], function(err, result, fields) {
         if (err) {
             res.send(err).status(400);
             return;
