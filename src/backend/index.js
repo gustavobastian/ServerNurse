@@ -42,6 +42,7 @@ var bodyParser = require('body-parser');
 const { request } = require('express');
 
 
+
 // looking for router
 
 var routerPacient = express = require('./routes/pacient');
@@ -56,7 +57,9 @@ var routerEvents = express = require('./routes/events');
 var routerLogEvents = express = require('./routes/logEvents');
 var routerStatistics = express = require('./routes/Statistics');
 var routerAuthenticate = express = require('./routes/authenticate');
-
+var routerSpecTable = express = require('./routes/SpecTable');
+var routerNurseSpecTable = express = require('./routes/nurseSpecTable');
+/*
 app.use('/api/pacient',auth.isAuthenticated,routerPacient);
 app.use('/api/user',auth.isAuthenticated,routerUser);
 app.use('/api/messages',auth.isAuthenticated,routerMessages);
@@ -69,7 +72,22 @@ app.use('/api/events',auth.isAuthenticated,routerEvents);
 app.use('/api/logEvents',auth.isAuthenticated,routerLogEvents);
 app.use('/api/Statistics',auth.isAuthenticated,routerStatistics);
 app.use('/api/authentication',routerAuthenticate);
-
+*/
+//without aut...for development
+app.use('/api/pacient',routerPacient);
+app.use('/api/user',routerUser);
+app.use('/api/messages',routerMessages);
+app.use('/api/notes',routerNotes);
+app.use('/api/beds',routerBeds);
+app.use('/api/usersTable',routerUsersTable);
+app.use('/api/medicalTable',routerMedicalTable);
+app.use('/api/QR',routerQR);
+app.use('/api/events',routerEvents);
+app.use('/api/logEvents',routerLogEvents);
+app.use('/api/Statistics',routerStatistics);
+app.use('/api/authentication',routerAuthenticate);
+app.use('/api/specTable',routerSpecTable);
+app.use('/api/nurseSpecTable',routerNurseSpecTable);
 
 
 //=======[ Initialization of beds and user States]================================

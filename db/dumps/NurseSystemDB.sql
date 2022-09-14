@@ -206,6 +206,15 @@ CREATE TABLE `PriorityTable` (
 
 
 --
+-- Table structure for bed specification
+-- 
+--
+CREATE TABLE `SpecTable` (
+  `id` INT NOT NULL AUTO_INCREMENT ,    
+  `name` VARCHAR NOT NULL ,
+   UNIQUE `id` (`id`)
+   ) ENGINE = InnoDB DEFAULT CHARSET=latin1;
+--
 -- Dumping example data
 --
 
