@@ -2,12 +2,12 @@ var express = require('express');
 var routerBeds = express.Router();
 var pool = require('../../mysql');
 var BedsList = require('../../Monitoring/Bed-mon');
-var PriorityList = require('../../Monitoring/P-mon');
-var auth = require('../authenticate/index');
 
-//filling the bedList
+
+//filling the bedList ordered by priority
+
 async function fillingBeds(){
-     pool.query('Select * from Bed', function(err, result, fields) {
+  await   pool.query('select * from Bed join PriorityTable using (bedId) ORDER BY PriorityTable.priority DESC', function(err, result, fields) {
         console.log("filling beds")
         if (err) {
             console.log("Error");
@@ -20,48 +20,42 @@ async function fillingBeds(){
         return;
         
     });
-
-     pool.query('Select bedId from `Pacient`', function(err, result, fields) {
+//looking for used beds and put as occupied
+  await   pool.query('Select bedId from `Pacient`', function(err, result, fields) {
         console.log("filling bed status")
         if (err) {
             console.log("Error")
             return;
         }
-        result.forEach(element => {        
+        result.forEach(element => { 
+            console.log(element)             
             BedsList.setStatus(element.bedId,1);
         });    
         
         return;
     });
-
+//looking for spec of beds
+console.log("printing spec for bed");
+   await pool.query('Select Bed.bedId,PacientSpecTable.specId from PacientSpecTable \
+        JOIN SpecTable on SpecTable.id = PacientSpecTable.specId  \
+        JOIN Pacient on Pacient.pacientId = PacientSpecTable.pacientId  \
+        JOIN Bed on Bed.bedId = Pacient.bedId  \
+        ', function(err, result, fields) {
+            if (err) {
+                console.log("error")
+                return;
+            }        
+            
+            result.forEach(element => {  
+                console.log(element)      
+                BedsList.setTreat(element.bedId,element.specId);
+            });            
+        });   
+ console.log("end printing spec for bed");
     BedsList.printBedlist();  
 }
 
 fillingBeds();
-
-//filling beds priority list
-
-async function fillingBedPriorities(){
-    pool.query('Select bedId,priority from PriorityTable', function(err, result, fields) {
-       console.log("filling beds priorities")
-       if (err) {
-           console.log("Error");
-           return;
-       }
-       result.forEach(element => {  
-        PriorityList.addBedPriority(element.bedId,element.priority)           
-       });    
-       return;
-       
-   });
-
-    
-   PriorityList.printBedPrioritylist()
-   
-}
-
-fillingBedPriorities();
-
 /**
  * Send to client all beds status information
 */

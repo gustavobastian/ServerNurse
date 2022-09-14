@@ -15,7 +15,7 @@ var app     = express();
 //var utils   = require('./mysql-connector');
 var BedsList = require('./Monitoring/Bed-mon');
 var UserList = require('./Monitoring/User-mon');
-var PriorityList = require('./Monitoring/P-mon');
+
 
 
 

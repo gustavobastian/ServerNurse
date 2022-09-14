@@ -31,6 +31,23 @@ routerPacientSpecTable.get('/:id', function(req, res) {
     });    
 });
 
+//get all single pacient's treatments from bedId
+routerPacientSpecTable.get('/bed/:id', function(req, res) {    
+    let idAb=req.params.id;   
+    pool.query('Select Bed.bedId,PacientSpecTable.specId from PacientSpecTable \
+    JOIN SpecTable on SpecTable.id = PacientSpecTable.specId  \
+    JOIN Pacient on Pacient.pacientId = PacientSpecTable.pacientId  \
+    JOIN Bed on Bed.bedId = Pacient.bedId  \
+    WHERE Pacient.pacientId=? limit 1',[idAb], function(err, result, fields) {
+        if (err) {
+            res.send(err).status(400);
+            return;
+        }        
+        console.log(result)
+        res.send(result);
+    });    
+});
+
 
 
 

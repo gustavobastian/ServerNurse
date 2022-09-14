@@ -12,7 +12,7 @@ var pool = require('../mysql/index');
  */
  class  BedsList  {    
     constructor() {
-         this.bedlist=[{id:0,st:0}];                        
+         this.bedlist=[{id:0,st:0,spec:0}];                        
     }
   /**
    * This function adds a bed to the status list, it is used only when adding a bed
@@ -20,7 +20,7 @@ var pool = require('../mysql/index');
    * @returns 1
    */
     addBed(id) {
-         this.bedlist.push({id:id,st:0});
+         this.bedlist.push({id:id,st:0,spec:0});
          return 1;
     }
     /**
@@ -28,9 +28,9 @@ var pool = require('../mysql/index');
      * @returns 
      */
     printBedlist(){
-     /*    this.bedlist.forEach(element => {
-            console.log("id:"+element.id,"|st:"+element.st);
-        });*/
+         this.bedlist.forEach(element => {
+            console.log("id:"+element.id,"|st:"+element.st+"|spec:"+element.spec);
+        });
         return 1;
     }
     /**
@@ -42,6 +42,19 @@ var pool = require('../mysql/index');
         var index=this.bedlist.findIndex(item=>item.id===bedId);       
         if(index>=0){
         this.bedlist[index].st=statusP;}
+        else{return}
+
+       this.printBedlist();
+   }
+   /**
+     * Alters the treatment of the bed
+     * @param {} bedId 
+     * @param {*} treatmentP 
+     */
+    setTreat(bedId,treatP){
+        var index=this.bedlist.findIndex(item=>item.id===bedId);       
+        if(index>=0){
+        this.bedlist[index].spec=treatP;}
         else{return}
 
        this.printBedlist();
