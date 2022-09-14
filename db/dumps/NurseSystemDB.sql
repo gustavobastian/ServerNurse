@@ -206,7 +206,7 @@ CREATE TABLE `PriorityTable` (
 
 
 --
--- Table structure for bed specification
+-- Table structure for showing treatment or specializations
 -- 
 --
 CREATE TABLE `SpecTable` (
@@ -214,11 +214,32 @@ CREATE TABLE `SpecTable` (
   `name` VARCHAR NOT NULL ,
    UNIQUE `id` (`id`)
    ) ENGINE = InnoDB DEFAULT CHARSET=latin1;
+   
+
+--
+-- Table structure for showing relations between nurses and treatment
+-- 
+--
+
+CREATE TABLE `NurseSpecTable` (
+  `nurseSpecId` INT NOT NULL AUTO_INCREMENT ,
+  `userId` INT NOT NULL ,
+  `specID` INT NOT NULL ,
+   PRIMARY KEY (`nurseSpecId`)) ENGINE = InnoDB;
+
+--
+-- Table structure for showing relations between pacient and treatment
+--
+
+CREATE TABLE `PacientSpecTable` (
+  `pacientSpecId` INT NOT NULL AUTO_INCREMENT ,
+  `pacientId` INT NOT NULL ,
+   `specID` INT NOT NULL ,
+    PRIMARY KEY (`pacientSpecId`)) ENGINE = InnoDB;
+
 --
 -- Dumping example data
 --
-
-
 --
 -- Dumping data for table `bed`
 --
