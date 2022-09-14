@@ -28,14 +28,14 @@ async function fillingBeds(){
             return;
         }
         result.forEach(element => { 
-            console.log(element)             
+            console.log(element.bedId)             
             BedsList.setStatus(element.bedId,1);
         });    
         
         return;
     });
 //looking for spec of beds
-console.log("printing spec for bed");
+console.log("printing spec for bed");   
    await pool.query('Select Bed.bedId,PacientSpecTable.specId from PacientSpecTable \
         JOIN SpecTable on SpecTable.id = PacientSpecTable.specId  \
         JOIN Pacient on Pacient.pacientId = PacientSpecTable.pacientId  \

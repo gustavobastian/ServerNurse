@@ -39,8 +39,7 @@ client.on('connect', function () {
   setInterval(publishBedStates, 10000);
   //task that will publish users state each second
   setInterval(publishUserStates, 10000);
-  //task that will publish beds priorities each 10 second
-  setInterval(publishBedPriorities, 100000);
+  
   
 })
 
@@ -63,14 +62,7 @@ client.on('connect', function () {
  * @param {}  
  */
  function publishBedPriorities(){
-  // console.log("publishing state");
-   var now = new Date();
-  // convert date to a string in UTC timezone format:
-    console.log(now.toUTCString());
-   let topic= "/Beds/priorities";
-   
-   var response = PriorityList.getBedPriority();
-   client.publish(topic, response);     
+      
   }
  
 
@@ -153,7 +145,7 @@ async function  loginHere(username, password){
 
     publishUserStates();
 
-    setTimeout(publishBedPriorities, 1500);
+    
 
 
     }
