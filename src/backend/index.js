@@ -59,6 +59,7 @@ var routerStatistics = express = require('./routes/Statistics');
 var routerAuthenticate = express = require('./routes/authenticate');
 var routerSpecTable = express = require('./routes/SpecTable');
 var routerNurseSpecTable = express = require('./routes/nurseSpecTable');
+var routerPacientSpecTable = express = require('./routes/pacientTreatment');
 /*
 app.use('/api/pacient',auth.isAuthenticated,routerPacient);
 app.use('/api/user',auth.isAuthenticated,routerUser);
@@ -72,6 +73,8 @@ app.use('/api/events',auth.isAuthenticated,routerEvents);
 app.use('/api/logEvents',auth.isAuthenticated,routerLogEvents);
 app.use('/api/Statistics',auth.isAuthenticated,routerStatistics);
 app.use('/api/authentication',routerAuthenticate);
+app.use('/api/nurseSpecTable',auth.isAuthenticated,routerNurseSpecTable);
+app.use('/api/pacient/treatment',auth.isAuthenticated,routerPacientSpecTable);
 */
 //without aut...for development
 app.use('/api/pacient',routerPacient);
@@ -88,6 +91,7 @@ app.use('/api/Statistics',routerStatistics);
 app.use('/api/authentication',routerAuthenticate);
 app.use('/api/specTable',routerSpecTable);
 app.use('/api/nurseSpecTable',routerNurseSpecTable);
+app.use('/api/pacient/treatment',routerPacientSpecTable);
 
 
 //=======[ Initialization of beds and user States]================================

@@ -224,7 +224,7 @@ CREATE TABLE `SpecTable` (
 CREATE TABLE `NurseSpecTable` (
   `nurseSpecId` INT NOT NULL AUTO_INCREMENT ,
   `userId` INT NOT NULL ,
-  `specID` INT NOT NULL ,
+  `specId` INT NOT NULL ,
    PRIMARY KEY (`nurseSpecId`)) ENGINE = InnoDB;
 
 --
@@ -234,7 +234,7 @@ CREATE TABLE `NurseSpecTable` (
 CREATE TABLE `PacientSpecTable` (
   `pacientSpecId` INT NOT NULL AUTO_INCREMENT ,
   `pacientId` INT NOT NULL ,
-   `specID` INT NOT NULL ,
+   `specId` INT NOT NULL ,
     PRIMARY KEY (`pacientSpecId`)) ENGINE = InnoDB;
 
 --

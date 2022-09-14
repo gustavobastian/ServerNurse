@@ -14,29 +14,8 @@ exports.isAuthenticated = async(req, res,next)=> {
     } else {
         return res.send({ message: 'No Auth' });
     }
-    console.log("Test desde el backend, llega en el header " + JSON.stringify(authHeader));    
-
-
-    /*
-    if(req.cookies.jwt){
-        try {
-            const deco=await util.promisify(jwt.verify)(req.cookies.jwt,process.env.JWT_SECRET)
-            pool.query('Select userId,username from User WHERE username=?',[deco.username], async function(err, result, fields) {
-                if (err) {
-                    console.log("error:"+err)
-                    var response = JSON.stringify(response_conform);
-                    console.log(response);                                
-                    return next;    
-                }
-                else req.user=result[0]
-                return next();
-            });
-        } catch (error) {
-            console.log(error);
-            return next(req,res)
-        }
-    }
-    else{ res.send("forbidden path")}*/
+   
+   
     if (token) {
         jwt.verify(token, process.env.JWT_SECRET, function(err) {
             if (err) {
