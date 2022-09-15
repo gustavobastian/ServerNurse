@@ -57,13 +57,7 @@ client.on('connect', function () {
   client.publish(topic, response);  
   
  }
-/**
- * Function that publishes the priority of each bed in the broker
- * @param {}  
- */
- function publishBedPriorities(){
-      
-  }
+
  
 
 /**
@@ -192,7 +186,7 @@ function loginOut(username){
  * @param {message}: username of the doctor
  */
 
- function getPacientsBeds(message){
+ function getPatientsBeds(message){
   //console.log("Aqui:"+message);
   console.log("Doctor:"+message);
   let topiclocal= "/User/"+message+"/Pacients";
@@ -217,7 +211,7 @@ function loginOut(username){
  * Function that returns the pacient information to topic
  * @param {*} pacientId :number that identifies the pacient
  */
-function getPacientInfoPacientId(pacientId){
+function getPatientInfoPacientId(pacientId){
   console.log("pacient:"+pacientId);
   
   
@@ -238,10 +232,10 @@ function getPacientInfoPacientId(pacientId){
 
 /**
  * Function that returns the pacient notes to topic
- * @param {*} pacientId :number that identifies the pacient
+ * @param {*} patientId :number that identifies the pacient
  */
-  function getPacientNotesPacientId(pacientId){
-  console.log("pacient:"+(pacientId));
+  function getPatientNotesPacientId(patientId){
+  console.log("patient:"+(patientId));
   console.log("asking for notes:");
   // system publising last 2 notes only
   let topic= "/Pacient/"+pacientId+"/notes";
@@ -264,7 +258,7 @@ function getPacientInfoPacientId(pacientId){
  * Function that returns the pacient notes to topic
  * @param {*} notesId :number that identifies the pacient
  */
-  function deletePacientNotesNotesId(notesId){
+  function deletePatientNotesNotesId(notesId){
   console.log("noteId:"+(notesId._content));
   console.log("deleting:");
   // system publising last 2 notes only
@@ -281,12 +275,12 @@ function getPacientInfoPacientId(pacientId){
 }
 
 /**
- * Function that put a note on the pacient(saves it to the database)
- * @param {*} pacientId :number that identifies the pacient
+ * Function that put a note on the patient(saves it to the database)
+ * @param {*} pacientId :number that identifies the patient
  */
- function setPacientNotesPacientId(pacientId, note){
-  //console.log("pacient:"+pacientId);
-  //console.log("note:"+note);  
+ function setPatientNotesPatientId(pacientId, note){
+  
+  
   pool.getConnection(function(err, connection) {
     connection.beginTransaction(function(err) {
         if (err) {                  //Transaction Error (Rollback and release connection)
@@ -354,7 +348,7 @@ function getPacientInfoPacientId(pacientId){
  * Function that publish the pacient id to topic
  * @param {*} bedId :number that identifies the pacient
  */
- function getBedPacientInfo(bedId){
+ function getBedPatientInfo(bedId){
   console.log("bed:"+JSON.parse(bedId));
   
   let topic= "/Beds/"+bedId+"/Pacient";
@@ -588,7 +582,7 @@ client.on('message', function (topic, message,packet) {
   }
 
   /**
-   *Asking/editing Pacients  information/notes
+   *Asking/editing Patients  information/notes
    **/  
   if((message_data._type=== 3)){//&&(topic==="Pacient/#")){
     console.log("escribiendo nota");
@@ -596,11 +590,11 @@ client.on('message', function (topic, message,packet) {
     //console.log("pacientID:"+d[2])
     if(d[2]==null){return;}
     if(message_data._content==""){return;}
-    setPacientNotesPacientId(d[2],message_data._content);    
+    setPatientNotesPatientId(d[2],message_data._content);    
   }
   if((message_data._type=== 4)){//&&(topic==="Pacient/#")){
 	console.log("asking info")  
-    getPacientInfoPacientId((message_data._content));
+    getPatientInfoPacientId((message_data._content));
   }
   if((message_data._type=== 5)){//&&(topic==="Pacient/#")){
 	  console.log("asking notes")  
@@ -620,12 +614,12 @@ client.on('message', function (topic, message,packet) {
   if((message_data._type=== 9)){//&&(topic==="Pacient/#")){    
 	console.log("Doctor:"+message);
     //getListOfBeds(message_data._content);    
-    getPacientsBeds(message_data._content); 
+    getPatientsBeds(message_data._content); 
   }
   if((message_data._type=== 10)){//&&(topic==="Pacient/#")){
     //console.log("pacient_from_bed");
     
-    getBedPacientInfo(message_data._content);    
+    getBedPatientInfo(message_data._content);    
     
   }
 
@@ -700,7 +694,7 @@ client.on('message', function (topic, message,packet) {
    if((message_data._type=== 18)){
     console.log("removing pacient note");
     console.log(message_data)
-    deletePacientNotesNotesId(message_data);    
+    deletePatientNotesNotesId(message_data);    
   } 
   
   
