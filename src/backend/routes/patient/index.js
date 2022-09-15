@@ -150,15 +150,28 @@ routerPatient.post('/', async function(req, res) {
                                                                     })                            
                                                                 }
                                                                 else{
-                                                                    connection.commit(function(err){
-                                                                        if(err){
-                                                                            connection.rollback(function(err){
-                                                                                connection.release();
-                                                                                console.log("error 5 ")
-                                                                                res.send().status(400);
-                                                                            })                            
-                                                                        }
-                                                                    })
+                                                                    connection.query('INSERT INTO `PatientSpecTable` ( `patientId`,`specID`)  \
+                                                                                    VALUES (?,?)',[pacientId,1], function(err, result, fields) {
+                                                                            if (err) {
+                                                                                res.send(err).status(400);
+                                                                                console.log("error adding a treatment to a pacient ")
+                                                                                return;
+                                                                            }
+                                                                            else{
+
+                                                                            
+                                                                    
+                                                                            connection.commit(function(err){
+                                                                                if(err){
+                                                                                    connection.rollback(function(err){
+                                                                                        connection.release();
+                                                                                        console.log("error 5 ")
+                                                                                        res.send().status(400);
+                                                                                    })                            
+                                                                                }
+                                                                            })
+                                                                        } 
+                                                                    });
                                                                 }        
                                                             });                                    
                                                             }
@@ -233,20 +246,30 @@ routerPatient.post('/', async function(req, res) {
  * body format: 
  * any
  */
- routerPatient.delete('/:id', function(req, res) {
+ routerPatient.delete('/:id', async function(req, res) {
     console.log(req.body);    
-    let pacientId=parseInt(req.params.id);
+    let patientId=parseInt(req.params.id);
         
-    pool.query(
+  await pool.query(
         'DELETE FROM Pacient \
         WHERE \
-         `Pacient`.`pacientId` = ?;',[pacientId], function(err, result, fields) {
+         `Pacient`.`pacientId` = ?;',[patientId], function(err, result, fields) {
+        if (err) {
+            res.send(err).status(400);
+            return;
+        }        
+    });
+  
+    await pool.query(
+        'DELETE FROM PatientSpecTable \
+        WHERE \
+         `PatientSpecTable`.`patientSpecId` = ?;',[patientId], function(err, result, fields) {
         if (err) {
             res.send(err).status(400);
             return;
         }
-        res.send(result).status(200);
-    });
-
+        res.send(result).status(200);    
+    });  
+    
 });
 module.exports = routerPatient;

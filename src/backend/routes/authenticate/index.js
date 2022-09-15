@@ -23,7 +23,7 @@ routerAuthenticate.post('/', async function(req, res) {
     console.log("auth")
     if (req.body) {
         var user = req.body;
-        console.log(user);
+    //    console.log(user);
         await pool.query('Select username,password,occupation from User WHERE username=?',[user.username], async function(err, result, fields) {
             if (err) {
                 console.log("error:"+err)

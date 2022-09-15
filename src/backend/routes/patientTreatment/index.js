@@ -80,6 +80,32 @@ routerPatientSpecTable.post('/', function(req, res) {
 
 
 
+//API for aletring treatment from the table of treatment
+
+routerPatientSpecTable.put('/', async function(req, res) {
+	console.log("making a put")
+	console.log(req.body);
+    let received= JSON.stringify(req.body);    
+    let received2 = JSON.parse(received)    
+    let specID=parseInt(received2.specId);
+    let patientID=parseInt(received2.patientId);
+    console.log("patientID:"+patientID.toString()+"|specID:"+specID.toString())
+    //UPDATE `PatientSpecTable` SET `specId` = '4' WHERE `PatientSpecTable`.`patientSpecId` = 4;
+    
+    await pool.query('UPDATE `PatientSpecTable` SET `specId`=?  \
+				WHERE `patientId`= ?',[specID,patientID], function(err, result, fields) {
+        if (err) {
+            res.send(err).status(400);
+            console.log("error adding a treatment to a pacient ")
+            return;
+        }
+        else{
+        res.send(result);
+        console.log("done adding a treatment to a pacient")}
+    });
+});
+
+
 
 //API for deleting specialization from the table of specialization
 

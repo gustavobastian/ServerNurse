@@ -91,7 +91,7 @@ app.use('/api/Statistics',routerStatistics);
 app.use('/api/authentication',routerAuthenticate);
 app.use('/api/specTable',routerSpecTable);
 app.use('/api/nurseSpecTable',routerNurseSpecTable);
-app.use('/api/patient/treatment',routerPatientSpecTable);
+app.use('/api/treatment',routerPatientSpecTable);
 
 
 //=======[ Initialization of beds and user States]================================
