@@ -4,8 +4,8 @@ var pool = require('../../mysql');
 
 //get specialization name 
 routerSpecTable.get('/all', function(req, res) {
-    let idAb=req.params.id;   
-    pool.query('Select * from SpecTable',[idAb], function(err, result, fields) {
+      
+    pool.query('Select * from SpecTable', function(err, result, fields) {
         if (err) {
             res.send(err).status(400);
             return;

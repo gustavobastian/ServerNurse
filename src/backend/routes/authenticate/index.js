@@ -7,7 +7,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require("bcrypt");
 require('dotenv').config({ encoding: 'latin1' })
 
-//Based onhttps://www.youtube.com/watch?v=H4v-YOlP7eM&list=PLrAw40DbN0l2gSLR8enPdvJNxExzbt3TF&index=5
+
 
 console.log("*****************************")
 console.log(process.env.TAG)
