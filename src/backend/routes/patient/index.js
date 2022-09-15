@@ -1,9 +1,9 @@
 var express = require('express');
-var routerPacient = express.Router();
+var routerPatient = express.Router();
 var pool = require('../../mysql');
 
 //API for getting all Pacients information
-routerPacient.get('/', function(req, res) {
+routerPatient.get('/', function(req, res) {
     pool.query('Select * from Pacient', function(err, result, fields) {
         if (err) {
             res.send(err).status(400);
@@ -14,7 +14,7 @@ routerPacient.get('/', function(req, res) {
 });
 
 //API for getting all  information for a single pacient
-routerPacient.get('/:id', function(req, res) {
+routerPatient.get('/:id', function(req, res) {
     idAb=req.params.id;   
     pool.query('Select * from Pacient where pacientId = ?',idAb, function(err, result, fields) {
         if (err) {
@@ -42,7 +42,7 @@ routerPacient.get('/:id', function(req, res) {
  * "userTableId":"1"}]
  */
 
-routerPacient.post('/', async function(req, res) {
+routerPatient.post('/', async function(req, res) {
     console.log(req.body);
     let received= JSON.stringify(req.body);
     console.log("firstname rev:"+received);
@@ -182,7 +182,7 @@ routerPacient.post('/', async function(req, res) {
 });
 
 
-//API for editing a Pacient
+//API for editing a Patient
 /**
  * body format: * 
  * [{"pacientId":2, 
@@ -194,7 +194,7 @@ routerPacient.post('/', async function(req, res) {
  * }]
  */
 
- routerPacient.put('/:id', function(req, res) {
+ routerPatient.put('/:id', function(req, res) {
     
 
     
@@ -228,12 +228,12 @@ routerPacient.post('/', async function(req, res) {
 });
 
 
-//API for deleting Pacient
+//API for deleting Patient
 /**
  * body format: 
  * any
  */
- routerPacient.delete('/:id', function(req, res) {
+ routerPatient.delete('/:id', function(req, res) {
     console.log(req.body);    
     let pacientId=parseInt(req.params.id);
         
@@ -249,4 +249,4 @@ routerPacient.post('/', async function(req, res) {
     });
 
 });
-module.exports = routerPacient;
+module.exports = routerPatient;

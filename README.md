@@ -71,7 +71,7 @@ DELETE method:
 
 ### Authentication 
 POST methods:
-* "localhost:8000/api/authentication/": this method ask the server for a jwt-token in order to access the endpoints of the system.  The body parameter must have:
+* "localhost:8000/api/authentication/": this method ask the server for a jwt-token in order to access the endpoints of the system.  The body parameter must have:\
 [{
   "username":"peter",  
   "password":"123456"}]
@@ -80,21 +80,24 @@ GET methods:
 * "localhost:8000/api/authentication/logout/": this method logout the user(not used right now... used with cookies in previous versions).
 
 ### Table of treatments
-This table contains all the nurse spec that can be assigned to one pacient.  A nurse can have more than one, but a pacient only one. It is used to filter the beds that can attend a nurse.
+This table contains all the nurse spec that can be assigned to one patient.  A nurse can have more than one, but a patient only one. It is used to filter the beds that can attend a nurse.
 
 GET methods:
-* "localhost:8000/api/specTable/all": this method returns all information in the table of treatments in JSON format. Example:
+* "localhost:8000/api/specTable/all": this method returns all information in the table of treatments in JSON format. Example:\
 [{"id":1,"Name":"Oncología"},
 {"id":2,"Name":"Cardiología"},
 {"id":3,"Name":"Podología"},
 {"id":4,"Name":"Odontología"},
 {"id":5,"Name":"Vacunación"},
 {"id":6,"Name":"General"}]
-* "localhost:8000/api/specTable/:id": this method returns the name of a single spec:  [{"name":"Oncología"}]
+
+* "localhost:8000/api/specTable/:id": this method returns the name of a single spec:\
+  [{"name":"Oncología"}]
 
 POST methods:
-* "localhost:8000/api/specTable/": this method is used to add a new treatment/spec to the table. The body must have: 
+* "localhost:8000/api/specTable/": this method is used to add a new treatment/spec to the table. The body must have: \
 [{Spec: "Enfermeria de salud mental"}]
+
 
 DELETE methods:
 * "localhost:8000/api/specTable/:id": this method delete a single specification.
@@ -104,31 +107,32 @@ Based in previous table, one can assign multiple specializations to a nurse by u
 
 GET methods:
 
-* "localhost:8000/api/nurseSpecTable/": this method is used to return the specialization of the entire group of nurses.
-[{"nurseSpecId":1,"userId":8,"specId":2},
-{"nurseSpecId":2,"userId":8,"specId":1},
+* "localhost:8000/api/nurseSpecTable/": this method is used to return the specialization of the entire group of nurses.\
+[{"nurseSpecId":1,"userId":8,"specId":2},\
+{"nurseSpecId":2,"userId":8,"specId":1},\
 {"nurseSpecId":3,"userId":9,"specId":1}]
 
-* "localhost:8000/api/nurseSpecTable/:id": this method is used to retrieve all the specialization of a single user. the id parameter is the userId. An example of the response body is:
-[{"nurseSpecId":1,"Name":"Cardiología","specId":2},{"nurseSpecId":2,"Name":"Oncología","specId":1}]
+* "localhost:8000/api/nurseSpecTable/:id": this method is used to retrieve all the specialization of a single user. the id parameter is the userId. An example of the response body is:\
+[{"nurseSpecId":1,"Name":"Cardiología","specId":2},\
+{"nurseSpecId":2,"Name":"Oncología","specId":1}]
 
 POST methods:
-* "localhost:8000/api/nurseSpecTable/": this method is used to create a new specialization for a nurse. The body format has the form:
- [{ specId: 1,  userId:}]
+* "localhost:8000/api/nurseSpecTable/": this method is used to create a new specialization for a nurse. The body format has the form:\
+ [{ specId: 1,  userId:}]\
  where the specId is specialization id from previous table, and the userId is the identification of user.
 
 DELETE methods: 
 * "localhost:8000/api/nurseSpecTable/:id": this method is used to delete a row in the table(removing a nurse specialization). The id parameter is the row index.
 
 
-### Pacient Management
+### Patient Management
 GET methods:
-* "localhost:8000/api/pacient/": returns all the pacients registered in the system in JSON format.
-* "localhost:8000/api/pacient/:id": returns the user's information registered in the system in JSON format. Example: 
+* "localhost:8000/api/patient/": returns all the patients registered in the system in JSON format.
+* "localhost:8000/api/patient/:id": returns the user's information registered in the system in JSON format. Example: \
 `[{"pacientId":1,"firstName":"Pedro","lastName":"Pasculli","bedId":1,"notesTableId":1,"userTableId":1}]` 
 
 POST methods:
-* "localhost:8000/api/pacient/": used for adding a new pacient to the system, needs the pacient information in the body of the message.
+* "localhost:8000/api/patient/": used for adding a new pacient to the system, needs the patient information in the body of the message.
 Body example:  
  {"pacientId":2, 
   "firstname":"peter",
@@ -137,7 +141,7 @@ Body example:
   "notesTableId":"1",
   "userTableId":"1"}
 PUT methods:
-* "localhost:8000/api/pacient/:id": used for editing a pacient information: needs information passed by the body parameter in JSON format.
+* "localhost:8000/api/patient/:id": used for editing a patient information: needs information passed by the body parameter in JSON format.
 Example:   
  [{"firstname":"peter",
   "lastname":"Frant",
@@ -147,15 +151,31 @@ Example:
 
 
 DELETE method:
-* "localhost:8000/api/pacient/:id": used for removing a user information from the database.
+* "localhost:8000/api/patient/:id": used for removing a user information from the database.
+
+#### Table of treatments assigned to a patient
+GET methods:
+* "localhost:8000/api/patient/treatment/all": returns the pacient-treatment table in JSON Format:\
+[{"pacientSpecId":1,"pacientId":1,"specId":1,"id":1,"Name":"Oncología"},{"pacientSpecId":2,"pacientId":2,"specId":2,"id":2,"Name":"Cardiología"}]
+
+* "localhost:8000/api/patient/treatment/:id": returns the pacient-treatment row in JSON Format:\
+[{"pacientSpecId":1,"pacientId":1,"specId":1,"id":1,"Name":"Oncología"}]
+
+* "localhost:8000/api/patient/treatment/bed/:id": returns the specialization Id in JSON Format using the bedId as parameter:\
+[{"bedId":1,"specId":1}]\
+Special note: this version of software only supports one treatment for each pacient
+
+
+POST method:
+* "localhost:8000/api/patient/treatment/": generate a new row in the table.
 
 ### Messaging Management
 GET methods:
 * "localhost:8000/api/messages/": returns the last 100 messages saved in the database in JSON format.
-Example of return:
+Example of return:\
 [{"messageId":1,"userIdLastName":"1","userIdSender":1,"pacientId":"1","content":"Se levanto bien","dateTime":"2022-05-01T23:36:03.000Z","audiolink":null,"userTableId":1}]
 * "localhost:8000/api/messages/info": returns the last 100 messages saved in the database in JSON format with information of the sender.
-Example of return:
+Example of return:\
 [{"messageId":1,"firstname":"Jose","lastname":"laurm","pacientId":"1","content":"Se levanto bien"}]
 
 

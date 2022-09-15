@@ -1,13 +1,13 @@
 var express = require('express');
-var routerPacientSpecTable = express.Router();
+var routerPatientSpecTable = express.Router();
 var pool = require('../../mysql');
 
 
 //get all treatments 
 
-routerPacientSpecTable.get('/all', function(req, res) {    
+routerPatientSpecTable.get('/all', function(req, res) {    
     console.log("here")
-    pool.query('Select * from PacientSpecTable INNER JOIN SpecTable on SpecTable.id = PacientSpecTable.specId limit 10', function(err, result, fields) {
+    pool.query('Select * from PatientSpecTable INNER JOIN SpecTable on SpecTable.id = PatientSpecTable.specId limit 10', function(err, result, fields) {
         if (err) {
             res.send(err).status(400);
             return;
@@ -18,10 +18,10 @@ routerPacientSpecTable.get('/all', function(req, res) {
 });
 
 
-//get all single pacient's treatments
-routerPacientSpecTable.get('/:id', function(req, res) {    
+//get all single patient's treatments
+routerPatientSpecTable.get('/:id', function(req, res) {    
     let idAb=req.params.id;   
-    pool.query('Select * from PacientSpecTable INNER JOIN SpecTable on SpecTable.id = PacientSpecTable.specId  WHERE pacientId=?',[idAb], function(err, result, fields) {
+    pool.query('Select * from PatientSpecTable INNER JOIN SpecTable on SpecTable.id = PatientSpecTable.specId  WHERE patientId=?',[idAb], function(err, result, fields) {
         if (err) {
             res.send(err).status(400);
             return;
@@ -31,12 +31,12 @@ routerPacientSpecTable.get('/:id', function(req, res) {
     });    
 });
 
-//get all single pacient's treatments from bedId
-routerPacientSpecTable.get('/bed/:id', function(req, res) {    
+//get all single patient's treatments from bedId
+routerPatientSpecTable.get('/bed/:id', function(req, res) {    
     let idAb=req.params.id;   
-    pool.query('Select Bed.bedId,PacientSpecTable.specId from PacientSpecTable \
-    JOIN SpecTable on SpecTable.id = PacientSpecTable.specId  \
-    JOIN Pacient on Pacient.pacientId = PacientSpecTable.pacientId  \
+    pool.query('Select Bed.bedId,PatientSpecTable.specId from PatientSpecTable \
+    JOIN SpecTable on SpecTable.id = PatientSpecTable.specId  \
+    JOIN Pacient on Pacient.pacientId = PatientSpecTable.patientId  \
     JOIN Bed on Bed.bedId = Pacient.bedId  \
     WHERE Pacient.pacientId=? limit 1',[idAb], function(err, result, fields) {
         if (err) {
@@ -54,20 +54,20 @@ routerPacientSpecTable.get('/bed/:id', function(req, res) {
 //adding a specialization to tables 
 	/**
 	 * body format:
-	 * [{ specId: 1,  pacientId:}]
+	 * [{ specId: 1,  patientId:}]
 	 */
     //INSERT INTO `NurseSpecTable` (`nurseSpecId`, `userID`, `specID`) VALUES (NULL, '8', '1')
 
 
-routerPacientSpecTable.post('/', function(req, res) {
+routerPatientSpecTable.post('/', function(req, res) {
 	console.log(req.body[0]);
     let received= JSON.stringify(req.body);    
     let received2 = JSON.parse(received)    
     let specID=(received2[0].specId);
-    let pacientID=(received2[0].pacientId);
+    let patientID=(received2[0].patientId);
     
-    pool.query('INSERT INTO `PacientSpecTable` ( `pacientId`,`specID`)  \
-				VALUES (?,?)',[pacientID,specID], function(err, result, fields) {
+    pool.query('INSERT INTO `PatientSpecTable` ( `patientId`,`specID`)  \
+				VALUES (?,?)',[patientID,specID], function(err, result, fields) {
         if (err) {
             res.send(err).status(400);
             console.log("error adding a treatment to a pacient ")
@@ -83,12 +83,12 @@ routerPacientSpecTable.post('/', function(req, res) {
 
 //API for deleting specialization from the table of specialization
 
-routerPacientSpecTable.delete('/:id', function(req, res) {
+routerPatientSpecTable.delete('/:id', function(req, res) {
     let index=req.params.id;           
     pool.query(
-        'DELETE FROM PacientSpecTable \
+        'DELETE FROM PatientSpecTable \
         WHERE \
-         `PacientSpecTable`.`pacientSpecId` = ?;',[index], function(err, result, fields) {
+         `PacientSpecTable`.`patientSpecId` = ?;',[index], function(err, result, fields) {
         if (err) {
             res.send(err).status(400);
             return;
@@ -98,4 +98,4 @@ routerPacientSpecTable.delete('/:id', function(req, res) {
 	
 });
 
-module.exports = routerPacientSpecTable;
+module.exports = routerPatientSpecTable;
