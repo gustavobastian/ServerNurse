@@ -10,21 +10,21 @@ async function fillingBeds(){
   await   pool.query('select * from Bed join PriorityTable using (bedId) ORDER BY PriorityTable.priority DESC', function(err, result, fields) {
         console.log("filling beds")
         if (err) {
-            console.log("Error");
+            console.log("Error in bedlist1");
             return;
         }
         result.forEach(element => {  
-            BedsList.addBed(element.bedId);      
-            
+            BedsList.addBed(element.bedId);                  
         });    
         return;
         
     });
+await  BedsList.printBedlist();       
 //looking for used beds and put as occupied
   await   pool.query('Select bedId from `Pacient`', function(err, result, fields) {
         console.log("filling bed status")
         if (err) {
-            console.log("Error")
+            console.log("Error in bedlist 2")
             return;
         }
         result.forEach(element => { 
@@ -34,20 +34,22 @@ async function fillingBeds(){
         
         return;
     });
+ await  BedsList.printBedlist();    
 //looking for spec of beds
 console.log("printing spec for bed");   
-   await pool.query('Select Bed.bedId,PacientSpecTable.specId from PacientSpecTable \
+   await pool.query('Select * from PacientSpecTable \
         JOIN SpecTable on SpecTable.id = PacientSpecTable.specId  \
         JOIN Pacient on Pacient.pacientId = PacientSpecTable.pacientId  \
         JOIN Bed on Bed.bedId = Pacient.bedId  \
         ', function(err, result, fields) {
             if (err) {
-                console.log("error")
+                console.log("error in belist 3")
                 return;
             }        
             
             result.forEach(element => {  
-                console.log(element)      
+                console.log(element)               
+                BedsList.setStatus(element.bedId,1);      
                 BedsList.setTreat(element.bedId,element.specId);
             });            
         });   
