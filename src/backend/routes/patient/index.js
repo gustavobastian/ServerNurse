@@ -12,6 +12,16 @@ routerPatient.get('/', function(req, res) {
         res.send(result);
     });
 });
+//API for getting all Pacients id information
+routerPatient.get('/numbers', function(req, res) {
+    pool.query('Select pacientId from Pacient', function(err, result, fields) {
+        if (err) {
+            res.send(err).status(400);
+            return;
+        }
+        res.send(result);
+    });
+});
 
 //API for getting all  information for a single pacient
 routerPatient.get('/:id', function(req, res) {

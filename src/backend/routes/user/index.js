@@ -9,6 +9,7 @@ var UserList = require('../../Monitoring/User-mon');
 
 
 //filling the userList
+async function fillingUserSt(){
 pool.query('Select * from User', function(err, result, fields) {
     if (err) {
         res.send(err).status(400);
@@ -21,7 +22,9 @@ pool.query('Select * from User', function(err, result, fields) {
    
 });
 
-
+}
+//filling users Status
+fillingUserSt();
 //API for getting all users information
 routerUser.get('/', function(req, res) {
     
@@ -95,14 +98,18 @@ routerUser.post('/', async function(req, res) {
     console.log(occupation);
     console.log(lastname);*/
 
-    pool.query(
+    await pool.query(
         'INSERT INTO User( `username`, `firstname`, `lastname`, `occupation`, `state`, `password`) \
         VALUES (?,?,?,?,?,?)',[username,firstname,lastname,occupation,state,password], function(err, result, fields) {
         if (err) {
             res.send(err).status(400);
+            console.log("error:"+err);
             return;
         }
+        else{
         res.send(result).status(202);
+        fillingUserSt();
+        }
     });
 
     
@@ -183,7 +190,10 @@ routerUser.put('/:id', async function(req, res) {
             res.send(err).status(400);
             return;
         }
+        else{
         res.send(result).status(202);
+        fillingUserSt();
+        }
     });
 
 });
