@@ -234,14 +234,14 @@ function getPatientInfoPacientId(pacientId){
  * Function that returns the pacient notes to topic
  * @param {*} patientId :number that identifies the pacient
  */
-  function getPatientNotesPacientId(patientId){
+  function getPatientNotesPatientId(patientId){
   console.log("patient:"+(patientId));
   console.log("asking for notes:");
   // system publising last 2 notes only
-  let topic= "/Pacient/"+pacientId+"/notes";
+  let topic= "/Pacient/"+patientId+"/notes";
    pool.query('SELECT DISTINCT notesId,note,state \
   FROM `Notes` as n JOIN `NotesTable` as nt JOIN `Pacient` as p \
-  WHERE n.notesTableId = nt.notesTableId AND p.notesTableId = nt.notesTableId AND pacientId = ? ORDER BY notesId DESC ',pacientId, function(err, result, fields) {
+  WHERE n.notesTableId = nt.notesTableId AND p.notesTableId = nt.notesTableId AND pacientId = ? ORDER BY notesId DESC ',patientId, function(err, result, fields) {
     if (err || result.length==0) {
         console.log("error:",err)
         client.publish(topic, JSON.stringify("Error"));          
@@ -598,7 +598,7 @@ client.on('message', function (topic, message,packet) {
   }
   if((message_data._type=== 5)){//&&(topic==="Pacient/#")){
 	  console.log("asking notes")  
-    getPacientNotesPacientId(message_data._content);
+    getPatientNotesPatientId(message_data._content);
   }
 
   /**
