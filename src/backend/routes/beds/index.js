@@ -16,45 +16,39 @@ async function fillingBeds(){
         result.forEach(element => {  
             BedsList.addBed(element.bedId);                  
         });    
-        return;
-        
     });
-await  BedsList.printBedlist();       
 //looking for used beds and put as occupied
-  await   pool.query('Select bedId from `Pacient`', function(err, result, fields) {
+await   pool.query('Select bedId from `Pacient`', function(err, result, fields) {
         console.log("filling bed status")
         if (err) {
             console.log("Error in bedlist 2")
             return;
         }
-        result.forEach(element => { 
-            console.log(element.bedId)             
+        result.forEach(element => {             
             BedsList.setStatus(element.bedId,1);
         });    
-        
-        return;
     });
  await  BedsList.printBedlist();    
 //looking for spec of beds
 console.log("printing spec for bed");   
-   await pool.query('Select * from PacientSpecTable \
-        JOIN SpecTable on SpecTable.id = PacientSpecTable.specId  \
-        JOIN Pacient on Pacient.pacientId = PacientSpecTable.pacientId  \
+ await pool.query('Select * from PatientSpecTable \
+        JOIN SpecTable on SpecTable.id = PatientSpecTable.specId  \
+        JOIN Pacient on Pacient.pacientId = PatientSpecTable.patientId  \
         JOIN Bed on Bed.bedId = Pacient.bedId  \
         ', function(err, result, fields) {
             if (err) {
-                console.log("error in belist 3")
+                console.log("error in bedlist 3")
                 return;
-            }        
-            
+            }                    
             result.forEach(element => {  
-                console.log(element)               
+                //console.log(element)               
                 BedsList.setStatus(element.bedId,1);      
                 BedsList.setTreat(element.bedId,element.specId);
             });            
         });   
  console.log("end printing spec for bed");
     BedsList.printBedlist();  
+ return;   
 }
 
 fillingBeds();
