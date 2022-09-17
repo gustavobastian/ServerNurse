@@ -180,7 +180,32 @@ function loginOut(username){
  function getListOfBeds(message){  
   console.log("Doctor:"+message);
  }
+
+ /**
+  * Get nurse caracteristics
+  * @param {*} message 
+  * {"_username":"robertop","_content":"1","_bedId":0,"_time":"0","_type":43}
+  */
  
+ function getNurseSpecs(message){
+  console.log(message);
+  
+  pool.query('Select NurseSpecTable.nurseSpecId,User.userId, SpecTable.Name, NurseSpecTable.specId  \
+  from NurseSpecTable \
+  INNER JOIN SpecTable on SpecTable.id= NurseSpecTable.specId\
+  INNER JOIN User ON User.userId=NurseSpecTable.userId \
+  WHERE username=?',[message], function(err, result, fields) {
+    if (err || result.length==0) {
+        console.log("error-asking for beds")
+        console.log("error:"+err)        
+        client.publish(topiclocal, JSON.stringify("Error"));          
+    }    
+    else{
+    let topiclocal= "/User/"+result[0].userId+"/Specs";
+    client.publish(topiclocal, JSON.stringify(result)); }
+  });
+ }
+
  /**
  * function that gets all the pacients  of a specified  doctor 
  * @param {message}: username of the doctor
@@ -269,8 +294,7 @@ function getPatientInfoPacientId(pacientId){
     }
     else{
     console.log(result)  
-  }}); 
-  
+  }});   
   
 }
 
@@ -379,7 +403,6 @@ function getPatientInfoPacientId(pacientId){
   
   let topic= "/Beds/"+bedId+"/MDT";
   
-
   pool.query('SELECT User.lastname, User.userId from   \
   MedicalTable JOIN Pacient USING (userTableId) \
   JOIN User USING (userId) \
@@ -687,6 +710,17 @@ client.on('message', function (topic, message,packet) {
     console.log(message_data)
     getBedMedicalTableInfo(message_data._bedId);    
   }    
+
+
+  /**
+   * Received a asking for help command, check it and update the status of the bed
+   */
+   if((message_data._type=== 43)){
+    console.log("ASK for nurseSec");
+    console.log(message_data)
+    
+    getNurseSpecs(message_data._username);      
+  } 
   
   /**
    * removin pacient notes
