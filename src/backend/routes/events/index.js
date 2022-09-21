@@ -160,7 +160,7 @@ eventsTable.get('/:id', function(req, res) {
     idAb=req.params.id;   
     pool.query('Select * from EventsTable where pacientId=?',[idAb], function(err, result, fields) {
         if (err) {
-            res.send(err).status(400);
+            res.send(err).status(404);
             return;
         }
         res.send(result);
@@ -203,7 +203,7 @@ eventsTable.get('/:id', function(req, res) {
             console.log("error"+err);   
             return;
         }
-        res.send(result).status(202);
+        res.send(result).status(201);
         console.log("done");   
         fillingScheduledJobs();
     });
@@ -244,7 +244,7 @@ eventsTable.get('/:id', function(req, res) {
             res.send(err).status(400);
             return;
         }
-        res.send(result).status(202);
+        res.send(result).status(201);
     });
 
 });
@@ -268,7 +268,7 @@ eventsTable.get('/:id', function(req, res) {
             res.send(err).status(400);
             return;
         }
-        res.send(result).status(202);
+        res.send(result).status(201);
     });
 
 });

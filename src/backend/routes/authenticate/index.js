@@ -82,7 +82,7 @@ logout = async(reg,res,next)=>{
 }
 
 routerAuthenticate.get('/logout/', logout,async function(req, res) {   
-    return res.send("logged out")
+    return res.send("logged out").status(200)
 }) 
 
 module.exports = routerAuthenticate;

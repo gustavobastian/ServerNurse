@@ -172,7 +172,7 @@ routerBeds.post('/pacient/notes/activation/:id', function(req, res) {
             
             });
 
-        res.send(result).status(202);
+        res.send(result).status(201);
         console.log("done");   }
     });
     
@@ -204,7 +204,7 @@ routerBeds.post('/pacient/notes/activation/:id', function(req, res) {
             res.send(err).status(400);
             return;
         }
-        res.send(result).status(202);
+        res.send(result).status(200);
     });
 
     
@@ -241,7 +241,7 @@ routerBeds.post('/pacient/notes/activation/:id', function(req, res) {
             
             });
         }    
-        res.send(result).status(202);
+        res.send(result).status(200);
     });
 
 });
@@ -266,7 +266,7 @@ routerBeds.post('/pacient/notes/activation/:id', function(req, res) {
             return;
         }
         fillingBedPriorities();
-        res.send(result).status(202);
+        res.send(result).status(200);
     });
  });
 
@@ -283,7 +283,7 @@ routerBeds.post('/pacient/notes/activation/:id', function(req, res) {
             res.send(err).status(400);
             return;
         }
-        res.send(result).status(202);
+        res.send(result).status(200);
     });
     
  });

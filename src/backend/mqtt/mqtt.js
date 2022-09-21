@@ -4,7 +4,9 @@ const bcrypt = require("bcrypt");
 var BedsList = require('../Monitoring/Bed-mon');
 var UserList = require('../Monitoring/User-mon');
 
-require('dotenv').config({ encoding: 'latin1' })
+require('dotenv').config({ encoding: 'latin1' });
+var Nurse = require('./nurse')
+var Patient = require('./patient')
 
 
 //=======[ Data ]================================
@@ -80,9 +82,7 @@ client.on('connect', function () {
  */
 async function  loginHere(username, password){
   console.log(username.toString()); 
-  password2=password.toString();
-
-  
+  password2=password.toString();  
   console.log(password2)
   let logeado=false;
   let response_conform={idNumber:0, mode:99};
@@ -181,166 +181,6 @@ function loginOut(username){
   console.log("Doctor:"+message);
  }
 
- /**
-  * Get nurse caracteristics
-  * @param {*} message 
-  * {"_username":"robertop","_content":"1","_bedId":0,"_time":"0","_type":43}
-  */
- 
- function getNurseSpecs(message){
-  console.log(message);
-  
-  pool.query('Select NurseSpecTable.nurseSpecId,User.userId, SpecTable.Name, NurseSpecTable.specId  \
-  from NurseSpecTable \
-  INNER JOIN SpecTable on SpecTable.id= NurseSpecTable.specId\
-  INNER JOIN User ON User.userId=NurseSpecTable.userId \
-  WHERE username=?',[message], function(err, result, fields) {
-    if (err || result.length==0) {
-        console.log("error-asking for beds")
-        console.log("error:"+err)        
-        client.publish(topiclocal, JSON.stringify("Error"));          
-    }    
-    else{
-    let topiclocal= "/User/"+result[0].userId+"/Specs";
-    client.publish(topiclocal, JSON.stringify(result)); }
-  });
- }
-
- /**
- * function that gets all the pacients  of a specified  doctor 
- * @param {message}: username of the doctor
- */
-
- function getPatientsBeds(message){
-  //console.log("Aqui:"+message);
-  console.log("Doctor:"+message);
-  let topiclocal= "/User/"+message+"/Pacients";
-  
-  pool.query('\
-  SELECT DISTINCT bedId,pacientId \
-  FROM `Pacient` as p JOIN `MedicalTable` as Mt JOIN `User` as u JOIN `UsersTable` as uT \
-  WHERE p.userTableId = uT.userTableId AND Mt.userTableId=uT.userTableId  AND u.userId = Mt.userId AND u.userId=? \
-  ',[message], function(err, result, fields) {
-    if (err || result.length==0) {
-        console.log("error-asking for beds")
-        console.log("error:"+err)
-        client.publish(topiclocal, JSON.stringify("Error"));          
-    }    
-    else{
-    client.publish(topiclocal, JSON.stringify(result)); }
-  });  
-
- }
-
-/**
- * Function that returns the pacient information to topic
- * @param {*} pacientId :number that identifies the pacient
- */
-function getPatientInfoPacientId(pacientId){
-  console.log("pacient:"+pacientId);
-  
-  
-  
-  let topic= "/Pacient/"+pacientId+"/info";
-  pool.query('Select * from Pacient where pacientId = ?',pacientId, function(err, result, fields) {
-    if (err || result.length==0) {
-        console.log("error:",err)
-        client.publish(topic, JSON.stringify("Error"));          
-    }
-    //console.log(result)
-    else{
-    client.publish(topic, JSON.stringify(result));  }
-  });  
-  
-   
-}
-
-/**
- * Function that returns the pacient notes to topic
- * @param {*} patientId :number that identifies the pacient
- */
-  function getPatientNotesPatientId(patientId){
-  console.log("patient:"+(patientId));
-  console.log("asking for notes:");
-  // system publising last 2 notes only
-  let topic= "/Pacient/"+patientId+"/notes";
-   pool.query('SELECT DISTINCT notesId,note,state \
-  FROM `Notes` as n JOIN `NotesTable` as nt JOIN `Pacient` as p \
-  WHERE n.notesTableId = nt.notesTableId AND p.notesTableId = nt.notesTableId AND pacientId = ? ORDER BY notesId DESC ',patientId, function(err, result, fields) {
-    if (err || result.length==0) {
-        console.log("error:",err)
-        client.publish(topic, JSON.stringify("Error"));          
-        
-    }
-    else{
-   // console.log(result)
-     client.publish(topic, JSON.stringify(result));  }
-  });
-  
-}
-
-/**
- * Function that returns the pacient notes to topic
- * @param {*} notesId :number that identifies the pacient
- */
-  function deletePatientNotesNotesId(notesId){
-  console.log("noteId:"+(notesId._content));
-  console.log("deleting:");
-  // system publising last 2 notes only
-  
-   pool.query('DELETE FROM Notes WHERE `Notes`.`notesId` = ?', [notesId._content], function(err, result, fields) {
-    if (err || result.length==0) {
-        console.log("error:",err)           
-    }
-    else{
-    console.log(result)  
-  }});   
-  
-}
-
-/**
- * Function that put a note on the patient(saves it to the database)
- * @param {*} pacientId :number that identifies the patient
- */
- function setPatientNotesPatientId(pacientId, note){
-  
-  
-  pool.getConnection(function(err, connection) {
-    connection.beginTransaction(function(err) {
-        if (err) {                  //Transaction Error (Rollback and release connection)
-            connection.rollback(function() {
-              console.log("aqui no estoy")
-                connection.release();
-                //Failure
-            });
-        } else {
-            console.log("aqui estoy")
-            connection.query('INSERT INTO `Notes` (`note`,`state`,`notesTableId`)\
-            VALUES (?,?,?)', [note,"activa",pacientId], function(err, results) {
-                if (err) {          //Query Error (Rollback and release connection)
-                    console.log(err);
-                    connection.rollback(function() {
-                        connection.release();
-                        //Failure
-                    });
-                } else {
-                    connection.commit(function(err) {
-                        if (err) {
-                            connection.rollback(function() {
-                                connection.release();
-                                //Failure
-                            });
-                        } else {
-                            connection.release();
-                            //Success
-                        }
-                    });
-                }
-            });
-        }
-      });
-    });    
-}
 
 
 /**
@@ -368,29 +208,6 @@ function getPatientInfoPacientId(pacientId){
 }
 
 
-/**
- * Function that publish the pacient id to topic
- * @param {*} bedId :number that identifies the pacient
- */
- function getBedPatientInfo(bedId){
-  console.log("bed:"+JSON.parse(bedId));
-  
-  let topic= "/Beds/"+bedId+"/Pacient";
-
-  pool.query('SELECT pacientId  \
-  FROM `Bed` as b JOIN `Pacient` as P\
-  USING (bedId) \
-  WHERE b.bedId = ?',[bedId], function(err, result, fields) {
-    if (err|| result.length==0) {
-        console.log("error")
-        client.publish(topic, JSON.stringify("Error"));          
-        
-    }
-    else{
-   // console.log(result)
-     client.publish(topic, JSON.stringify(result));  }
-  });  
-}
 /**
  * Function that publish the medical Table id to topic
  * @param {*} bedId :number that identifies the pacient
@@ -613,15 +430,15 @@ client.on('message', function (topic, message,packet) {
     //console.log("pacientID:"+d[2])
     if(d[2]==null){return;}
     if(message_data._content==""){return;}
-    setPatientNotesPatientId(d[2],message_data._content);    
+    Patient.setPatientNotesPatientId(d[2],message_data._content,client);    
   }
   if((message_data._type=== 4)){//&&(topic==="Pacient/#")){
 	console.log("asking info")  
-    getPatientInfoPacientId((message_data._content));
+    Patient.getPatientInfoPacientId((message_data._content),client);
   }
   if((message_data._type=== 5)){//&&(topic==="Pacient/#")){
 	  console.log("asking notes")  
-    getPatientNotesPatientId(message_data._content);
+    Patient.getPatientNotesPatientId(message_data._content,client);
   }
 
   /**
@@ -637,12 +454,12 @@ client.on('message', function (topic, message,packet) {
   if((message_data._type=== 9)){//&&(topic==="Pacient/#")){    
 	console.log("Doctor:"+message);
     //getListOfBeds(message_data._content);    
-    getPatientsBeds(message_data._content); 
+    Patient.getPatientsBeds(message_data._content,client); 
   }
   if((message_data._type=== 10)){//&&(topic==="Pacient/#")){
     //console.log("pacient_from_bed");
     
-    getBedPatientInfo(message_data._content);    
+    Patient.getBedPatientInfo(message_data._content,client);    
     
   }
 
@@ -672,7 +489,7 @@ client.on('message', function (topic, message,packet) {
         console.log("get end of work");
         BedsList.setStatus(message_data._bedId,1); 
         publishBedStates(); 
-        saveNewEvent(3,message_data._bedId,message_data._username,"","");        
+        saveNewEvent(3,message_data._bedId,message_data._username,"",message_data._content);        
       }
   
   /**
@@ -719,7 +536,7 @@ client.on('message', function (topic, message,packet) {
     console.log("ASK for nurseSec");
     console.log(message_data)
     
-    getNurseSpecs(message_data._username);      
+    Nurse.getNurseSpecs(message_data._username,client);      
   } 
   
   /**
@@ -728,12 +545,12 @@ client.on('message', function (topic, message,packet) {
    if((message_data._type=== 18)){
     console.log("removing pacient note");
     console.log(message_data)
-    deletePatientNotesNotesId(message_data);    
+    Patient.deletePatientNotesNotesId(message_data,client);    
   } 
   
   
   /**
-   * removin pacient notes
+   * cancelling call
    */
    if((message_data._type=== 19)){
     console.log("cancelling call");
