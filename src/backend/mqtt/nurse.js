@@ -26,6 +26,7 @@ var pool = require('../mysql/index');
     });
     return;
    }
+   
 }
 var Nurse= new NurseClass();
 module.exports= Nurse;

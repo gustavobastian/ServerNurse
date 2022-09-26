@@ -7,31 +7,16 @@ var BedsList = require('../../Monitoring/Bed-mon');
 //filling the bedList ordered by priority
 
 async function fillingBeds(){
-  await   pool.query('select * from Bed join PriorityTable using (bedId) ORDER BY PriorityTable.priority DESC', function(err, result, fields) {
+  await   pool.query('select * from Bed join PriorityTable using (bedId) ORDER BY PriorityTable.priority DESC', async function(err, result, fields) {
         console.log("filling beds")
         if (err) {
             console.log("Error in bedlist1");
             return;
         }
-        result.forEach(element => {  
+        await result.forEach(element => {  
             BedsList.addBed(element.bedId);                  
-        });    
-    });
-//looking for used beds and put as occupied
-await   pool.query('Select bedId from `Pacient`', function(err, result, fields) {
-        console.log("filling bed status")
-        if (err) {
-            console.log("Error in bedlist 2")
-            return;
-        }
-        result.forEach(element => {             
-            BedsList.setStatus(element.bedId,1);
-        });    
-    });
- await  BedsList.printBedlist();    
-//looking for spec of beds
-console.log("printing spec for bed");   
- await pool.query('Select * from PatientSpecTable \
+        });
+        await pool.query('Select * from PatientSpecTable \
         JOIN SpecTable on SpecTable.id = PatientSpecTable.specId  \
         JOIN Pacient on Pacient.pacientId = PatientSpecTable.patientId  \
         JOIN Bed on Bed.bedId = Pacient.bedId  \
@@ -45,8 +30,24 @@ console.log("printing spec for bed");
                 BedsList.setStatus(element.bedId,1);      
                 BedsList.setTreat(element.bedId,element.specId);
             });            
-        });   
- console.log("end printing spec for bed");
+        });       
+    });
+//looking for used beds and put as occupied
+/*await   pool.query('Select bedId from `Pacient`', function(err, result, fields) {
+        console.log("filling bed status")
+        if (err) {
+            console.log("Error in bedlist 2")
+            return;
+        }
+        result.forEach(element => {             
+            BedsList.setStatus(element.bedId,1);
+        });    
+    });
+ await  BedsList.printBedlist();    */
+//looking for spec of beds
+//await console.log("printing spec for bed");   
+ 
+ //console.log("end printing spec for bed");
     BedsList.printBedlist();  
  return;   
 }
@@ -57,7 +58,7 @@ fillingBeds();
 */
 routerBeds.get('/state/', function(req, res) {    
     var response = BedsList.getBedStats();    
-    res.send(response);
+    res.send(response).status(201);
  });
 
 /**
@@ -69,7 +70,7 @@ routerBeds.get('/', function(req, res) {
             res.send(err).status(400);
             return;
         }
-        res.send(result);
+        res.send(result).status(201);
     });
 });
 

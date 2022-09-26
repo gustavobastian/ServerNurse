@@ -67,7 +67,7 @@ async function fillingScheduledJobs(){
                                 console.log("lauching weekly job ");                        
                                 console.log("Bed:"+element.bedId);  
                                 console.log("Note:"+element.note);  
-                                BedsList.setStatus(bedID,9)
+                                BedsList.setStatus(bedID,5)
 
                         }) }  
                         if(element.type=="monthly"){
@@ -82,7 +82,7 @@ async function fillingScheduledJobs(){
                                         console.log("lauching monthly job ");                        
                                         console.log("Bed:"+element.bedId);  
                                         console.log("Note:"+element.note);  
-                                        BedsList.setStatus(bedID,9)
+                                        BedsList.setStatus(bedID,5)
                     
                                 }) }    
                                 

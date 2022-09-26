@@ -4,6 +4,7 @@ var pool = require('../mysql/index');
  * class UserList contains information about states of users
  * status==0 not logged in
  * status==1  logged in
+ * status==2  in action (only for nurses)
  */
  class  UserList  {
     

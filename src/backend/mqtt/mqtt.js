@@ -1,12 +1,15 @@
 const { json } = require('express');
+require('dotenv').config({ encoding: 'latin1' });
 var mqtt=require('mqtt');
 const bcrypt = require("bcrypt");
 var BedsList = require('../Monitoring/Bed-mon');
 var UserList = require('../Monitoring/User-mon');
 
-require('dotenv').config({ encoding: 'latin1' });
+var BedUserList = require('../Monitoring/Bed-user-mon');
+
 var Nurse = require('./nurse')
 var Patient = require('./patient')
+var Beds = require('./beds')
 
 
 //=======[ Data ]================================
@@ -40,9 +43,7 @@ client.on('connect', function () {
   //task that will publish beds state each second
   setInterval(publishBedStates, 10000);
   //task that will publish users state each second
-  setInterval(publishUserStates, 10000);
-  
-  
+  setInterval(publishUserStates, 15000);
 })
 
 /**
@@ -56,12 +57,10 @@ client.on('connect', function () {
    console.log(now.toUTCString());
   let topic= "/Beds/status";
   var response = BedsList.getBedStats();
-  client.publish(topic, response);  
-  
+  client.publish(topic, response);    
  }
 
  
-
 /**
  * Function that publishes the state of each user in the broker
  * @param {}  
@@ -173,69 +172,6 @@ function loginOut(username){
 
 
 /**
- * function that gets all the beds with pacients of a specified  doctor 
- * @param {message}: username of the doctor
- */
-
- function getListOfBeds(message){  
-  console.log("Doctor:"+message);
- }
-
-
-
-/**
- * Function that publish the bed info to topic
- * @param {*} bedId :number that identifies the pacient
- */
- function getBedInfo(bedId){
-  console.log("bed:"+JSON.parse(bedId));
-  // system publising last 2 notes only
-  let topic= "/Beds/"+bedId+"/info";
-
-  pool.query('SELECT *  \
-  FROM `Bed` as b \
-  WHERE b.bedId = ?',[bedId], function(err, result, fields) {
-    if (err|| result.length==0) {
-        console.log("error")
-        client.publish(topic, JSON.stringify("Error"));          
-        
-    }
-    else{
-   // console.log(result)
-     client.publish(topic, JSON.stringify(result));  }
-  });
-  
-}
-
-
-/**
- * Function that publish the medical Table id to topic
- * @param {*} bedId :number that identifies the pacient
- * Message form:
- * {"_bedId":1,"_content":"consulta lista MDT"
- * ,"_time":"today","_username":"system","_type":17}
- */
- function getBedMedicalTableInfo(bedId){
-  console.log("bed:"+JSON.parse(bedId));
-  
-  let topic= "/Beds/"+bedId+"/MDT";
-  
-  pool.query('SELECT User.lastname, User.userId from   \
-  MedicalTable JOIN Pacient USING (userTableId) \
-  JOIN User USING (userId) \
-  WHERE `Pacient`.`bedId`= ?',[bedId], function(err, result, fields) {
-    if (err|| result.length==0) {
-        console.log("error")
-        client.publish(topic, JSON.stringify("Error"));       
-        
-    }
-    else{
-   // console.log(result)
-     client.publish(topic, JSON.stringify(result));  }
-  });  
-}
-
-/**
  * Function that compares qr
  * @param {*} bedId :number that identifies the pacient
  */
@@ -263,12 +199,10 @@ function loginOut(username){
           else{
 			  console.log("QR invalid");			  
 			  client.publish(topic, JSON.stringify("QR invalid"));          
-			  }
-          
-          
+			  } 
           }
   });
-	publishBedStates();  
+	
   
 }
 
@@ -385,17 +319,18 @@ else if(typeofEvent==2){
 /**
  * Functions for subscribe to topics and reroute to api functions
 */
-client.on('message', function (topic, message,packet) {
+client.on('message', async function (topic, message,packet) {
   // message is Buffer
-  //console.log(packet, packet.payload.toString()); 
+ // console.log(packet, packet.payload.toString()); 
   let message_data=JSON.parse(message);
-  /*console.log(JSON.parse(message));*/
+  //console.log(JSON.parse(message));
   console.log("***********************************");
-  console.log(topic);
+ // console.log(topic);
   console.log("***********************************");
   //console.log(message_data._content); 
-  //console.log(message_data._bedId); 
 
+  //console.log(message_data._bedId); 
+  //console.log("Message type:"+message_data._type); 
   //received an alarm from a caller device, update state of bed
   if(topic==="/Beds/caller-events"){
     //message_content {"_bedId":2,"_content":"alert","_time":"today","_username":"system"}
@@ -404,14 +339,11 @@ client.on('message', function (topic, message,packet) {
     publishBedStates();
     saveNewEvent(1,message_data._bedId,"system","","");
   }
- /* if(topic==="/Beds/"){
-    //message_content {"_bedId":2,"_content":"alert","_time":"today","_username":"system"}
-    //console.log(JSON.stringify(message_data));        
-    saveNewEvent(2,,0,message_data,"");
-  }*/
+  //else{console.log("Message type:"+message_data._type); }
+ 
   /**
    * login/logout functions
-   * TODO: check passwords
+   * 
    * 
    */
   if(message_data._type=== 1){	  
@@ -446,7 +378,7 @@ client.on('message', function (topic, message,packet) {
    **/  
   if((message_data._type=== 8)){//&&(topic==="Pacient/#")){
     //console.log("bedInfo");
-    getBedInfo(message_data._content);    
+    Beds.getBedInfo(message_data._content,client);    
   }
   /**
    * Ask for beds for the current doctor
@@ -467,19 +399,28 @@ client.on('message', function (topic, message,packet) {
    * Received a QR, check it and update the status of the bed
    */
   if((message_data._type=== 11)){//&&(topic==="Pacient/#")){
-//    console.log("get QR");
-    
-    compareQR(message_data._content,message_data._bedId);        
+//    console.log("get QR");    
+    await compareQR(message_data._content,message_data._bedId);   
+    await publishBedStates();       
   }    
   /**
    * Received a acceptance from nurse... going to room,  update the status of the bed
    */
-   if((message_data._type=== 12)){//&&(topic==="Pacient/#")){
-    //    console.log("get QR");
-        console.log("going to room");
+   if((message_data._type=== 12)){
+     console.log("going to room");
+     
+     console.log("******************************************************************************************************************************");
         
-        BedsList.setStatus(message_data._bedId,3);    
-        publishBedStates();      
+     console.log("receiver id:" + message_data._content);   
+     let id=parseInt(message_data._content)  
+     console.log("******************************************************************************************************************************");
+     await   UserList.setStatus(id,2);    
+     await publishUserStates();
+     BedUserList.addBedUser(message_data._bedId,id);
+     //UserList.setStatus(data,0);
+     //publishUserStates();
+     await   BedsList.setStatus(message_data._bedId,3);    
+     await   publishBedStates();      
       }    
 
   /**
@@ -487,7 +428,14 @@ client.on('message', function (topic, message,packet) {
    */
    if((message_data._type=== 13)){
         console.log("get end of work");
+
+        let id=BedUserList.getId(message_data._bedId);
+        await UserList.setStatus(id,1);    
+        await publishUserStates();
+        BedUserList.removeData(message_data._bedId);
+        
         BedsList.setStatus(message_data._bedId,1); 
+        
         publishBedStates(); 
         saveNewEvent(3,message_data._bedId,message_data._username,"",message_data._content);        
       }
@@ -497,8 +445,8 @@ client.on('message', function (topic, message,packet) {
    */
    if((message_data._type=== 14)){
     console.log("ASK");
-    BedsList.setStatus(message_data._bedId,5); 
-    publishBedStates();         
+   await BedsList.setStatus(message_data._bedId,5); 
+   await publishBedStates();         
   }    
   /**
    * Received a close command, check it and update the status of the bed
@@ -506,8 +454,8 @@ client.on('message', function (topic, message,packet) {
    if((message_data._type=== 16)){
     console.log("END ASK");
     console.log(message_data)
-    BedsList.setStatus(message_data._bedId,4);    
-    publishBedStates();      
+    await BedsList.setStatus(message_data._bedId,4);    
+    await publishBedStates();      
   } 
 
   /**
@@ -516,8 +464,8 @@ client.on('message', function (topic, message,packet) {
    if((message_data._type=== 44)){
     console.log("ASK for help");
     console.log(message_data)
-    BedsList.setStatus(message_data._bedId,6);    
-    publishBedStates();      
+   await BedsList.setStatus(message_data._bedId,6);    
+   await publishBedStates();      
   } 
   /**
    * Ask for list of medicalTable
@@ -525,10 +473,8 @@ client.on('message', function (topic, message,packet) {
    if((message_data._type=== 17)){
     console.log("ASKing list of doctors");
     console.log(message_data)
-    getBedMedicalTableInfo(message_data._bedId);    
-  }    
-
-
+  await  Beds.getBedMedicalTableInfo(message_data._bedId,client);    
+  } 
   /**
    * Received a asking for help command, check it and update the status of the bed
    */
@@ -536,27 +482,32 @@ client.on('message', function (topic, message,packet) {
     console.log("ASK for nurseSec");
     console.log(message_data)
     
-    Nurse.getNurseSpecs(message_data._username,client);      
+   await Nurse.getNurseSpecs(message_data._username,client);      
   } 
-  
   /**
    * removin pacient notes
    */
    if((message_data._type=== 18)){
-    console.log("removing pacient note");
+    console.log("removing patient note");
     console.log(message_data)
-    Patient.deletePatientNotesNotesId(message_data,client);    
+   await Patient.deletePatientNotesNotesId(message_data,client);    
   } 
-  
-  
   /**
    * cancelling call
    */
    if((message_data._type=== 19)){
     console.log("cancelling call");
     console.log(message_data)
-    BedsList.setStatus(message_data._bedId,2);    
-    publishBedStates();      
+    //BedUserList.printBedUserlist();
+
+    let id=BedUserList.getId(message_data._bedId);
+    await UserList.setStatus(id,1);    
+    await publishUserStates();
+
+    BedUserList.removeData(message_data._bedId);
+    //BedUserList.printBedUserlist();
+    await BedsList.setStatus(message_data._bedId,2);    
+    await publishBedStates();      
   }    
 
 })

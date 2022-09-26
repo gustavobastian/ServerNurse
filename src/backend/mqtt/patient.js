@@ -1,7 +1,7 @@
 var pool = require('../mysql/index');
 
  /**
-  *In this class we save all the nurse functions
+  *In this class we save all the Patient functions
   */
  class PatientClass{
     constructor() {

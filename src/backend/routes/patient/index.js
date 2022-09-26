@@ -2,6 +2,7 @@ var express = require('express');
 var routerPatient = express.Router();
 var pool = require('../../mysql');
 
+
 //API for getting all Pacients information
 routerPatient.get('/', function(req, res) {
     pool.query('Select * from Pacient', function(err, result, fields) {
@@ -244,6 +245,7 @@ routerPatient.post('/', async function(req, res) {
             return;
         }
         res.send(result).status(202);
+        
     });
 
     
