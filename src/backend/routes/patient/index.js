@@ -1,7 +1,7 @@
 var express = require('express');
 var routerPatient = express.Router();
 var pool = require('../../mysql');
-
+var BedsList = require('../../Monitoring/Bed-mon');
 
 //API for getting all Pacients information
 routerPatient.get('/', function(req, res) {
@@ -10,7 +10,9 @@ routerPatient.get('/', function(req, res) {
             res.send(err).status(400);
             return;
         }
+        else{
         res.send(result);
+		}
     });
 });
 //API for getting all Pacients id information
@@ -20,7 +22,9 @@ routerPatient.get('/numbers', function(req, res) {
             res.send(err).status(400);
             return;
         }
+        else{
         res.send(result);
+		}
     });
 });
 
@@ -32,7 +36,9 @@ routerPatient.get('/:id', function(req, res) {
             res.send(err).status(400);
             return;
         }
+        else{
         res.send(result);
+		}
     });
 });
 
@@ -200,7 +206,33 @@ routerPatient.post('/', async function(req, res) {
                      res.send().status(200);
                })
             });       
-    
+    //updating bedlist status
+    BedsList.bedlist=[{id:0,st:0,spec:0}];                        
+    await   pool.query('select * from Bed join PriorityTable using (bedId) ORDER BY PriorityTable.priority DESC', async function(err, result, fields) {
+        console.log("filling beds")
+        if (err) {
+            console.log("Error in bedlist1");
+            return;
+        }
+        await result.forEach(element => {  
+            BedsList.addBed(element.bedId);                  
+        });
+        await pool.query('Select * from PatientSpecTable \
+        JOIN SpecTable on SpecTable.id = PatientSpecTable.specId  \
+        JOIN Pacient on Pacient.pacientId = PatientSpecTable.patientId  \
+        JOIN Bed on Bed.bedId = Pacient.bedId  \
+        ', function(err, result, fields) {
+            if (err) {
+                console.log("error in bedlist 3")
+                return;
+            }                    
+            result.forEach(element => {  
+                //console.log(element)               
+                BedsList.setStatus(element.bedId,1);      
+                BedsList.setTreat(element.bedId,element.specId);
+            });            
+        });       
+    });
        
     
 });
@@ -218,36 +250,67 @@ routerPatient.post('/', async function(req, res) {
  * }]
  */
 
- routerPatient.put('/:id', function(req, res) {
-    
-
+ routerPatient.put('/:id', async function(req, res) {
+    console.log((req.body))
+	let received= JSON.stringify(req.body);    
+    let received2 = JSON.parse(received)    
     
     let pacientId=parseInt(req.params.id);
-    let firstname=req.body[0].firstname;
-    let lastname=req.body[0].lastname;
-    let bedId= (req.body[0].bedId);
-    let notesTableId=(req.body[0].notesTableId);
-    let usersTableId = (req.body[0].usersTableId);    
+    
+    let firstname=req.body._firstName;
+    let lastname=req.body._lastName;
+    let bedId= (req.body._bedId);    
+    let usersTableId = (req.body._usersTableId);    
 
+    console.log()
      
 
-    pool.query(
+    await pool.query(
         'UPDATE Pacient SET\
         `firstname` = ?, \
         `lastname` = ?, \
         `bedId` = ?, \
-        `notesTableId` = ?, \
         `userTableId`= ? \
          WHERE \
-         `Pacient`.`pacientId` = ?;',[firstname,lastname,bedId,notesTableId,usersTableId,pacientId], function(err, result, fields) {
+         `Pacient`.`pacientId` = ?;',[firstname,lastname,bedId,usersTableId,pacientId], async function(err, result, fields) {
         if (err) {
             res.send(err).status(400);
+            console.log("Error:"+err)
             return;
         }
+        else{
         res.send(result).status(202);
-        
+    //updating bedlist status
+    BedsList.bedlist=[{id:0,st:0,spec:0}];                        
+    await   pool.query('select * from Bed join PriorityTable using (bedId) ORDER BY PriorityTable.priority DESC', async function(err, result, fields) {
+        console.log("filling beds")
+        if (err) {
+            console.log("Error in bedlist1");
+            return;
+        }
+        await result.forEach(element => {  
+            BedsList.addBed(element.bedId);                  
+        });
+        await pool.query('Select * from PatientSpecTable \
+        JOIN SpecTable on SpecTable.id = PatientSpecTable.specId  \
+        JOIN Pacient on Pacient.pacientId = PatientSpecTable.patientId  \
+        JOIN Bed on Bed.bedId = Pacient.bedId  \
+        ', function(err, result, fields) {
+            if (err) {
+                console.log("error in bedlist 3")
+                return;
+            }                    
+            result.forEach(element => {  
+                //console.log(element)               
+                BedsList.setStatus(element.bedId,1);      
+                BedsList.setTreat(element.bedId,element.specId);
+            });            
+        });       
     });
-
+    
+    }
+            
+    });
     
     //res.send(OK);
 });
@@ -284,4 +347,6 @@ routerPatient.post('/', async function(req, res) {
     });  
     
 });
+
+
 module.exports = routerPatient;

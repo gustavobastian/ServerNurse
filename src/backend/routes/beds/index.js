@@ -32,22 +32,7 @@ async function fillingBeds(){
             });            
         });       
     });
-//looking for used beds and put as occupied
-/*await   pool.query('Select bedId from `Pacient`', function(err, result, fields) {
-        console.log("filling bed status")
-        if (err) {
-            console.log("Error in bedlist 2")
-            return;
-        }
-        result.forEach(element => {             
-            BedsList.setStatus(element.bedId,1);
-        });    
-    });
- await  BedsList.printBedlist();    */
-//looking for spec of beds
-//await console.log("printing spec for bed");   
- 
- //console.log("end printing spec for bed");
+
     BedsList.printBedlist();  
  return;   
 }

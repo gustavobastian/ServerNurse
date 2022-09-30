@@ -5,6 +5,7 @@ var mqtt=require('mqtt')
 var express = require('express');
 var jwt = require('express-jwt');
 var auth = require('./middleware/authentication');
+var BedsList = require('./Monitoring/Bed-mon');
 const cookieParser = require('cookie-parser')
 
 
@@ -13,7 +14,7 @@ const cookieParser = require('cookie-parser')
 //const connection = require('./mysql-connector');
 var app     = express();
 //var utils   = require('./mysql-connector');
-var BedsList = require('./Monitoring/Bed-mon');
+
 var UserList = require('./Monitoring/User-mon');
 var CalendarList = require('./Monitoring/Calendar-mon');
 

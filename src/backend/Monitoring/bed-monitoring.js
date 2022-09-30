@@ -74,6 +74,7 @@ var pool = require('../mysql/index');
     getBedStats(){
         return JSON.stringify(this.bedlist);
     }
+          
 };  
 
 module.exports = BedsList;
