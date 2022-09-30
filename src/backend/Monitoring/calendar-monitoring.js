@@ -37,8 +37,20 @@ var pool = require('../mysql/index');
     * @param {} calendarId 
     */
    getNote(calendarIdP){
-    var index=this.CalendarList.findIndex(item=>item.calendarId===calendarIdP);           
+    var index=this.CalendarList.findIndex(item=>item.calendarId===calendarIdP);    
+
     return this.CalendarList[index].note;
+    
+    }
+
+    /**
+    * Get the note of the event
+    * @param {} calendarId 
+    */
+   getNoteBed(bedIdP){
+    var index=this.CalendarList.findIndex(item=>item.bedId===bedIdP);    
+    if(index==-1){return "none";}       
+    else {return this.CalendarList[index].note;}
     
     }
 

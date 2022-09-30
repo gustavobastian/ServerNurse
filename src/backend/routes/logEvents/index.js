@@ -5,7 +5,7 @@ var pool = require('../../mysql');
 
 
 eventsTable.get('/', function(req, res) {
-    pool.query('Select * from LogEvents', function(err, result, fields) {
+    pool.query('Select * from LogEvents ORDER BY logEventId DESC ', function(err, result, fields) {
         if (err) {
             res.send(err).status(400);
             return;
@@ -18,7 +18,7 @@ eventsTable.get('/', function(req, res) {
  * return  events  info filtered by pacient
  */
 
-eventsTable.get('/pacient/:id', function(req, res) {
+eventsTable.get('/patient/:id', function(req, res) {
     idAb=req.params.id;   
     pool.query('Select * from LogEvents where pacientId=?',[idAb], function(err, result, fields) {
         if (err) {

@@ -300,6 +300,14 @@ else {
 
 }
 
+function getCalendarNotes(bedId){
+  let topic= "/Beds/"+bedId+"/CalendarNote";
+  console.log("asking for calendar events ...inside function")
+  let note =CalendarList.getNoteBed(bedId);    
+  console.log("note:" + note)
+  client.publish(topic, JSON.stringify(note));  
+  console.log("*********************")
+}
 
 
 /**
@@ -489,6 +497,7 @@ client.on('message', async function (topic, message,packet) {
 
   if((message_data._type=== 20)){
     console.log("Asking for notes of a calendar event")
+    await getCalendarNotes(message_data._bedId);
   }
 
   })

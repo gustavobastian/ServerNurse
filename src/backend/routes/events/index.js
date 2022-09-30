@@ -57,7 +57,7 @@ async function fillingScheduledJobs(){
                                         console.log("Note:"+element.note);  
                                         BedsList.setStatus(bedID,5);
                                         CalendarList.addCalendar(element.eventId,bedID,element.note);
-                                        client.publish("/Calendar/Notes", JSON.stringify({'id':bedID,"note":element.note}));                  
+                                     //  client.publish("/Calendar/Notes", JSON.stringify({'id':bedID,"note":element.note}));                  
                                     })                   
                             }
                         if(element.type=="weekly"){
@@ -72,7 +72,7 @@ async function fillingScheduledJobs(){
                                 console.log("Note:"+element.note);  
                                 BedsList.setStatus(bedID,5);
                                 CalendarList.addCalendar(element.eventId,element.bedId,element.note);
-                                client.publish("/Calendar/Notes", JSON.stringify({'id':bedID,"note":element.note}));                  
+                                //client.publish("/Calendar/Notes", JSON.stringify({'id':bedID,"note":element.note}));                  
 
                         }) }  
                         if(element.type=="monthly"){
@@ -89,7 +89,7 @@ async function fillingScheduledJobs(){
                                         console.log("Note:"+element.note);  
                                         BedsList.setStatus(bedID,5);
                                         CalendarList.addCalendar(element.eventId,element.bedID,element.note);
-                                        client.publish("/Calendar/Notes", JSON.stringify({'id':bedID,"note":element.note}));                  
+                                  //      client.publish("/Calendar/Notes", JSON.stringify({'id':bedID,"note":element.note}));                  
                     
                                 }) }    
                                 
