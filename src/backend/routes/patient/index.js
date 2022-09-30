@@ -157,7 +157,7 @@ routerPatient.post('/', async function(req, res) {
                                                             connection.query(
                                                                 'INSERT INTO Pacient (`pacientId`, `firstName`, `lastName`, `bedId`, `notesTableId`, `userTableId`) \
                                                                 VALUES (?,?,?,?,?,?)',[pacientId,firstname,lastname,bedId,notesTableId,usersTableId], 
-                                                                function(err, result, fields) {
+                                                                async function(err, result, fields) {
                                                                 if (err) {
                                                                     console.log("error:"+err)
                                                                     connection.rollback(function(err){
@@ -189,6 +189,62 @@ routerPatient.post('/', async function(req, res) {
                                                                             })
                                                                         } 
                                                                     });
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                    //updating bedlist status
+                                                                        BedsList.bedlist=[{id:0,st:0,spec:0}];                        
+                                                                        await   pool.query('select * from Bed join PriorityTable using (bedId) ORDER BY PriorityTable.priority DESC', async function(err, result, fields) {
+                                                                            console.log("filling beds")
+                                                                            if (err) {
+                                                                                console.log("Error in bedlist1");
+                                                                                return;
+                                                                            }
+                                                                            await result.forEach(element => {  
+                                                                                BedsList.addBed(element.bedId);                  
+                                                                            });
+                                                                            await pool.query('Select * from PatientSpecTable \
+                                                                            JOIN SpecTable on SpecTable.id = PatientSpecTable.specId  \
+                                                                            JOIN Pacient on Pacient.pacientId = PatientSpecTable.patientId  \
+                                                                            JOIN Bed on Bed.bedId = Pacient.bedId  \
+                                                                            ', function(err, result, fields) {
+                                                                                if (err) {
+                                                                                    console.log("error in bedlist 3")
+                                                                                    return;
+                                                                                }                    
+                                                                                result.forEach(element => {  
+                                                                                    //console.log(element)               
+                                                                                    BedsList.setStatus(element.bedId,1);      
+                                                                                    BedsList.setTreat(element.bedId,element.specId);
+                                                                                });            
+                                                                            });       
+                                                                        });
+                                                                        
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
                                                                 }        
                                                             });                                    
                                                             }
@@ -206,33 +262,6 @@ routerPatient.post('/', async function(req, res) {
                      res.send().status(200);
                })
             });       
-    //updating bedlist status
-    BedsList.bedlist=[{id:0,st:0,spec:0}];                        
-    await   pool.query('select * from Bed join PriorityTable using (bedId) ORDER BY PriorityTable.priority DESC', async function(err, result, fields) {
-        console.log("filling beds")
-        if (err) {
-            console.log("Error in bedlist1");
-            return;
-        }
-        await result.forEach(element => {  
-            BedsList.addBed(element.bedId);                  
-        });
-        await pool.query('Select * from PatientSpecTable \
-        JOIN SpecTable on SpecTable.id = PatientSpecTable.specId  \
-        JOIN Pacient on Pacient.pacientId = PatientSpecTable.patientId  \
-        JOIN Bed on Bed.bedId = Pacient.bedId  \
-        ', function(err, result, fields) {
-            if (err) {
-                console.log("error in bedlist 3")
-                return;
-            }                    
-            result.forEach(element => {  
-                //console.log(element)               
-                BedsList.setStatus(element.bedId,1);      
-                BedsList.setTreat(element.bedId,element.specId);
-            });            
-        });       
-    });
        
     
 });
@@ -241,13 +270,13 @@ routerPatient.post('/', async function(req, res) {
 //API for editing a Patient
 /**
  * body format: * 
- * [{"pacientId":2, 
- * "firstname":"peter",
- * "lastname":"Frant",
- * "bedId":"3",
- * "notesTableId":"1",
- * "userTableId":"1"
- * }]
+ * {"_pacientId":2, 
+ * "_firstname":"peter",
+ * "_lastname":"Frant",
+ * "_bedId":"3",
+ * "_notesTableId":"1",
+ * "_userTableId":"1"
+ * }
  */
 
  routerPatient.put('/:id', async function(req, res) {
