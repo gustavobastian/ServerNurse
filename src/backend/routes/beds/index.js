@@ -150,11 +150,41 @@ routerBeds.post('/pacient/notes/activation/:id', function(req, res) {
         bedId=result.insertId;
         pool.query(
             'INSERT INTO PriorityTable(`bedId`, `priority`) \
-            VALUES (?,?)',[bedId,0], function(err, result2, fields) {
+            VALUES (?,?)',[bedId,0], async function(err, result2, fields) {
             if (err) {
                 res.send(err).status(400);
                 return;
                 }
+
+            else{
+                //updating bedlist status
+                BedsList.bedlist=[{id:0,st:0,spec:0}];                        
+                await   pool.query('select * from Bed join PriorityTable using (bedId) ORDER BY PriorityTable.priority DESC', async function(err, result, fields) {
+                    console.log("filling beds")
+                    if (err) {
+                        console.log("Error in bedlist1");
+                        return;
+                    }
+                    await result.forEach(element => {  
+                        BedsList.addBed(element.bedId);                  
+                    });
+                    await pool.query('Select * from PatientSpecTable \
+                    JOIN SpecTable on SpecTable.id = PatientSpecTable.specId  \
+                    JOIN Pacient on Pacient.pacientId = PatientSpecTable.patientId  \
+                    JOIN Bed on Bed.bedId = Pacient.bedId  \
+                    ', function(err, result, fields) {
+                        if (err) {
+                            console.log("error in bedlist 3")
+                            return;
+                        }                    
+                        result.forEach(element => {  
+                            //console.log(element)               
+                            BedsList.setStatus(element.bedId,1);      
+                            BedsList.setTreat(element.bedId,element.specId);
+                        });            
+                    });       
+                });
+            }    
             
             });
 

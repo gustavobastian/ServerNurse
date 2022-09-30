@@ -1,7 +1,8 @@
 var pool = require('../mysql/index');
 
 /**
- * class CalendarList contains information about events that has been launched recently... it is supossed to be cleaned right after the event is closed
+ * class CalendarList contains non permanent information about events that has been launched recently... 
+ * it is supossed to be cleaned right after the event is closed.
  * 
  */
  class  CalendarList  {

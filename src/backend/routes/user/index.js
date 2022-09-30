@@ -10,6 +10,7 @@ var UserList = require('../../Monitoring/User-mon');
 
 //filling the userList
 async function fillingUserSt(){
+    UserList.UserList=[{id:0,st:0}]; 
 pool.query('Select * from User', function(err, result, fields) {
     if (err) {
         res.send(err).status(400);
