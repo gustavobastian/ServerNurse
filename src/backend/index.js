@@ -15,6 +15,7 @@ var app     = express();
 //var utils   = require('./mysql-connector');
 var BedsList = require('./Monitoring/Bed-mon');
 var UserList = require('./Monitoring/User-mon');
+var CalendarList = require('./Monitoring/Calendar-mon');
 
 
 
@@ -60,8 +61,8 @@ var routerAuthenticate = express = require('./routes/authenticate');
 var routerSpecTable = express = require('./routes/SpecTable');
 var routerNurseSpecTable = express = require('./routes/nurseSpecTable');
 var routerPatientSpecTable = express = require('./routes/patientTreatment');
-/*
-app.use('/api/pacient',auth.isAuthenticated,routerPacient);
+
+app.use('/api/patient',auth.isAuthenticated,routerPatient);
 app.use('/api/user',auth.isAuthenticated,routerUser);
 app.use('/api/messages',auth.isAuthenticated,routerMessages);
 app.use('/api/notes',auth.isAuthenticated,routerNotes);
@@ -73,10 +74,12 @@ app.use('/api/events',auth.isAuthenticated,routerEvents);
 app.use('/api/logEvents',auth.isAuthenticated,routerLogEvents);
 app.use('/api/Statistics',auth.isAuthenticated,routerStatistics);
 app.use('/api/authentication',routerAuthenticate);
+app.use('/api/specTable',auth.isAuthenticated,routerSpecTable);
 app.use('/api/nurseSpecTable',auth.isAuthenticated,routerNurseSpecTable);
-app.use('/api/pacient/treatment',auth.isAuthenticated,routerPacientSpecTable);
-*/
+app.use('/api/treatment',auth.isAuthenticated,routerPatientSpecTable);
+
 //without aut...for development
+/*
 app.use('/api/patient',routerPatient);
 app.use('/api/user',routerUser);
 app.use('/api/messages',routerMessages);
@@ -91,7 +94,7 @@ app.use('/api/Statistics',routerStatistics);
 app.use('/api/authentication',routerAuthenticate);
 app.use('/api/specTable',routerSpecTable);
 app.use('/api/nurseSpecTable',routerNurseSpecTable);
-app.use('/api/treatment',routerPatientSpecTable);
+app.use('/api/treatment',routerPatientSpecTable);*/
 
 
 //=======[ Initialization of beds and user States]================================

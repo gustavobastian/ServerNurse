@@ -1,18 +1,20 @@
 
 /**
- * class bedUserList contains information about who is attending the patient 
+ * class bedUserList contains information about who is attending the patient and type of event
+ * 1:caller
+ * 2:calendar
  */
  class  BedsUserList  {    
     constructor() {
-         this.beduserlist=[{bedId:0,userId:0}];                        
+         this.beduserlist=[{bedId:0,userId:0,type:0}];                        
     }
   /**
    * This function adds a bed - user to the list, it is used only when adding a bed
    * @param {} id bedId
    * @returns 1
    */
-    addBedUser(bedid,userid) {
-         this.beduserlist.push({bedId:bedid,userId:userid});
+    addBedUser(bedid,userid,typeP) {
+         this.beduserlist.push({bedId:bedid,userId:userid,type:typeP});
          return 1;
     }
     
@@ -22,7 +24,7 @@
      */
     printBedUserlist(){
          this.beduserlist.forEach(element => {
-            console.log("bedId:"+element.bedId,"|userId:"+element.userId);
+            console.log("bedId:"+element.bedId,"|userId:"+element.userId,"|type:"+element.type);
         });
         return 1;
     }
@@ -32,9 +34,24 @@
     * @param {} bedId 
     */
    getId(bedId){
+    
     var index=this.beduserlist.findIndex(item=>item.bedId===bedId);           
-    return this.beduserlist[index].userId;
-    //this.printBedlist();
+    if(index>0){
+    return this.beduserlist[index].userId;}
+    else{return this.beduserlist[0].userId;}
+    
+    }
+    /**
+    * Get the kind of event
+    * @param {} bedId 
+    */
+   getId(bedId){
+    
+    var index=this.beduserlist.findIndex(item=>item.bedId===bedId);           
+    if(index>0){
+    return this.beduserlist[index].type;}
+    else{return this.beduserlist[0].type;}
+    
     }
 
    removeData(bedId){

@@ -6,6 +6,7 @@ var BedsList = require('../Monitoring/Bed-mon');
 var UserList = require('../Monitoring/User-mon');
 
 var BedUserList = require('../Monitoring/Bed-user-mon');
+var CalendarList = require('../Monitoring/Calendar-mon');
 
 var Nurse = require('./nurse')
 var Patient = require('./patient')
@@ -15,6 +16,7 @@ var Beds = require('./beds')
 //=======[ Data ]================================
 var pool = require('../mysql');
 
+var calendarEvents=[];
 /**
  * 
  * Connecting to MQTT broker
@@ -217,7 +219,7 @@ function saveNewEvent(typeofEvent, bedId, username, note, note2){
  2:start a calendar event log
  3:close ticket/finish 
 */
-if(typeofEvent==1){
+if(typeofEvent!=3){
   userIdLocal=0;
   note=" ";
   note2=" ";
@@ -240,7 +242,16 @@ if(typeofEvent==1){
      );
   }});  
   }
-else if(typeofEvent==3){ 
+else { 
+          
+        let calendarId =CalendarList.getCalendarId(bedId);    
+        let type=1;      
+        if(calendarId!=-1){
+          console.log("cerrando evento calendario")
+          type=2;
+          CalendarList.removeCalendar(calendarId);   
+        }
+
         pool.query('SELECT pacientId from   \
         Pacient  WHERE `Pacient`.`bedId`= ?',[bedId], function(err, result, fields) {
           if (err|| result.length==0) {
@@ -269,7 +280,8 @@ else if(typeofEvent==3){
                             if(isNaN(userId)){userIdLocal=0;}   
                             else{userIdLocal=userId;}
                             //UPDATE `LogEvents` SET `finish` = '2022-08-10 01:54:55' WHERE `LogEvents`.`logEventId` = 2;
-                            pool.query('UPDATE `LogEvents` SET `finish` =?,`userId`=?, `Note2`=? , `Note`=?  WHERE `LogEvents`.`logEventId` = ?',[mySQLDateString, userIdLocal , note2 , note , logId ], function(err, result, fields) {
+                            pool.query('UPDATE `LogEvents` SET `type`= ?,`finish` =?,`userId`=?, `Note2`=? , `Note`=? \
+                             WHERE `LogEvents`.`logEventId` = ?',[type,mySQLDateString, userIdLocal , note2 , note , logId ], function(err, result, fields) {
                             if (err|| result.length==0) {
                                 console.log("error:",err)
                             }})
@@ -284,33 +296,7 @@ else if(typeofEvent==3){
 
         })      
       }      
-else if(typeofEvent==2){ 
-  console.log("saving event 3");
-  userIdLocal=0;
-  note=note.toString();
-  note2=" ";
 
-  pool.query('SELECT pacientId from   \
-  Pacient  WHERE `Pacient`.`bedId`= ?',[bedId], function(err, result, fields) {
-    if (err|| result.length==0) {
-        console.log("error")
-    }
-    else{
-      let pacientIdLocal=result[0].pacientId;
-    console.log(result[0].pacientId)
-     //client.publish(topic, JSON.stringify(result));  }
-     /**INSERT INTO `LogEvents` (`logEventId`, `type`, `init`, `finish`,
-      *  `pacientId`, `userId`, `Note`, `Note2`)
-      *  VALUES (NULL, '1', '2022-08-10 01:28:30.000000', '2022-08-10 01:28:30.000000', '3', '0', '', '');*/
-     pool.query('INSERT INTO `LogEvents`   \
-          (`type`,`pacientId`,`userId`,`Note`,`Note2`) VALUES(?,?,?,?,?)',[typeofEvent,pacientIdLocal,userIdLocal,'','' ], 
-          function(err, result, fields) {
-          if (err|| result.length==0) {
-              console.log("error",err)
-            }}
-     );
-  }});  
-  }
 
 }
 
@@ -389,11 +375,8 @@ client.on('message', async function (topic, message,packet) {
     Patient.getPatientsBeds(message_data._content,client); 
   }
   if((message_data._type=== 10)){//&&(topic==="Pacient/#")){
-    //console.log("pacient_from_bed");
-    
     Patient.getBedPatientInfo(message_data._content,client);    
-    
-  }
+    }
 
   /**
    * Received a QR, check it and update the status of the bed
@@ -429,88 +412,91 @@ client.on('message', async function (topic, message,packet) {
    if((message_data._type=== 13)){
         console.log("get end of work");
 
-        let id=BedUserList.getId(message_data._bedId);
-        await UserList.setStatus(id,1);    
-        await publishUserStates();
-        BedUserList.removeData(message_data._bedId);
-        
-        BedsList.setStatus(message_data._bedId,1); 
-        
+        let id=BedUserList.getId(message_data._bedId);        
+
+        if(id>0){
+          await UserList.setStatus(id,1);    
+          await publishUserStates();
+          BedUserList.removeData(message_data._bedId);
+          }
+
+        BedsList.setStatus(message_data._bedId,1);         
         publishBedStates(); 
         saveNewEvent(3,message_data._bedId,message_data._username,"",message_data._content);        
       }
   
   /**
-   * Received a asking Question, check it and update the status of the bed
-   */
-   if((message_data._type=== 14)){
-    console.log("ASK");
-   await BedsList.setStatus(message_data._bedId,5); 
-   await publishBedStates();         
-  }    
-  /**
-   * Received a close command, check it and update the status of the bed
-   */
-   if((message_data._type=== 16)){
-    console.log("END ASK");
-    console.log(message_data)
-    await BedsList.setStatus(message_data._bedId,4);    
-    await publishBedStates();      
-  } 
-
-  /**
-   * Received a asking for help command, check it and update the status of the bed
-   */
-   if((message_data._type=== 44)){
+     * Received a asking for help command, check it and update the status of the bed
+     */
+  if((message_data._type=== 14)){
     console.log("ASK for help");
     console.log(message_data)
-   await BedsList.setStatus(message_data._bedId,6);    
-   await publishBedStates();      
+  await BedsList.setStatus(message_data._bedId,6);    
+  await publishBedStates();      
   } 
+  
   /**
-   * Ask for list of medicalTable
+   * Received a asking Specicalization of nurse
    */
-   if((message_data._type=== 17)){
-    console.log("ASKing list of doctors");
-    console.log(message_data)
-  await  Beds.getBedMedicalTableInfo(message_data._bedId,client);    
-  } 
-  /**
-   * Received a asking for help command, check it and update the status of the bed
-   */
-   if((message_data._type=== 43)){
+   if((message_data._type=== 16)){
     console.log("ASK for nurseSec");
     console.log(message_data)
     
    await Nurse.getNurseSpecs(message_data._username,client);      
   } 
   /**
-   * removin pacient notes
-   */
-   if((message_data._type=== 18)){
+     * Ask for list of medicalTable
+     */
+  if((message_data._type=== 17)){
+    console.log("ASKing list of doctors");
+    console.log(message_data)
+  await  Beds.getBedMedicalTableInfo(message_data._bedId,client);    
+  } 
+
+  /**
+     * removin pacient notes
+     */
+  if((message_data._type=== 18)){
     console.log("removing patient note");
     console.log(message_data)
-   await Patient.deletePatientNotesNotesId(message_data,client);    
+  await Patient.deletePatientNotesNotesId(message_data,client);    
   } 
+
   /**
-   * cancelling call
-   */
-   if((message_data._type=== 19)){
+     * cancelling call
+     */
+  if((message_data._type=== 19)){
     console.log("cancelling call");
     console.log(message_data)
     //BedUserList.printBedUserlist();
 
     let id=BedUserList.getId(message_data._bedId);
+    if(id>0){
     await UserList.setStatus(id,1);    
     await publishUserStates();
+    }
 
     BedUserList.removeData(message_data._bedId);
     //BedUserList.printBedUserlist();
     await BedsList.setStatus(message_data._bedId,2);    
     await publishBedStates();      
-  }    
+    }    
 
-})
+
+  /**
+     * Ask for notes of a calendar event
+     */
+
+  if((message_data._type=== 20)){
+    console.log("Asking for notes of a calendar event")
+  }
+
+  })
+
+  
+  
+  
+  
 
 
   module.exports = client;

@@ -6,6 +6,17 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
     * Modifies README accordingly
 
+## 1.0.1
+
+* Project creation
+    * Docker Compose implementation for whole project.
+    * Typescript compilation into docker-compose.
+    * MySQL 5.7 DB Server.
+    * PHPMyAdmin.
+    * NodeJS backend application.    
+    * Materialize CSS framework.
+
+
 ## 1.0.0
 
 * Project creation

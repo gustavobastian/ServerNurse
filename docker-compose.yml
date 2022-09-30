@@ -10,6 +10,8 @@ services:
         volumes:
             -                    ./db/dumps:/docker-entrypoint-initdb.d
             -                    ./db/data:/var/lib/mysql
+            -                    /etc/timezone:/etc/timezone:ro
+            -                    /etc/localtime:/etc/localtime:ro
         networks:
             -                    NurseSystem-net
 
@@ -29,7 +31,9 @@ services:
     node-backend:
         image:                   abassi/nodejs-server:10.0-dev
         volumes:
-            -                    ./src/backend:/home/node/app/src            
+            -                    ./src/backend:/home/node/app/src
+            -                    /etc/timezone:/etc/timezone:ro
+            -                    /etc/localtime:/etc/localtime:ro            
         networks:
             -                    NurseSystem-net
         depends_on:

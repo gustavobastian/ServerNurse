@@ -5,6 +5,7 @@ var pool = require('../../mysql');
 const schedule = require('node-schedule');
 var client = require ('../../mqtt/mqtt')
 var BedsList = require('../../Monitoring/Bed-mon');
+var CalendarList = require('../../Monitoring/Calendar-mon');
 
 
 //filling the bedList
@@ -36,9 +37,10 @@ async function fillingScheduledJobs(){
                     console.log("error:",err)
                    // client.publish(topic, JSON.stringify("Error"));          
                 }
-                //console.log(result)
+                
                 else{
                         bedID=result[0].bedId;    
+                        console.log(result[0].bedId)
 
                         if(element.type=="daily"){
                                 console.log("creating daily job")
@@ -53,8 +55,9 @@ async function fillingScheduledJobs(){
                                         console.log("lauching daily job ");  
                                         console.log("Bed:"+bedID);  
                                         console.log("Note:"+element.note);  
-                                        BedsList.setStatus(bedID,9)
-                                        client.publish("/Beds/"+bedID+"/Notes", JSON.stringify(element.note));                  
+                                        BedsList.setStatus(bedID,5);
+                                        CalendarList.addCalendar(element.eventId,bedID,element.note);
+                                        client.publish("/Calendar/Notes", JSON.stringify({'id':bedID,"note":element.note}));                  
                                     })                   
                             }
                         if(element.type=="weekly"){
@@ -67,7 +70,9 @@ async function fillingScheduledJobs(){
                                 console.log("lauching weekly job ");                        
                                 console.log("Bed:"+element.bedId);  
                                 console.log("Note:"+element.note);  
-                                BedsList.setStatus(bedID,5)
+                                BedsList.setStatus(bedID,5);
+                                CalendarList.addCalendar(element.eventId,element.bedId,element.note);
+                                client.publish("/Calendar/Notes", JSON.stringify({'id':bedID,"note":element.note}));                  
 
                         }) }  
                         if(element.type=="monthly"){
@@ -82,7 +87,9 @@ async function fillingScheduledJobs(){
                                         console.log("lauching monthly job ");                        
                                         console.log("Bed:"+element.bedId);  
                                         console.log("Note:"+element.note);  
-                                        BedsList.setStatus(bedID,5)
+                                        BedsList.setStatus(bedID,5);
+                                        CalendarList.addCalendar(element.eventId,element.bedID,element.note);
+                                        client.publish("/Calendar/Notes", JSON.stringify({'id':bedID,"note":element.note}));                  
                     
                                 }) }    
                                 
@@ -98,45 +105,10 @@ async function fillingScheduledJobs(){
     
 }; 
 
-     /*pool.query('Select * from Bed', function(err, result, fields) {
-        console.log("filling beds")
-        if (err) {
-            console.log("Error");
-            return;
-        }
-        result.forEach(element => {  
-            BedsList.addBed(element.bedId);      
-            
-        });    
-        return;
-        
-    });
-
-     pool.query('Select bedId from `Pacient`', function(err, result, fields) {
-        console.log("filling bed status")
-        if (err) {
-            console.log("Error")
-            return;
-        }
-        result.forEach(element => {        
-            BedsList.setStatus(element.bedId,1);
-        });    
-        //UserList.printUserList();  
-        return;
-    });
-
- //   BedsList.printBedlist();  */
-//}
+   
 
 fillingScheduledJobs();
-/**
- * Send to client all beds status information
-*/
-/*
-routerBeds.get('/state/', function(req, res) {    
-    var response = BedsList.getBedStats();    
-    res.send(response);
- });
+
 
 /**
  * Send to client all events information
@@ -186,8 +158,10 @@ eventsTable.get('/:id', function(req, res) {
     let received2=JSON.parse(received);
     
     let pacientId=parseInt(received2.pacientId);
-    let date_int=JSON.stringify(received2.dateTime);
+    let date_int=JSON.parse(received2.dateTime);//
+    console.log(date_int)
     let stringTime=JSON.parse(date_int);
+    
     let type =( received2.type);
     console.log("pacientId:"+pacientId);
     console.log("tipo:"+type);
@@ -203,9 +177,11 @@ eventsTable.get('/:id', function(req, res) {
             console.log("error"+err);   
             return;
         }
+        else{
         res.send(result).status(201);
         console.log("done");   
         fillingScheduledJobs();
+        }
     });
     
     //res.status(202);
