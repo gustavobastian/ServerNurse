@@ -60,8 +60,10 @@ var pool = require('../mysql/index');
     * @param {} calendarId 
     */
    getCalendarId(bedIdP){
-    var index=this.CalendarList.findIndex(item=>item.bedId===bedIdP);           
-    return this.CalendarList[index].calendarId;
+    
+    var index=this.CalendarList.findIndex(item=>item.bedId===bedIdP);      
+    if(index==-1){return -1;}           
+    else{return this.CalendarList[index].calendarId;}
     
     }
 

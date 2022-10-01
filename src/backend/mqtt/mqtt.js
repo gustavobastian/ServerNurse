@@ -16,7 +16,7 @@ var Beds = require('./beds')
 //=======[ Data ]================================
 var pool = require('../mysql');
 
-var calendarEvents=[];
+
 /**
  * 
  * Connecting to MQTT broker
@@ -208,7 +208,7 @@ function loginOut(username){
   
 }
 
-function saveNewEvent(typeofEvent, bedId, username, note, note2){
+async function saveNewEvent(typeofEvent, bedId, username, note, note2){
   console.log("tipo de evento:"+typeofEvent);
   console.log("username:"+username);
   console.log("Note:"+note2);
@@ -243,9 +243,9 @@ if(typeofEvent!=3){
   }});  
   }
 else { 
-          
-        let calendarId =CalendarList.getCalendarId(bedId);    
         let type=1;      
+        let calendarId =await CalendarList.getCalendarId(bedId);    
+        
         if(calendarId!=-1){
           console.log("cerrando evento calendario")
           type=2;
@@ -319,7 +319,7 @@ client.on('message', async function (topic, message,packet) {
   let message_data=JSON.parse(message);
   //console.log(JSON.parse(message));
   console.log("***********************************");
- // console.log(topic);
+  console.log(topic);
   console.log("***********************************");
   //console.log(message_data._content); 
 
