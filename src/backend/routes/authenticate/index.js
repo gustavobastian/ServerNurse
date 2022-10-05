@@ -34,9 +34,16 @@ routerAuthenticate.post('/', async function(req, res) {
                 return;    
             }
             else{
+                console.log(response);            
+
                 //console.log(JSON.stringify(result[0]));
+                try{
                 testUser.username=result[0].username;
                 testUser.password=result[0].password;
+                }catch (e){res.status(403).send({
+                    errorMessage: 'Auth required!'});
+                    return;    
+                    }
                 
                 
                     await bcrypt.compare(user.password, result[0].password, (err, resultComp)=> {
