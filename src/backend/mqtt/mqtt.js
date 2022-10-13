@@ -11,6 +11,8 @@ var CalendarList = require('../Monitoring/Calendar-mon');
 var Nurse = require('./nurse')
 var Patient = require('./patient')
 var Beds = require('./beds')
+var Calendar = require('./calendar')
+var User = require('./users')
 
 
 //=======[ Data ]================================
@@ -300,15 +302,6 @@ else {
 
 }
 
-function getCalendarNotes(bedId){
-  let topic= "/Beds/"+bedId+"/CalendarNote";
-  console.log("asking for calendar events ...inside function")
-  let note =CalendarList.getNoteBed(bedId);    
-  console.log("note:" + note)
-  client.publish(topic, JSON.stringify(note));  
-  console.log("*********************")
-}
-
 
 /**
  * Functions for subscribe to topics and reroute to api functions
@@ -334,18 +327,6 @@ client.on('message', async function (topic, message,packet) {
     saveNewEvent(1,message_data._bedId,"system","","");
   }
   //else{console.log("Message type:"+message_data._type); }
- 
-  /**
-   * login/logout functions
-   * 
-   * 
-   */
-  if(message_data._type=== 1){	  
-    loginHere(message_data._username, message_data._content)    
-  }
-  if(message_data._type=== 2){
-    loginOut(message_data._username)    
-  }
 
   /**
    *Asking/editing Patients  information/notes
@@ -497,7 +478,9 @@ client.on('message', async function (topic, message,packet) {
 
   if((message_data._type=== 20)){
     console.log("Asking for notes of a calendar event")
-    await getCalendarNotes(message_data._bedId);
+    
+    await Calendar.getCalendarNotes(message_data._bedId,client,CalendarList);
+    
   }
 
   })
