@@ -207,7 +207,25 @@ else {
 
 }
 
+async function getBedIdCaller(callerId){
+  console.log("here");
+  console.log(callerId);
+  console.log("here*");
+  pool.query('SELECT * from  Bed WHERE `callerId`= ?',[callerId],  function(err, result, fields) {
+    if (err|| result.length==0) {
+        console.log("error:"+err)
+        return; 
+    }
+    else{
+      let bedId=result[0].bedId;
+      console.log(bedId)
+      BedsList.setStatus(bedId,2);
+      publishBedStates();
+      return ;
+    }
 
+})
+}
 /**
  * Functions for subscribe to topics and reroute to api functions
 */
@@ -227,9 +245,12 @@ client.on('message', async function (topic, message,packet) {
   if(topic==="/Beds/caller-events"){
     //message_content {"_bedId":2,"_content":"alert","_time":"today","_username":"system"}
     //console.log(JSON.stringify(message_data));
-    BedsList.setStatus(message_data._bedId,2);
-    publishBedStates();
-    saveNewEvent(1,message_data._bedId,"system","","");
+    //BedsList.setStatus(message_data._bedId,2);
+    //publishBedStates();
+    //saveNewEvent(1,message_data._bedId,"system","","");
+    
+    await getBedIdCaller(message_data);
+    
   }
   //else{console.log("Message type:"+message_data._type); }
  
