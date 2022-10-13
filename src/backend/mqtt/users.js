@@ -11,11 +11,13 @@ const userList = require('../Monitoring/User-mon');
    /***
     * Functions that sets the status of the user in 1 and sends to the app the mode of use
     */
-    async loginHere(username, password,client,UserList){
+    async loginHere(username, passwordP ,client,UserList){
     console.log("user:"+username.toString()); 
-    console.log("pass:"+password.toString()); 
+    console.log("pass:"+passwordP.toString()); 
     //password2=password.toString();  
     //console.log(password2)
+    let d= passwordP.split("Ç")
+    let password=d[0];
     let logeado=false;
     let response_conform={idNumber:0, mode:99};
     //client.publish('/User/Info', c) ;
@@ -25,7 +27,8 @@ const userList = require('../Monitoring/User-mon');
                 var response = JSON.stringify(response_conform);
                 console.log(response);
                 //client.publish('/User/System/response', response);  
-                client.publish('/User/' + username + '/response', response);
+                //client.publish('/User/' + username + '/response', response);
+                client.publish('/Session/' + d[1] + '/response', response);
                 return;
             }
             else {
@@ -65,7 +68,8 @@ const userList = require('../Monitoring/User-mon');
 
                 var response = JSON.stringify(response_conform);
                 console.log(response);
-                client.publish('/User/' + username + '/response', response);
+                //client.publish('/User/' + username + '/response', response);
+                client.publish('/Session/' + d[1] + '/response', response);
 
                 let topic= "/User/status";
                 var response = UserList.getUserStats();
