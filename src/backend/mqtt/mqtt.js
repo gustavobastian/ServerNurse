@@ -80,101 +80,6 @@ client.on('connect', function () {
 
 
 
-/***
- * Functions that sets the status of the user in 1 and sends to the app the mode of use
- */
-async function  loginHere(username, password){
-  console.log(username.toString()); 
-  password2=password.toString();  
-  console.log(password2)
-  let logeado=false;
-  let response_conform={idNumber:0, mode:99};
-  //client.publish('/User/Info', c) ;
-  await pool.query('Select * from User WHERE username=?',[username], function(err, result, fields) {
-    if (err) {
-        console.log("error:"+err)
-        var response = JSON.stringify(response_conform);
-        console.log(response);
-    //client.publish('/User/System/response', response);  
-        client.publish('/User/'+username+'/response', response); 
-        return;
-    }
-    else{
-    
-    
-    if(result[0]!=null){ ///I have a user in the database
-
-      let estado=UserList.getStatus(result[0].userId)
-      console.log("Estado:"+estado) 
-      UserList.setStatus(result[0].userId,1);
-
-     if(estado<1){                           ///The user is not already logged
-      bcrypt.compare(password, result[0].password, (err, resultComp) => {
-          if(resultComp==true)
-          {
-            console.log('logueado');
-            
-            ///User/System/{"idNumber":1,"mode":"doctor"}
-           response_conform={idNumber:result[0].userId, mode:result[0].occupation};
-            logeado=true;
-            let data=result[0].userId;
-            console.log("data:"+data);
-            UserList.setStatus(data,1);
-            //check if user is logged
-              UserList.printUserList();
-          }
-          if(resultComp==false)
-          {
-            console.log('no logueado');
-            logeado=false;
-          }
-         });
-        }
-
-        if((estado<1)){
-          response_conform={idNumber:result[0].userId, mode:result[0].occupation};//------------------------------>Quitar cuando use el hash
-          }
-    } 
-    
-    var response = JSON.stringify(response_conform);
-    console.log(response);
-    client.publish('/User/'+username+'/response', response);  
-
-    publishUserStates();
-
-    
-
-
-    }
-  });
-}
-
-/***
- * Functions that sets the status of the user in 0 and response ok to the app
- */
-function loginOut(username){
-  pool.query('Select * from User WHERE username=?',[username], function(err, result, fields) {
-    if (err) {
-        console.log(error)
-        return;
-    }   
-
-
-    let response_conform={idNumber:result[0].userId, mode:"ok"};
-
-    var response = JSON.stringify(response_conform);
-    console.log(response);
-    client.publish('/User/'+username+'/response', response);  
-   
-    
-    let data=result[0].userId;
-    console.log("data:"+data);
-    UserList.setStatus(data,0);
-    publishUserStates();
-  });
-}
-
-
 /**
  * Function that compares qr
  * @param {*} bedId :number that identifies the pacient
@@ -314,7 +219,7 @@ client.on('message', async function (topic, message,packet) {
   console.log("***********************************");
   console.log(topic);
   console.log("***********************************");
-  //console.log(message_data._content); 
+  console.log(message_data._content); 
 
   //console.log(message_data._bedId); 
   //console.log("Message type:"+message_data._type); 
@@ -327,7 +232,26 @@ client.on('message', async function (topic, message,packet) {
     saveNewEvent(1,message_data._bedId,"system","","");
   }
   //else{console.log("Message type:"+message_data._type); }
-
+ 
+  /**
+   * login/logout functions
+   * 
+   * 
+   */
+  if(message_data._type=== 1){	  
+    
+    User.loginHere(message_data._username, message_data._content,client,UserList)    
+  }
+  if(message_data._type=== 2){
+    
+    User.loginOut(message_data._username,client,UserList)     
+  }
+  if(message_data._type=== 23){
+   // console.log(JSON.stringify(message_data))
+    data=message_data._content.split("Ç");
+    if(message_data._username==data[1]){
+    User.updatePass(message_data._username,data[0],client)    ; }
+  }
   /**
    *Asking/editing Patients  information/notes
    **/  

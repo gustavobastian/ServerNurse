@@ -7,21 +7,10 @@ const userList = require('../Monitoring/User-mon');
   */
   class UserClass{
     constructor() {
-   }
-    /**
-     * Function that publishes the state of each user in the broker
-     * @param {}  
-     */
-    publishUserStates(client,UserList){
-        
-        let topic= "/User/status";
-        var response = UserList.getUserStats();
-        client.publish(topic, response);  
-        
-    }
+   }    
    /***
- * Functions that sets the status of the user in 1 and sends to the app the mode of use
- */
+    * Functions that sets the status of the user in 1 and sends to the app the mode of use
+    */
     async loginHere(username, password,client,UserList){
     console.log("user:"+username.toString()); 
     console.log("pass:"+password.toString()); 
@@ -88,8 +77,8 @@ const userList = require('../Monitoring/User-mon');
    
 
     /***
- * Functions that sets the status of the user in 0 and response ok to the app
- */
+    * Functions that sets the status of the user in 0 and response ok to the app
+    */
     loginOut(username,client,UserList){
         pool.query('Select * from User WHERE username=?',[username], function(err, result, fields) {
         if (err) {
@@ -113,6 +102,29 @@ const userList = require('../Monitoring/User-mon');
         client.publish(topic, response);  
         });
     }
+    /***
+    * Functions that update the password of the user in the database
+    */
+   async updatePass(username, password2) {
+    console.log("user:",username);
+    console.log("newPass:",password2);
+    let password = await bcrypt.hash(password2, 12);
+
+    pool.query(
+        'UPDATE User SET\
+        `password`= ? \
+         WHERE \
+         `User`.`username` = ?;',[password,username], function(err, result, fields) {
+        if (err) {
+            console.log(err)
+            return;
+        }
+        else{
+            console.log("The password was successfully changed")
+    }
+    });
+   }
+
 }
   
  
