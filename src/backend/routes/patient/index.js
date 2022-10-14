@@ -174,9 +174,7 @@ routerPatient.post('/', async function(req, res) {
                                                                                 console.log("error adding a treatment to a pacient ")
                                                                                 return;
                                                                             }
-                                                                            else{
-
-                                                                            
+                                                                            else{                                                                            
                                                                     
                                                                             connection.commit(function(err){
                                                                                 if(err){
@@ -184,8 +182,11 @@ routerPatient.post('/', async function(req, res) {
                                                                                         connection.release();
                                                                                         console.log("error 5 ")
                                                                                         res.send().status(400);
-                                                                                    })                            
-                                                                                }
+                                                                                    })
+                                                                                                           
+                                                                                }else{
+                                                                                    console.log("patient added to db")
+                                                                                }     
                                                                             })
                                                                         } 
                                                                     });
@@ -354,7 +355,7 @@ routerPatient.post('/', async function(req, res) {
     console.log(req.body);    
     let patientId=parseInt(req.params.id);
         
-  await pool.query(
+    await pool.query(
         'DELETE FROM Pacient \
         WHERE \
          `Pacient`.`pacientId` = ?;',[patientId], function(err, result, fields) {
@@ -365,15 +366,53 @@ routerPatient.post('/', async function(req, res) {
     });
   
     await pool.query(
+        'DELETE FROM EventsTable \
+        WHERE \
+         `EventsTable`.`pacientId` = ?;',[patientId], function(err, result, fields) {
+        if (err) {
+            res.send(err).status(400);
+            return;
+        }        
+    });  
+    await pool.query(
         'DELETE FROM PatientSpecTable \
         WHERE \
          `PatientSpecTable`.`patientSpecId` = ?;',[patientId], function(err, result, fields) {
         if (err) {
             res.send(err).status(400);
             return;
+        }        
+        else{res.send(result).status(200);  }  
+    });
+
+    //Updating bedlist
+    BedsList.bedlist=[{id:0,st:0,spec:0}];                        
+    await   pool.query('select * from Bed join PriorityTable using (bedId) ORDER BY PriorityTable.priority DESC', async function(err, result, fields) {
+        console.log("filling beds")
+        if (err) {
+            console.log("Error in bedlist1");
+            return;
         }
-        res.send(result).status(200);    
+        await result.forEach(element => {  
+            BedsList.addBed(element.bedId);                  
+        });
+        await pool.query('Select * from PatientSpecTable \
+        JOIN SpecTable on SpecTable.id = PatientSpecTable.specId  \
+        JOIN Pacient on Pacient.pacientId = PatientSpecTable.patientId  \
+        JOIN Bed on Bed.bedId = Pacient.bedId  \
+        ', function(err, result, fields) {
+            if (err) {
+                console.log("error in bedlist 3")
+                return;
+            }                    
+            result.forEach(element => {  
+                //console.log(element)               
+                BedsList.setStatus(element.bedId,1);      
+                BedsList.setTreat(element.bedId,element.specId);
+            });            
+        });       
     });  
+
     
 });
 
