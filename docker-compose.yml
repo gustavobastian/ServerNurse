@@ -42,7 +42,7 @@ services:
             -                    .env
         ports: 
             -                    "8000:3000"
-        command:                 bash -c "npm set registry https://registry.npmjs.org/ && npm install --save cookie-parser dotenv mqtt bcrypt express-jwt jsonwebtoken node-schedule --save  && sleep 50  && nodemon /home/node/app/src/index.js"
+        command:                 bash -c "npm set registry https://registry.npmjs.org/ && npm install --save randomstring cookie-parser dotenv mqtt bcrypt express-jwt jsonwebtoken node-schedule --save  && sleep 50  && nodemon /home/node/app/src/index.js"
 
 networks:
     NurseSystem-net:

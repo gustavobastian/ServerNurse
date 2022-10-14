@@ -2,6 +2,9 @@ var express = require('express');
 var eventsTable = express.Router();
 var pool = require('../../mysql');
 
+var randf = require('randomstring');    
+
+
 const schedule = require('node-schedule');
 var client = require ('../../mqtt/mqtt')
 var BedsList = require('../../Monitoring/Bed-mon');
@@ -11,6 +14,7 @@ var CalendarList = require('../../Monitoring/Calendar-mon');
 //filling the bedList
 async function fillingScheduledJobs(){
     console.log("generating scheduled jobs")
+    let scheduleJob=0;
     let type=0;
     pool.query('Select * from EventsTable', function(err, result, fields) {
         if (err) {
@@ -19,7 +23,7 @@ async function fillingScheduledJobs(){
         }
         if(result!=null )
         {
-            
+        let n=0;
         result.forEach(element => {
             console.log(JSON.stringify(element)    );
             console.log(element.datetime)
@@ -30,6 +34,7 @@ async function fillingScheduledJobs(){
             let minutesL=data.getMinutes();
             let dateL=data.getDate();
             let dayL= data.getDay();
+            
 
             console.log("h:"+hoursL+"|min:"+ minutesL+"|date:"+ dateL+"|dayL:"+ dayL);
             pool.query('Select * from Pacient where pacientId = ?',element.pacientId, function(err, result, fields) {
@@ -41,24 +46,38 @@ async function fillingScheduledJobs(){
                 else{
                         bedID=result[0].bedId;    
                         console.log(result[0].bedId)
+                           
+                        
+                        var jobId ="job-"+n.toString(); //randomsrting
+                        n=n+1;    
+
 
                         if(element.type=="daily"){
                                 console.log("creating daily job")
+                                console.log("jobId:"+jobId);  
                                 type=1;
                                 const rule= new schedule.RecurrenceRule();
                                 rule.hour=hoursL;
-                                rule.minute=minutesL;
-                                
+                                rule.minute=minutesL;                                
                                     
-                                    console.log("bed calendario:"+bedID);
-                                    const job = schedule.scheduleJob(rule,function(){
+                                //console.log("bed calendario:"+bedID);
+                                schedule.scheduleJob(jobId,rule,function(){
                                         console.log("lauching daily job ");  
-                                        console.log("Bed:"+bedID);  
-                                        console.log("Note:"+element.note);  
+                                //        console.log("Bed:"+bedID);  
+                                //        console.log("Note:"+element.note);  
+                                         console.log("jobId:"+jobId);  
                                         BedsList.setStatus(bedID,5);
                                         CalendarList.addCalendar(element.eventId,bedID,element.note);
                                      //  client.publish("/Calendar/Notes", JSON.stringify({'id':bedID,"note":element.note}));                  
-                                    })                   
+                                    })
+                                    var jobList = schedule.scheduledJobs;
+                                    var d=0;
+                                    for(jobName in jobList){
+                                        // Here inside **jobName** you are getting name of each Schedule.
+                                        d=d+1;
+                                    }
+
+                                    console.log("number of jobs:"+d)                                                   
                             }
                         if(element.type=="weekly"){
                             console.log("creating weekly job")
@@ -66,39 +85,64 @@ async function fillingScheduledJobs(){
                             rule.hour=hoursL;
                             rule.minute=minutesL;
                             rule.dayOfWeek=dayL;
-                            const job = schedule.scheduleJob(rule, function(){
+                            console.log("jobId:"+jobId);  
+                            schedule.scheduleJob(jobId,rule, function(){
                                 console.log("lauching weekly job ");                        
-                                console.log("Bed:"+element.bedId);  
-                                console.log("Note:"+element.note);  
+                                //console.log("Bed:"+element.bedId);  
+                                //console.log("Note:"+element.note);  
+                                console.log("jobId:"+jobId);  
+                                
                                 BedsList.setStatus(bedID,5);
                                 CalendarList.addCalendar(element.eventId,element.bedId,element.note);
-                                //client.publish("/Calendar/Notes", JSON.stringify({'id':bedID,"note":element.note}));                  
+                                //client.publish("/Calendar/Notes", JSON.stringify({'id':bedID,"note":element.note}));   
+                        
 
-                        }) }  
+                        }) 
+                        var jobList = schedule.scheduledJobs;
+                                    var d=0;
+                                    for(jobName in jobList){
+                                        // Here inside **jobName** you are getting name of each Schedule.
+                                        d=d+1;
+                                    }
+
+                                    console.log("number of jobs:"+d)                                                                                                                                 
+           
+                        }  
                         if(element.type=="monthly"){
                             console.log("creating monthly job")
+                            console.log("jobId:"+jobId);  
                                     const rule= new schedule.RecurrenceRule();
                                     rule.hour=hoursL;
                                     rule.minute=minutesL;
                                     rule.date=dateL;
                             
                                     type=3;
-                                    const job = schedule.scheduleJob(rule, function(){
+                                    schedule.scheduleJob(jobId,rule, function(){
                                         console.log("lauching monthly job ");                        
-                                        console.log("Bed:"+element.bedId);  
-                                        console.log("Note:"+element.note);  
+                                        //console.log("Bed:"+element.bedId);  
+                                        //console.log("Note:"+element.note);  
+                                        console.log("jobId:"+jobId);  
                                         BedsList.setStatus(bedID,5);
                                         CalendarList.addCalendar(element.eventId,element.bedID,element.note);
-                                  //      client.publish("/Calendar/Notes", JSON.stringify({'id':bedID,"note":element.note}));                  
-                    
-                                }) }    
+                                  //      client.publish("/Calendar/Notes", JSON.stringify({'id':bedID,"note":element.note}));   
+                                        
+                                })
+                                var jobList = schedule.scheduledJobs;
+                                    var d=0;
+                                    for(jobName in jobList){
+                                        // Here inside **jobName** you are getting name of each Schedule.
+                                        d=d+1;
+                                    }
+
+                                    console.log("number of jobs:"+d)                                                   
+                                }    
                                 
                                 
                     }
                 })           
 
             });  
-
+           
         }
     })
        
@@ -115,6 +159,18 @@ fillingScheduledJobs();
 */
 
 eventsTable.get('/', function(req, res) {
+     //counting all scheduled jobs
+     var jobList = schedule.scheduledJobs;
+     var d=0;
+     for(jobName in jobList){
+         // Here inside **jobName** you are getting name of each Schedule.
+         console.log(JSON.stringify(jobName))
+         d=d+1;
+     }
+
+     console.log("number of jobs:"+d)                                                   
+    
+    
     pool.query('Select * from EventsTable', function(err, result, fields) {
         if (err) {
             res.send(err).status(400);
@@ -130,12 +186,31 @@ eventsTable.get('/', function(req, res) {
 
 eventsTable.get('/:id', function(req, res) {
     idAb=req.params.id;   
+
+    //counting all scheduled jobs
+    var jobList = schedule.scheduledJobs;
+    var d=0;
+    for(jobName in jobList){
+        // Here inside **jobName** you are getting name of each Schedule.
+        console.log(JSON.stringify(jobName))
+        d=d+1;
+    }
+
+    console.log("number of jobs:"+d)                                                   
+   
+     
+
     pool.query('Select * from EventsTable where pacientId=?',[idAb], function(err, result, fields) {
         if (err) {
-            res.send(err).status(404);
+     
+            res.send(err).status(404);            
             return;
         }
-        res.send(result);
+        else{
+     
+            res.send(result);            
+            return;
+        }
     });
 });
 
@@ -169,12 +244,18 @@ eventsTable.get('/:id', function(req, res) {
     console.log("nota:"+note);
     console.log("datetime:"+(stringTime));
 
+    //deleting all scheduled jobs
+    try {
+        for (const job in schedule.scheduledJobs) schedule.cancelJob(job);   
+    }catch(e){console.log(e);}
+
     pool.query(
         'INSERT INTO EventsTable(`pacientId`, `type`, `dateTime`, `note`) \
         VALUES (?,?,?,?)',[pacientId,type,stringTime,note], function(err, result, fields) {
         if (err) {
             res.send(err).status(400);
             console.log("error"+err);   
+            fillingScheduledJobs();
             return;
         }
         else{
@@ -207,6 +288,14 @@ eventsTable.get('/:id', function(req, res) {
     let type=(req.body.type);  
     let note =( req.body.note);
 
+
+    
+    //deleting all scheduled jobs
+    try {
+        for (const job in schedule.scheduledJobs) schedule.cancelJob(job);
+   
+    }catch(e){console.log(e);}
+
     console.log("eventId: " + eventId + " dateTime: " + dateTime + " type: " + type + "note:"+note)
         
     pool.query(
@@ -218,9 +307,16 @@ eventsTable.get('/:id', function(req, res) {
          `EventsTable`.`eventId` = ?;',[type,dateTime,note,eventId], function(err, result, fields) {
         if (err) {
             res.send(err).status(400);
+            fillingScheduledJobs();
             return;
         }
+        else{
         res.send(result).status(201);
+        fillingScheduledJobs();
+        return;
+        }
+
+
     });
 
 });
@@ -231,10 +327,20 @@ eventsTable.get('/:id', function(req, res) {
  * any
  */
 
- eventsTable.delete('/:id', function(req, res) {
+ eventsTable.delete('/:id', async function(req, res) {
     console.log(req.body);
-    
     let eventId=parseInt(req.params.id);
+
+    
+    //deleting all scheduled jobs
+    try {
+        for (const job in schedule.scheduledJobs) schedule.cancelJob(job);
+   
+    }catch(e){console.log(e);}
+    
+
+    
+    
     console.log("deleting event:"+eventId)        
     pool.query(
         'DELETE FROM EventsTable        \
@@ -242,10 +348,17 @@ eventsTable.get('/:id', function(req, res) {
          `EventsTable`.`eventId` = ?;',[eventId], function(err, result, fields) {
         if (err) {
             res.send(err).status(400);
+            fillingScheduledJobs();
             return;
         }
+        else{
         res.send(result).status(201);
+        fillingScheduledJobs();
+        return;
+        }
+        
     });
+    
 
 });
 
