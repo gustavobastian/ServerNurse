@@ -34,9 +34,9 @@ routerAuthenticate.post('/', async function(req, res) {
                 return;    
             }
             else{
-                console.log(response);            
+                //console.log(response);            
 
-                //console.log(JSON.stringify(result[0]));
+               // console.log(JSON.stringify(result[0]));
                 try{
                 testUser.username=result[0].username;
                 testUser.password=result[0].password;
@@ -48,7 +48,7 @@ routerAuthenticate.post('/', async function(req, res) {
                 
                     await bcrypt.compare(user.password, result[0].password, (err, resultComp)=> {
 
-                        if (resultComp==true  ) {
+                        if ((resultComp==true  ) &&(result[0].occupation=="Administrador") ){
                             var token = jwt.sign(user, process.env.JWT_SECRET,{
                                 expiresIn: process.env.JWT_EXP_TIM
                             });
