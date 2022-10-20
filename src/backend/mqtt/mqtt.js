@@ -267,12 +267,7 @@ client.on('message', async function (topic, message,packet) {
     
     User.loginOut(message_data._username,client,UserList)     
   }
-  if(message_data._type=== 23){
-   // console.log(JSON.stringify(message_data))
-    data=message_data._content.split("Ç");
-    if(message_data._username==data[1]){
-    User.updatePass(message_data._username,data[0],client)    ; }
-  }
+  
   /**
    *Asking/editing Patients  information/notes
    **/  
@@ -427,6 +422,19 @@ client.on('message', async function (topic, message,packet) {
     await Calendar.getCalendarNotes(message_data._bedId,client,CalendarList);
     
   }
+
+/**
+ * message type 23===>> prepared for updating pass... not used
+ */
+  if(message_data._type=== 23){
+    // console.log(JSON.stringify(message_data))
+     data=message_data._content.split("Ç");
+   
+   //uncomment next lines for enabling  
+   //  if(message_data._username==data[1]){
+   //  User.updatePass(message_data._username,data[0],client)    ; }
+   }
+
 
   })
 
