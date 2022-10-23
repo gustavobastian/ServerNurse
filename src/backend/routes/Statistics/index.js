@@ -19,7 +19,7 @@ routerStatistics.get('/promNurse', function(req, res) {
  * Send to client events counts by patient
 */
 routerStatistics.get('/promPatient', function(req, res) {    
-    pool.query('SELECT pacientID,COUNT(*) as cn FROM `LogEvents` GROUP BY `LogEvents`.`pacientId` ASC ', function(err, result, fields) {
+    pool.query('SELECT patientId,COUNT(*) as cn FROM `LogEvents` GROUP BY `LogEvents`.`patientId` ASC ', function(err, result, fields) {
         if (err) {
             res.send(err).status(400);
             return;

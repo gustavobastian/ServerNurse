@@ -131,17 +131,17 @@ if(typeofEvent!=3){
   note=" ";
   note2=" ";
 
-  pool.query('SELECT pacientId from   \
+  pool.query('SELECT patientId from   \
   Pacient  WHERE `Pacient`.`bedId`= ?',[bedId], function(err, result, fields) {
     if (err|| result.length==0) {
         console.log("error")
     }
     else{
-      let pacientIdLocal=result[0].pacientId;
-    console.log(result[0].pacientId)
+      let patientIdLocal=result[0].patientId;
+    console.log(result[0].patientId)
      
     pool.query('INSERT INTO `LogEvents`   \
-          (`type`,`pacientId`,`userId`,`Note`,`Note2`) VALUES(?,?,?,?,?)',[typeofEvent,pacientIdLocal,userIdLocal,'','' ], 
+          (`type`,`patientId`,`userId`,`Note`,`Note2`) VALUES(?,?,?,?,?)',[typeofEvent,patientIdLocal,userIdLocal,'','' ], 
           function(err, result, fields) {
           if (err|| result.length==0) {
               console.log("error",err)
@@ -159,13 +159,13 @@ else {
           CalendarList.removeCalendar(calendarId);   
         }
 
-        pool.query('SELECT pacientId from   \
+        pool.query('SELECT patientId from   \
         Pacient  WHERE `Pacient`.`bedId`= ?',[bedId], function(err, result, fields) {
           if (err|| result.length==0) {
               console.log("error")
           }
           else{
-            pacientLocal=result[0].pacientId;  
+            pacientLocal=result[0].patientId;  
             pool.query('SELECT userId from   \
             User  WHERE `User`.`username`= ?',[username], function(err, result, fields) {
               if (err|| result.length==0) {
@@ -174,7 +174,7 @@ else {
               else{
                         userId=result[0].userId;  
                         pool.query('SELECT logEventId from  LogEvents \
-                        WHERE `LogEvents`.`pacientId`= ? ORDER BY logEventId DESC LIMIT 1',[pacientLocal], function(err, result, fields) {
+                        WHERE `LogEvents`.`patientId`= ? ORDER BY logEventId DESC LIMIT 1',[pacientLocal], function(err, result, fields) {
                         if (err|| result.length==0) {
                             console.log("error1:",err )
                         }
@@ -279,14 +279,14 @@ client.on('message', async function (topic, message,packet) {
   if((message_data._type=== 3)){//&&(topic==="Pacient/#")){
     console.log("escribiendo nota");
     let d= topic.split('/')
-    //console.log("pacientID:"+d[2])
+    //console.log("patientId:"+d[2])
     if(d[2]==null){return;}
     if(message_data._content==""){return;}
     Patient.setPatientNotesPatientId(d[2],message_data._content,client);    
   }
   if((message_data._type=== 4)){//&&(topic==="Pacient/#")){
 	console.log("asking info")  
-    Patient.getPatientInfoPacientId((message_data._content),client);
+    Patient.getPatientInfopatientId((message_data._content),client);
   }
   if((message_data._type=== 5)){//&&(topic==="Pacient/#")){
 	  console.log("asking notes")  

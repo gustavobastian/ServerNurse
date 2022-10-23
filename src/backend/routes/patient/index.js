@@ -17,7 +17,7 @@ routerPatient.get('/', function(req, res) {
 });
 //API for getting all Pacients id information
 routerPatient.get('/numbers', function(req, res) {
-    pool.query('Select pacientId from Patient', function(err, result, fields) {
+    pool.query('Select patientId from Patient', function(err, result, fields) {
         if (err) {
             res.send(err).status(400);
             return;
@@ -31,7 +31,7 @@ routerPatient.get('/numbers', function(req, res) {
 //API for getting all  information for a single pacient
 routerPatient.get('/:id', function(req, res) {
     idAb=req.params.id;   
-    pool.query('Select * from Patient where pacientId = ?',idAb, function(err, result, fields) {
+    pool.query('Select * from Patient where patientId = ?',idAb, function(err, result, fields) {
         if (err) {
             res.send(err).status(400);
             return;
@@ -44,14 +44,14 @@ routerPatient.get('/:id', function(req, res) {
 
 /*
  * query for getting doctors from pacient id
- * SELECT userId, username from `Pacient` as p JOIN `MedicalTable` as MT JOIN `User` as us ON p.userTableId=MT.userTableId AND MT.userId=us.userID Where p.pacientId=1;
+ * SELECT userId, username from `Pacient` as p JOIN `MedicalTable` as MT JOIN `User` as us ON p.userTableId=MT.userTableId AND MT.userId=us.userID Where p.patientId=1;
  * 
  * */
  
 //API for adding new  Pacient
 /**
  * body format:
- * [{"pacientId":2, 
+ * [{"patientId":2, 
  * "firstname":"peter",
  * "lastname":"Frant",
  * "bedId":"3",
@@ -63,7 +63,7 @@ routerPatient.post('/', async function(req, res) {
     console.log(req.body);
     let received= JSON.stringify(req.body);
     console.log("firstname rev:"+received);
-    let pacientId=req.body._pacientId;
+    let patientId=req.body._patientId;
 
     
     
@@ -73,7 +73,7 @@ routerPatient.post('/', async function(req, res) {
     console.log("lastname:"+lastname);
     let bedId= (req.body._bedId);
     console.log("bedid:"+bedId);
-    let notesTableId=(req.body._pacientId);
+    let notesTableId=(req.body._patientId);
     let usersTableId = (req.body._userTableId);   
     let output; 
     
@@ -155,8 +155,8 @@ routerPatient.post('/', async function(req, res) {
 
 
                                                             connection.query(
-                                                                'INSERT INTO Patient (`pacientId`, `firstName`, `lastName`, `bedId`, `notesTableId`, `userTableId`) \
-                                                                VALUES (?,?,?,?,?,?)',[pacientId,firstname,lastname,bedId,notesTableId,usersTableId], 
+                                                                'INSERT INTO Patient (`patientId`, `firstName`, `lastName`, `bedId`, `notesTableId`, `userTableId`) \
+                                                                VALUES (?,?,?,?,?,?)',[patientId,firstname,lastname,bedId,notesTableId,usersTableId], 
                                                                 async function(err, result, fields) {
                                                                 if (err) {
                                                                     console.log("error:"+err)
@@ -168,7 +168,7 @@ routerPatient.post('/', async function(req, res) {
                                                                 }
                                                                 else{
                                                                     connection.query('INSERT INTO `PatientSpecTable` ( `patientId`,`specID`)  \
-                                                                                    VALUES (?,?)',[pacientId,1], function(err, result, fields) {
+                                                                                    VALUES (?,?)',[patientId,1], function(err, result, fields) {
                                                                             if (err) {
                                                                                 res.send(err).status(400);
                                                                                 console.log("error adding a treatment to a pacient ")
@@ -207,7 +207,7 @@ routerPatient.post('/', async function(req, res) {
                                                                             });
                                                                             await pool.query('Select * from PatientSpecTable \
                                                                             JOIN SpecTable on SpecTable.id = PatientSpecTable.specId  \
-                                                                            JOIN Pacient on Pacient.pacientId = PatientSpecTable.patientId  \
+                                                                            JOIN Pacient on Pacient.patientId = PatientSpecTable.patientId  \
                                                                             JOIN Bed on Bed.bedId = Pacient.bedId  \
                                                                             ', function(err, result, fields) {
                                                                                 if (err) {
@@ -271,7 +271,7 @@ routerPatient.post('/', async function(req, res) {
 //API for editing a Patient
 /**
  * body format: * 
- * {"_pacientId":2, 
+ * {"_patientId":2, 
  * "_firstname":"peter",
  * "_lastname":"Frant",
  * "_bedId":"3",
@@ -285,7 +285,7 @@ routerPatient.post('/', async function(req, res) {
 	let received= JSON.stringify(req.body);    
     let received2 = JSON.parse(received)    
     
-    let pacientId=parseInt(req.params.id);
+    let patientId=parseInt(req.params.id);
     
     let firstname=req.body._firstName;
     let lastname=req.body._lastName;
@@ -302,7 +302,7 @@ routerPatient.post('/', async function(req, res) {
         `bedId` = ?, \
         `userTableId`= ? \
          WHERE \
-         `Patient`.`pacientId` = ?;',[firstname,lastname,bedId,usersTableId,pacientId], async function(err, result, fields) {
+         `Patient`.`patientId` = ?;',[firstname,lastname,bedId,usersTableId,patientId], async function(err, result, fields) {
         if (err) {
             res.send(err).status(400);
             console.log("Error:"+err)
@@ -323,7 +323,7 @@ routerPatient.post('/', async function(req, res) {
         });
         await pool.query('Select * from PatientSpecTable \
         JOIN SpecTable on SpecTable.id = PatientSpecTable.specId  \
-        JOIN Patient on Patient.pacientId = PatientSpecTable.patientId  \
+        JOIN Patient on Patient.patientId = PatientSpecTable.patientId  \
         JOIN Bed on Bed.bedId = Patient.bedId  \
         ', function(err, result, fields) {
             if (err) {
@@ -358,7 +358,7 @@ routerPatient.post('/', async function(req, res) {
     await pool.query(
         'DELETE FROM Patient \
         WHERE \
-         `Patient`.`pacientId` = ?;',[patientId], function(err, result, fields) {
+         `Patient`.`patientId` = ?;',[patientId], function(err, result, fields) {
         if (err) {
             res.send(err).status(400);
             return;
@@ -368,7 +368,7 @@ routerPatient.post('/', async function(req, res) {
     await pool.query(
         'DELETE FROM EventsTable \
         WHERE \
-         `EventsTable`.`pacientId` = ?;',[patientId], function(err, result, fields) {
+         `EventsTable`.`patientId` = ?;',[patientId], function(err, result, fields) {
         if (err) {
             res.send(err).status(400);
             return;
@@ -398,7 +398,7 @@ routerPatient.post('/', async function(req, res) {
         });
         await pool.query('Select * from PatientSpecTable \
         JOIN SpecTable on SpecTable.id = PatientSpecTable.specId  \
-        JOIN Patient on Patient.pacientId = PatientSpecTable.patientId  \
+        JOIN Patient on Patient.patientId = PatientSpecTable.patientId  \
         JOIN Bed on Bed.bedId = Patient.bedId  \
         ', function(err, result, fields) {
             if (err) {

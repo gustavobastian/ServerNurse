@@ -20,7 +20,7 @@ eventsTable.get('/', function(req, res) {
 
 eventsTable.get('/patient/:id', function(req, res) {
     idAb=req.params.id;   
-    pool.query('Select * from LogEvents where pacientId=?',[idAb], function(err, result, fields) {
+    pool.query('Select * from LogEvents where patientId=?',[idAb], function(err, result, fields) {
         if (err) {
             res.send(err).status(400);
             return;
@@ -60,7 +60,7 @@ eventsTable.get('/patient/:id', function(req, res) {
 
 //API for adding new Events 
 /**
- *{"pacientId":1,
+ *{"patientId":1,
  *"type": "daily",
  *"note":"say hola",
  *"dateTime":"2022-07-20 11:39:51"
@@ -74,7 +74,7 @@ eventsTable.get('/patient/:id', function(req, res) {
     let received=(JSON.stringify(req.body));       
     let received2=JSON.parse(received);
     
-    let pacientId=parseInt(received2._pacientId);
+    let patientId=parseInt(received2._patientId);
     let date_int_init=(received2._dateTimeInit);
     let date_int_finish=(received2._dateTimeFinish);
     let stringTimeInit=JSON.parse(date_int_init);
@@ -89,8 +89,8 @@ eventsTable.get('/patient/:id', function(req, res) {
     //console.log("datetime:"+JSON.parse(stringTime));
 /*
     pool.query(
-        'INSERT INTO LogEvents(`pacientId`, `type`, `dateTime`, `note`) \
-        VALUES (?,?,?,?)',[pacientId,type,stringTime,note], function(err, result, fields) {
+        'INSERT INTO LogEvents(`patientId`, `type`, `dateTime`, `note`) \
+        VALUES (?,?,?,?)',[patientId,type,stringTime,note], function(err, result, fields) {
         if (err) {
             res.send(err).status(400);
             console.log("error"+err);   

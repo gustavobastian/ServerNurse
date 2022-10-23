@@ -129,12 +129,12 @@ DELETE methods:
 GET methods:
 * "localhost:8000/api/patient/": returns all the patients registered in the system in JSON format.
 * "localhost:8000/api/patient/:id": returns the user's information registered in the system in JSON format. Example: \
-`[{"pacientId":1,"firstName":"Pedro","lastName":"Pasculli","bedId":1,"notesTableId":1,"userTableId":1}]` 
+`[{"patientId":1,"firstName":"Pedro","lastName":"Pasculli","bedId":1,"notesTableId":1,"userTableId":1}]` 
 
 POST methods:
 * "localhost:8000/api/patient/": used for adding a new pacient to the system, needs the patient information in the body of the message.
 Body example:  
- {"pacientId":2, 
+ {"patientId":2, 
   "firstname":"peter",
   "lastname":"Frant",
   "bedId":"3",
@@ -156,10 +156,10 @@ DELETE method:
 #### Table of treatments assigned to a patient
 GET methods:
 * "localhost:8000/api/patient/treatment/all": returns the pacient-treatment table in JSON Format:\
-[{"pacientSpecId":1,"pacientId":1,"specId":1,"id":1,"Name":"Oncología"},{"pacientSpecId":2,"pacientId":2,"specId":2,"id":2,"Name":"Cardiología"}]
+[{"pacientSpecId":1,"patientId":1,"specId":1,"id":1,"Name":"Oncología"},{"pacientSpecId":2,"patientId":2,"specId":2,"id":2,"Name":"Cardiología"}]
 
 * "localhost:8000/api/patient/treatment/:id": returns the pacient-treatment row in JSON Format:\
-[{"pacientSpecId":1,"pacientId":1,"specId":1,"id":1,"Name":"Oncología"}]
+[{"pacientSpecId":1,"patientId":1,"specId":1,"id":1,"Name":"Oncología"}]
 
 * "localhost:8000/api/patient/treatment/bed/:id": returns the specialization Id in JSON Format using the bedId as parameter:\
 [{"bedId":1,"specId":1}]\
@@ -173,10 +173,10 @@ POST method:
 GET methods:
 * "localhost:8000/api/messages/": returns the last 100 messages saved in the database in JSON format.
 Example of return:\
-[{"messageId":1,"userIdLastName":"1","userIdSender":1,"pacientId":"1","content":"Se levanto bien","dateTime":"2022-05-01T23:36:03.000Z","audiolink":null,"userTableId":1}]
+[{"messageId":1,"userIdLastName":"1","userIdSender":1,"patientId":"1","content":"Se levanto bien","dateTime":"2022-05-01T23:36:03.000Z","audiolink":null,"userTableId":1}]
 * "localhost:8000/api/messages/info": returns the last 100 messages saved in the database in JSON format with information of the sender.
 Example of return:\
-[{"messageId":1,"firstname":"Jose","lastname":"laurm","pacientId":"1","content":"Se levanto bien"}]
+[{"messageId":1,"firstname":"Jose","lastname":"laurm","patientId":"1","content":"Se levanto bien"}]
 
 
 based in https://github.com/gotoiot/app-fullstack-base

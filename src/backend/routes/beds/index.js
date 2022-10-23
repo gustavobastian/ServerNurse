@@ -18,8 +18,8 @@ async function fillingBeds(){
         });
         await pool.query('Select * from PatientSpecTable \
         JOIN SpecTable on SpecTable.id = PatientSpecTable.specId  \
-        JOIN Pacient on Pacient.pacientId = PatientSpecTable.patientId  \
-        JOIN Bed on Bed.bedId = Pacient.bedId  \
+        JOIN Patient on Patient.patientId = PatientSpecTable.patientId  \
+        JOIN Bed on Bed.bedId = Patient.bedId  \
         ', function(err, result, fields) {
             if (err) {
                 console.log("error in bedlist 3")
@@ -77,7 +77,7 @@ routerBeds.get('/:id', function(req, res) {
 routerBeds.get('/pacient/notes/:id', function(req, res) {
     idAb=req.params.id;   
     //pool.query('Select * from Bed as b JOIN Pacient AS p ON b.bedId=p.bedId JOIN NotesTable AS n ON p.notesTableId=n.notesTableId JOIN Notes AS nn ON n.noteId= n.noteId where b.bedId='+idAb, function(err, result, fields) {
-        pool.query(`Select * from Bed as b JOIN Pacient AS p ON b.bedId=p.bedId where b.bedId=?`,[idAb],   function(err, result, fields) {
+        pool.query(`Select * from Bed as b JOIN Patient AS p ON b.bedId=p.bedId where b.bedId=?`,[idAb],   function(err, result, fields) {
       //pool.query('Select notesId,firstname,lastname,note, state from Bed as b JOIN Pacient AS p ON b.bedId=p.bedId JOIN NotesTable AS n ON p.notesTableId=n.notesTableId JOIN Notes AS nn ON n.noteId= nn.notesId WHERE nn.state= "activa" AND b.bedId=?',[idAb], function(err, result, fields) {      
         if (err) {
             res.send(err).status(400);
@@ -170,7 +170,7 @@ routerBeds.post('/pacient/notes/activation/:id', function(req, res) {
                     });
                     await pool.query('Select * from PatientSpecTable \
                     JOIN SpecTable on SpecTable.id = PatientSpecTable.specId  \
-                    JOIN Pacient on Pacient.pacientId = PatientSpecTable.patientId  \
+                    JOIN Patient on Patient.patientId = PatientSpecTable.patientId  \
                     JOIN Bed on Bed.bedId = Pacient.bedId  \
                     ', function(err, result, fields) {
                         if (err) {

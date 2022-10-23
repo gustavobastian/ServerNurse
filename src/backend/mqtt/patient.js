@@ -17,7 +17,7 @@ var pool = require('../mysql/index');
         
         let topic= "/Beds/"+bedId+"/Pacient";
 
-        pool.query('SELECT pacientId  \
+        pool.query('SELECT patientId  \
         FROM `Bed` as b JOIN `Patient` as P\
         USING (bedId) \
         WHERE b.bedId = ?',[bedId], function(err, result, fields) {
@@ -45,7 +45,7 @@ var pool = require('../mysql/index');
             let topiclocal= "/User/"+message+"/Pacients";
             
             pool.query('\
-            SELECT DISTINCT bedId,pacientId \
+            SELECT DISTINCT bedId,patientId \
             FROM `Patient` as p JOIN `MedicalTable` as Mt JOIN `User` as u JOIN `UsersTable` as uT \
             WHERE p.userTableId = uT.userTableId AND Mt.userTableId=uT.userTableId  AND u.userId = Mt.userId AND u.userId=? \
             ',[message], function(err, result, fields) {
@@ -64,11 +64,11 @@ var pool = require('../mysql/index');
          * Function that returns the pacient information to topic
          * @param {*} patientId :number that identifies the pacient
          */
-         getPatientInfoPacientId(patientId,client){
+         getPatientInfopatientId(patientId,client){
             console.log("patient:"+patientId);            
                         
             let topic= "/Pacient/"+patientId+"/info";
-            pool.query('Select * from Patient where pacientId = ?',[patientId], function(err, result, fields) {
+            pool.query('Select * from Patient where patientId = ?',[patientId], function(err, result, fields) {
             if (err || result.length==0) {
                 console.log("error:",err)
                 client.publish(topic, JSON.stringify("Error"));          
@@ -92,7 +92,7 @@ var pool = require('../mysql/index');
             let topic= "/Pacient/"+patientId+"/notes";
             pool.query('SELECT DISTINCT notesId,note,state \
             FROM `Notes` as n JOIN `NotesTable` as nt JOIN `Patient` as p \
-            WHERE n.notesTableId = nt.notesTableId AND p.notesTableId = nt.notesTableId AND pacientId = ? ORDER BY notesId DESC ',patientId, function(err, result, fields) {
+            WHERE n.notesTableId = nt.notesTableId AND p.notesTableId = nt.notesTableId AND patientId = ? ORDER BY notesId DESC ',patientId, function(err, result, fields) {
             if (err || result.length==0) {
                 console.log("error:",err)
                 client.publish(topic, JSON.stringify("Error"));          
@@ -126,9 +126,9 @@ var pool = require('../mysql/index');
         
         /**
          * Function that put a note on the patient(saves it to the database)
-         * @param {*} pacientId :number that identifies the patient
+         * @param {*} patientId :number that identifies the patient
          */
-        setPatientNotesPatientId(pacientId, note,client){
+        setPatientNotesPatientId(patientId, note,client){
             
             
             pool.getConnection(function(err, connection) {
@@ -142,7 +142,7 @@ var pool = require('../mysql/index');
                 } else {
                     console.log("aqui estoy")
                     connection.query('INSERT INTO `Notes` (`note`,`state`,`notesTableId`)\
-                    VALUES (?,?,?)', [note,"activa",pacientId], function(err, results) {
+                    VALUES (?,?,?)', [note,"activa",patientId], function(err, results) {
                         if (err) {          //Query Error (Rollback and release connection)
                             console.log(err);
                             connection.rollback(function() {

@@ -37,10 +37,10 @@ async function fillingScheduledJobs(){
             
 
             console.log("h:"+hoursL+"|min:"+ minutesL+"|date:"+ dateL+"|dayL:"+ dayL);
-            pool.query('Select * from Patient where pacientId = ?',element.pacientId, function(err, result, fields) {
+            pool.query('Select * from Patient where Patient.patientId = ?',[element.patientId], function(err, result, fields) {
                 if (err || result.length==0) {
                     console.log("error:",err)
-                   // client.publish(topic, JSON.stringify("Error"));          
+                   
                 }
                 
                 else{
@@ -200,7 +200,7 @@ eventsTable.get('/:id', function(req, res) {
    
      
 
-    pool.query('Select * from EventsTable where pacientId=?',[idAb], function(err, result, fields) {
+    pool.query('Select * from EventsTable where patientId=?',[idAb], function(err, result, fields) {
         if (err) {
      
             res.send(err).status(404);            
@@ -218,7 +218,7 @@ eventsTable.get('/:id', function(req, res) {
 
 //API for adding new Events 
 /**
- *{"pacientId":1,
+ *{"patientId":1,
  *"type": "daily",
  *"note":"say hola",
  *"dateTime":"2022-07-20 11:39:51"
@@ -232,13 +232,13 @@ eventsTable.get('/:id', function(req, res) {
     let received=(JSON.stringify(req.body));       
     let received2=JSON.parse(received);
     
-    let pacientId=parseInt(received2.pacientId);
+    let patientId=parseInt(received2.patientId);
     let date_int=JSON.parse(received2.dateTime);//
     console.log(date_int)
     let stringTime=JSON.parse(date_int);
     
     let type =( received2.type);
-    console.log("pacientId:"+pacientId);
+    console.log("patientId:"+patientId);
     console.log("tipo:"+type);
     let note =( received2.note);
     console.log("nota:"+note);
@@ -250,8 +250,8 @@ eventsTable.get('/:id', function(req, res) {
     }catch(e){console.log(e);}
 
     pool.query(
-        'INSERT INTO EventsTable(`pacientId`, `type`, `dateTime`, `note`) \
-        VALUES (?,?,?,?)',[pacientId,type,stringTime,note], function(err, result, fields) {
+        'INSERT INTO EventsTable(`patientId`, `type`, `dateTime`, `note`) \
+        VALUES (?,?,?,?)',[patientId,type,stringTime,note], function(err, result, fields) {
         if (err) {
             res.send(err).status(400);
             console.log("error"+err);   

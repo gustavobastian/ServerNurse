@@ -80,7 +80,7 @@ CREATE TABLE `QRbed` (
 
 CREATE TABLE `EventsTable` (
   `eventId` int(11) NOT NULL AUTO_INCREMENT,
-  `pacientId` int(11) NOT NULL,
+  `patientId` int(11) NOT NULL,
   `datetime` timestamp NOT NULL,  
   `type` varchar(10) NOT NULL,
   `note` varchar(255),
@@ -159,13 +159,13 @@ CREATE TABLE `MedicalTable` (
 
 
 CREATE TABLE `Patient` (
-  `pacientId` int(11) NOT NULL,
+  `patientId` int(11) NOT NULL,
   `firstName` varchar(255) NOT NULL,
   `lastName` varchar(255) NOT NULL,
   `bedId` int(11) ,  
   `notesTableId` int(11),  
   `userTableId` int(11),
-  PRIMARY KEY (`pacientId`),  
+  PRIMARY KEY (`patientId`),  
   FOREIGN KEY (`bedId`)  REFERENCES Bed(bedId), 
   FOREIGN KEY (`notesTableId`)  REFERENCES NotesTable(notesTableId),   
   FOREIGN KEY (`userTableId`)  REFERENCES UsersTable(userTableId)   
@@ -183,7 +183,7 @@ CREATE TABLE `Messages` (
   `messageId` int(11) NOT NULL,
   `userIdLastName` varchar(255) NOT NULL,
   `userIdSender` int(255) NOT NULL,
-  `pacientId` varchar(255) NOT NULL,
+  `patientId` varchar(255) NOT NULL,
   `content`varchar(255) NOT NULL,
   `dateTime` timestamp DEFAULT CURRENT_TIMESTAMP ,  
   `audiolink` char(255),  
@@ -233,7 +233,7 @@ CREATE TABLE `NurseSpecTable` (
 
 CREATE TABLE `PatientSpecTable` (
   `pacientSpecId` INT NOT NULL AUTO_INCREMENT ,
-  `pacientId` INT NOT NULL ,
+  `patientId` INT NOT NULL ,
    `specId` INT NOT NULL ,
     PRIMARY KEY (`pacientSpecId`)) ENGINE = InnoDB;
 
@@ -296,13 +296,13 @@ INSERT INTO `Notes` (`note`,`state`,`notesTableId`) VALUES
 -- Dumping data for table `pacient`
 --
 
-INSERT INTO `Patient` (`pacientId`, `firstName`,`lastName`,`BedId`,`notesTableId`,`userTableId`) VALUES
+INSERT INTO `Patient` (`patientId`, `firstName`,`lastName`,`BedId`,`notesTableId`,`userTableId`) VALUES
 (1, "Pedro","Pasculli",1,1,1 ),
 (2, "Oscar", "Rugger",2,1,2);
 
 
 
-INSERT INTO `Messages` (`messageId`, `userIdLastName`, `userIdSender`, `pacientId`, `content`, `dateTime`, `audiolink`, `userTableId`) VALUES ('1', '1', '1', '1', 'Se levanto bien', CURRENT_TIMESTAMP, NULL, '1');
+INSERT INTO `Messages` (`messageId`, `userIdLastName`, `userIdSender`, `patientId`, `content`, `dateTime`, `audiolink`, `userTableId`) VALUES ('1', '1', '1', '1', 'Se levanto bien', CURRENT_TIMESTAMP, NULL, '1');
 
 
 
@@ -311,7 +311,7 @@ CREATE TABLE `NurseSystemDB`.`LogEvents` (
    `type` INT NOT NULL ,
    `init` DATETIME NOT NULL ,
    `finish` DATETIME NOT NULL ,
-   `pacientId` INT NOT NULL ,
+   `patientId` INT NOT NULL ,
    `userId` INT NOT NULL ,
    `Note` VARCHAR(255) NOT NULL ,
    `Note2` VARCHAR(255) NOT NULL ,
