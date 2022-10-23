@@ -36,9 +36,9 @@ routerPatientSpecTable.get('/bed/:id', function(req, res) {
     let idAb=req.params.id;   
     pool.query('Select Bed.bedId,PatientSpecTable.specId from PatientSpecTable \
     JOIN SpecTable on SpecTable.id = PatientSpecTable.specId  \
-    JOIN Pacient on Pacient.pacientId = PatientSpecTable.patientId  \
-    JOIN Bed on Bed.bedId = Pacient.bedId  \
-    WHERE Pacient.pacientId=? limit 1',[idAb], function(err, result, fields) {
+    JOIN Patient on Patient.pacientId = PatientSpecTable.patientId  \
+    JOIN Bed on Bed.bedId = Patient.bedId  \
+    WHERE Patient.pacientId=? limit 1',[idAb], function(err, result, fields) {
         if (err) {
             res.send(err).status(400);
             return;

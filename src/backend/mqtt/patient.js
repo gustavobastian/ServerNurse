@@ -18,7 +18,7 @@ var pool = require('../mysql/index');
         let topic= "/Beds/"+bedId+"/Pacient";
 
         pool.query('SELECT pacientId  \
-        FROM `Bed` as b JOIN `Pacient` as P\
+        FROM `Bed` as b JOIN `Patient` as P\
         USING (bedId) \
         WHERE b.bedId = ?',[bedId], function(err, result, fields) {
             if (err|| result.length==0) {
@@ -46,7 +46,7 @@ var pool = require('../mysql/index');
             
             pool.query('\
             SELECT DISTINCT bedId,pacientId \
-            FROM `Pacient` as p JOIN `MedicalTable` as Mt JOIN `User` as u JOIN `UsersTable` as uT \
+            FROM `Patient` as p JOIN `MedicalTable` as Mt JOIN `User` as u JOIN `UsersTable` as uT \
             WHERE p.userTableId = uT.userTableId AND Mt.userTableId=uT.userTableId  AND u.userId = Mt.userId AND u.userId=? \
             ',[message], function(err, result, fields) {
             if (err || result.length==0) {
@@ -68,7 +68,7 @@ var pool = require('../mysql/index');
             console.log("patient:"+patientId);            
                         
             let topic= "/Pacient/"+patientId+"/info";
-            pool.query('Select * from Pacient where pacientId = ?',[patientId], function(err, result, fields) {
+            pool.query('Select * from Patient where pacientId = ?',[patientId], function(err, result, fields) {
             if (err || result.length==0) {
                 console.log("error:",err)
                 client.publish(topic, JSON.stringify("Error"));          
@@ -91,7 +91,7 @@ var pool = require('../mysql/index');
             // system publising last 2 notes only
             let topic= "/Pacient/"+patientId+"/notes";
             pool.query('SELECT DISTINCT notesId,note,state \
-            FROM `Notes` as n JOIN `NotesTable` as nt JOIN `Pacient` as p \
+            FROM `Notes` as n JOIN `NotesTable` as nt JOIN `Patient` as p \
             WHERE n.notesTableId = nt.notesTableId AND p.notesTableId = nt.notesTableId AND pacientId = ? ORDER BY notesId DESC ',patientId, function(err, result, fields) {
             if (err || result.length==0) {
                 console.log("error:",err)

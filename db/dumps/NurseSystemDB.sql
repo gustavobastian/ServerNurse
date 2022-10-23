@@ -158,7 +158,7 @@ CREATE TABLE `MedicalTable` (
 --
 
 
-CREATE TABLE `Pacient` (
+CREATE TABLE `Patient` (
   `pacientId` int(11) NOT NULL,
   `firstName` varchar(255) NOT NULL,
   `lastName` varchar(255) NOT NULL,
@@ -231,7 +231,7 @@ CREATE TABLE `NurseSpecTable` (
 -- Table structure for showing relations between pacient and treatment
 --
 
-CREATE TABLE `PacientSpecTable` (
+CREATE TABLE `PatientSpecTable` (
   `pacientSpecId` INT NOT NULL AUTO_INCREMENT ,
   `pacientId` INT NOT NULL ,
    `specId` INT NOT NULL ,
@@ -296,7 +296,7 @@ INSERT INTO `Notes` (`note`,`state`,`notesTableId`) VALUES
 -- Dumping data for table `pacient`
 --
 
-INSERT INTO `Pacient` (`pacientId`, `firstName`,`lastName`,`BedId`,`notesTableId`,`userTableId`) VALUES
+INSERT INTO `Patient` (`pacientId`, `firstName`,`lastName`,`BedId`,`notesTableId`,`userTableId`) VALUES
 (1, "Pedro","Pasculli",1,1,1 ),
 (2, "Oscar", "Rugger",2,1,2);
 

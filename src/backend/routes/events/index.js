@@ -37,7 +37,7 @@ async function fillingScheduledJobs(){
             
 
             console.log("h:"+hoursL+"|min:"+ minutesL+"|date:"+ dateL+"|dayL:"+ dayL);
-            pool.query('Select * from Pacient where pacientId = ?',element.pacientId, function(err, result, fields) {
+            pool.query('Select * from Patient where pacientId = ?',element.pacientId, function(err, result, fields) {
                 if (err || result.length==0) {
                     console.log("error:",err)
                    // client.publish(topic, JSON.stringify("Error"));          

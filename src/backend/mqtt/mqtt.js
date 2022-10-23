@@ -210,7 +210,7 @@ else {
 async function getBedIdCaller(callerId){
   console.log("here");
   console.log(callerId);
-  console.log("here*");
+  console.log("here*");/*
   pool.query('SELECT * from  Bed WHERE `callerId`= ?',[callerId],  function(err, result, fields) {
     if (err|| result.length==0) {
         console.log("error:"+err)
@@ -224,7 +224,7 @@ async function getBedIdCaller(callerId){
       return ;
     }
 
-})
+})*/
 }
 /**
  * Functions for subscribe to topics and reroute to api functions
@@ -232,24 +232,29 @@ async function getBedIdCaller(callerId){
 client.on('message', async function (topic, message,packet) {
   // message is Buffer
  // console.log(packet, packet.payload.toString()); 
+
   let message_data=JSON.parse(message);
-  //console.log(JSON.parse(message));
+  
   console.log("***********************************");
   console.log(topic);
+  //console.log((message));
+  //console.log(packet.payload.toString()); 
   console.log("***********************************");
   console.log(message_data._content); 
 
   //console.log(message_data._bedId); 
   //console.log("Message type:"+message_data._type); 
   //received an alarm from a caller device, update state of bed
-  if(topic==="/Beds/caller-events"){
+  if(topic==="/Beds/Caller-events"){
     //message_content {"_bedId":2,"_content":"alert","_time":"today","_username":"system"}
     //console.log(JSON.stringify(message_data));
     //BedsList.setStatus(message_data._bedId,2);
     //publishBedStates();
     //saveNewEvent(1,message_data._bedId,"system","","");
-    
-    await getBedIdCaller(message_data);
+    let message2=(JSON.stringify(packet.payload.toString()));
+    let message3=JSON.parse(message2);
+    console.log(message3.callerId)
+    await getBedIdCaller(message2);
     
   }
   //else{console.log("Message type:"+message_data._type); }

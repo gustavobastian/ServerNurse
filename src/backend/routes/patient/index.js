@@ -5,7 +5,7 @@ var BedsList = require('../../Monitoring/Bed-mon');
 
 //API for getting all Pacients information
 routerPatient.get('/', function(req, res) {
-    pool.query('Select * from Pacient', function(err, result, fields) {
+    pool.query('Select * from Patient', function(err, result, fields) {
         if (err) {
             res.send(err).status(400);
             return;
@@ -17,7 +17,7 @@ routerPatient.get('/', function(req, res) {
 });
 //API for getting all Pacients id information
 routerPatient.get('/numbers', function(req, res) {
-    pool.query('Select pacientId from Pacient', function(err, result, fields) {
+    pool.query('Select pacientId from Patient', function(err, result, fields) {
         if (err) {
             res.send(err).status(400);
             return;
@@ -31,7 +31,7 @@ routerPatient.get('/numbers', function(req, res) {
 //API for getting all  information for a single pacient
 routerPatient.get('/:id', function(req, res) {
     idAb=req.params.id;   
-    pool.query('Select * from Pacient where pacientId = ?',idAb, function(err, result, fields) {
+    pool.query('Select * from Patient where pacientId = ?',idAb, function(err, result, fields) {
         if (err) {
             res.send(err).status(400);
             return;
@@ -155,7 +155,7 @@ routerPatient.post('/', async function(req, res) {
 
 
                                                             connection.query(
-                                                                'INSERT INTO Pacient (`pacientId`, `firstName`, `lastName`, `bedId`, `notesTableId`, `userTableId`) \
+                                                                'INSERT INTO Patient (`pacientId`, `firstName`, `lastName`, `bedId`, `notesTableId`, `userTableId`) \
                                                                 VALUES (?,?,?,?,?,?)',[pacientId,firstname,lastname,bedId,notesTableId,usersTableId], 
                                                                 async function(err, result, fields) {
                                                                 if (err) {
@@ -296,13 +296,13 @@ routerPatient.post('/', async function(req, res) {
      
 
     await pool.query(
-        'UPDATE Pacient SET\
+        'UPDATE Patient SET\
         `firstname` = ?, \
         `lastname` = ?, \
         `bedId` = ?, \
         `userTableId`= ? \
          WHERE \
-         `Pacient`.`pacientId` = ?;',[firstname,lastname,bedId,usersTableId,pacientId], async function(err, result, fields) {
+         `Patient`.`pacientId` = ?;',[firstname,lastname,bedId,usersTableId,pacientId], async function(err, result, fields) {
         if (err) {
             res.send(err).status(400);
             console.log("Error:"+err)
@@ -323,8 +323,8 @@ routerPatient.post('/', async function(req, res) {
         });
         await pool.query('Select * from PatientSpecTable \
         JOIN SpecTable on SpecTable.id = PatientSpecTable.specId  \
-        JOIN Pacient on Pacient.pacientId = PatientSpecTable.patientId  \
-        JOIN Bed on Bed.bedId = Pacient.bedId  \
+        JOIN Patient on Patient.pacientId = PatientSpecTable.patientId  \
+        JOIN Bed on Bed.bedId = Patient.bedId  \
         ', function(err, result, fields) {
             if (err) {
                 console.log("error in bedlist 3")
@@ -356,9 +356,9 @@ routerPatient.post('/', async function(req, res) {
     let patientId=parseInt(req.params.id);
         
     await pool.query(
-        'DELETE FROM Pacient \
+        'DELETE FROM Patient \
         WHERE \
-         `Pacient`.`pacientId` = ?;',[patientId], function(err, result, fields) {
+         `Patient`.`pacientId` = ?;',[patientId], function(err, result, fields) {
         if (err) {
             res.send(err).status(400);
             return;
@@ -398,8 +398,8 @@ routerPatient.post('/', async function(req, res) {
         });
         await pool.query('Select * from PatientSpecTable \
         JOIN SpecTable on SpecTable.id = PatientSpecTable.specId  \
-        JOIN Pacient on Pacient.pacientId = PatientSpecTable.patientId  \
-        JOIN Bed on Bed.bedId = Pacient.bedId  \
+        JOIN Patient on Patient.pacientId = PatientSpecTable.patientId  \
+        JOIN Bed on Bed.bedId = Patient.bedId  \
         ', function(err, result, fields) {
             if (err) {
                 console.log("error in bedlist 3")
