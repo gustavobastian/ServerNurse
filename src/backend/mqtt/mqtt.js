@@ -208,23 +208,23 @@ else {
 }
 
 async function getBedIdCaller(callerId){
-  console.log("here");
-  console.log(callerId);
-  console.log("here*");/*
-  pool.query('SELECT * from  Bed WHERE `callerId`= ?',[callerId],  function(err, result, fields) {
+  let device=JSON.parse(callerId)
+  pool.query('SELECT * from  Bed WHERE `callerId`= ?',[device.callerId],  function(err, result, fields) {
     if (err|| result.length==0) {
         console.log("error:"+err)
         return; 
     }
     else{
+      console.log("Caller data is correct")
       let bedId=result[0].bedId;
       console.log(bedId)
       BedsList.setStatus(bedId,2);
-      publishBedStates();
+      publishBedStates();      
+      saveNewEvent(1,bedId,"system","","");
       return ;
     }
 
-})*/
+})
 }
 /**
  * Functions for subscribe to topics and reroute to api functions
@@ -248,12 +248,9 @@ client.on('message', async function (topic, message,packet) {
   if(topic==="/Beds/Caller-events"){
     //message_content {"_bedId":2,"_content":"alert","_time":"today","_username":"system"}
     //console.log(JSON.stringify(message_data));
-    //BedsList.setStatus(message_data._bedId,2);
-    //publishBedStates();
-    //saveNewEvent(1,message_data._bedId,"system","","");
-    let message2=(JSON.stringify(packet.payload.toString()));
-    let message3=JSON.parse(message2);
-    console.log(message3.callerId)
+    
+    let message2=packet.payload.toString();
+        
     await getBedIdCaller(message2);
     
   }
@@ -277,7 +274,7 @@ client.on('message', async function (topic, message,packet) {
    *Asking/editing Patients  information/notes
    **/  
   if((message_data._type=== 3)){//&&(topic==="Pacient/#")){
-    console.log("escribiendo nota");
+    console.log("writing note");
     let d= topic.split('/')
     //console.log("patientId:"+d[2])
     if(d[2]==null){return;}
@@ -439,14 +436,7 @@ client.on('message', async function (topic, message,packet) {
    //  if(message_data._username==data[1]){
    //  User.updatePass(message_data._username,data[0],client)    ; }
    }
-
-
   })
 
   
-  
-  
-  
-
-
   module.exports = client;

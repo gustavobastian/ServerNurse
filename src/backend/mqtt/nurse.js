@@ -18,6 +18,7 @@ var pool = require('../mysql/index');
       if (err || result.length==0) {
           console.log("error-asking for beds")
           console.log("error:"+err)        
+          let topiclocal= "/User/"+result[0].userId+"/Specs";
           client.publish(topiclocal, JSON.stringify("Error"));          
       }    
       else{
