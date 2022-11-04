@@ -33,6 +33,11 @@ client.on('connect', function () {
     //  client.publish('/User/Info', 'Bienvenidos al sistema enfermera')
     }
   })
+  client.subscribe('/User/Disconnection', function (err) {
+    if (!err) {
+    //  client.publish('/User/Info', 'Bienvenidos al sistema enfermera')
+    }
+  })
   client.subscribe('/Pacient/#', function (err) {
     if (!err) {      
       //client.publish('/Pacient/Info', 'Bienvenidos al sistema enfermera')
@@ -58,7 +63,7 @@ client.on('connect', function () {
  // console.log("publishing state");
   var now = new Date();
  // convert date to a string in UTC timezone format:
-   console.log(now.toUTCString());
+   console.log(now);
   let topic= "/Beds/status";
   var response = BedsList.getBedStats();
   client.publish(topic, response);    
@@ -254,13 +259,25 @@ client.on('message', async function (topic, message,packet) {
     await getBedIdCaller(message2);
     
   }
-  //else{console.log("Message type:"+message_data._type); }
+  
+
+  /**
+   * Disconnection(MQTT last will testament)
+   */
+   
  
+   if(topic==="/User/Disconnection"){
+    console.log("aqui");
+    console.log(packet.payload.toString());
+    User.loginOut(message_data._user,client,UserList)      
+  }
   /**
    * login/logout functions
    * 
    * 
    */
+
+
   if(message_data._type=== 1){	  
     
     User.loginHere(message_data._username, message_data._content,client,UserList)    

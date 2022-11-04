@@ -24,6 +24,5 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
     * Typescript compilation into docker-compose.
     * MySQL 5.7 DB Server.
     * PHPMyAdmin.
-    * NodeJS backend application.
-    * Mosquitto Server
+    * NodeJS backend application.    
     * Materialize CSS framework.

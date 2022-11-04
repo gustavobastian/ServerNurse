@@ -1,12 +1,13 @@
 version: '3'
 
 services:
-
+  
     mysql-server:
         image:                   mysql:5.7
         hostname:                mysql-server
         environment:
             MYSQL_ROOT_PASSWORD: userpass
+            TZ:                  America/Argentina/Buenos_Aires
         volumes:
             -                    ./db/dumps:/docker-entrypoint-initdb.d
             -                    ./db/data:/var/lib/mysql
@@ -31,18 +32,19 @@ services:
     node-backend:
         image:                   abassi/nodejs-server:10.0-dev
         volumes:
-            -                    ./src/backend:/home/node/app/src
-            -                    /etc/timezone:/etc/timezone:ro
-            -                    /etc/localtime:/etc/localtime:ro            
+            -                    ./src/backend:/home/node/app/src   
+            -                    /etc/localtime:/etc/localtime:ro
+            -                    /etc/timezone:/etc/timezone:ro                  
         networks:
             -                    NurseSystem-net
         depends_on:
             -                    mysql-admin
         env_file:
-            -                    .env
+            -                    .env                           
+        
         ports: 
             -                    "8000:3000"
-        command:                 bash -c "npm set registry https://registry.npmjs.org/ && npm install --save randomstring cookie-parser dotenv mqtt bcrypt express-jwt jsonwebtoken node-schedule --save  && sleep 50  && nodemon /home/node/app/src/index.js"
+        command:                 bash -c "npm set registry https://registry.npmjs.org/ && npm install --save randomstring cookie-parser dotenv mqtt bcrypt express-jwt jsonwebtoken node-schedule --save &&npm audit fix && sleep 50  && nodemon /home/node/app/src/index.js "
 
 networks:
     NurseSystem-net:
