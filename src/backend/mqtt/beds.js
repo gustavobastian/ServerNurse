@@ -34,7 +34,7 @@ var pool = require('../mysql/index');
   }
     /**
      * Function that publish the medical Table id to topic
-     * @param {*} bedId :number that identifies the pacient
+     * @param {*} bedId :number that identifies the patient
      * Message form:
      * {"_bedId":1,"_content":"consulta lista MDT"
      * ,"_username":"system","_type":17}
@@ -45,9 +45,9 @@ var pool = require('../mysql/index');
         let topic= "/Beds/"+bedId+"/MDT";
         
         pool.query('SELECT User.lastname, User.userId from   \
-        MedicalTable JOIN Pacient USING (userTableId) \
+        MedicalTable JOIN Patient USING (userTableId) \
         JOIN User USING (userId) \
-        WHERE `Pacient`.`bedId`= ?',[bedId], function(err, result, fields) {
+        WHERE `Patient`.`bedId`= ?',[bedId], function(err, result, fields) {
         if (err|| result.length==0) {
             console.log("error")
             client.publish(topic, JSON.stringify("Error"));       

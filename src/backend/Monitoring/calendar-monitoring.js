@@ -12,7 +12,7 @@ var pool = require('../mysql/index');
         
     }
   /**
-   * This function adds a user to the status list, it is used only when adding a user
+   * This function adds a event to the calendar list, it is used only when adding a event
    * @param {} calendarIdP: id of calendar event
    * @param {} bedIdP : number of bed of the event
    * @param {} noteP :note of the event

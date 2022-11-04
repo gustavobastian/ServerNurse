@@ -28,24 +28,24 @@ var pool = require('../mysql');
 var client = mqtt.connect(process.env.MQTT_CONNECTION)
 //listening to  messages
 client.on('connect', function () {
-  client.subscribe('/User/general', function (err) {
-    if (!err) {
-    //  client.publish('/User/Info', 'Bienvenidos al sistema enfermera')
+  client.subscribe('/User/#', function (err) {
+    if (err) {
+    console.log("error:"+err);
     }
   })
-  client.subscribe('/User/Disconnection', function (err) {
-    if (!err) {
-    //  client.publish('/User/Info', 'Bienvenidos al sistema enfermera')
+  /*client.subscribe('/User/Disconnection', function (err) {
+    if (err) {
+      console.log("error:"+err);
     }
-  })
-  client.subscribe('/Pacient/#', function (err) {
-    if (!err) {      
-      //client.publish('/Pacient/Info', 'Bienvenidos al sistema enfermera')
+  })*/
+  client.subscribe('/Patient/#', function (err) {
+    if (err) {      
+      console.log("error:"+err);
     }
   })
   client.subscribe('/Beds/#', function (err) {
-    if (!err) {      
-      //client.publish('/Pacient/Info', 'Bienvenidos al sistema enfermera')
+    if (err) {      
+      console.log("error:"+err);
     }
   })
 
@@ -87,7 +87,7 @@ client.on('connect', function () {
 
 /**
  * Function that compares qr
- * @param {*} bedId :number that identifies the pacient
+ * @param {*} bedId :number that identifies the patient
  */
  function compareQR(message,_bedId){
   //console.log("bed:"+JSON.parse(bedId));
@@ -137,7 +137,7 @@ if(typeofEvent!=3){
   note2=" ";
 
   pool.query('SELECT patientId from   \
-  Pacient  WHERE `Pacient`.`bedId`= ?',[bedId], function(err, result, fields) {
+  Patient  WHERE `Patient`.`bedId`= ?',[bedId], function(err, result, fields) {
     if (err|| result.length==0) {
         console.log("error")
     }
@@ -165,12 +165,12 @@ else {
         }
 
         pool.query('SELECT patientId from   \
-        Pacient  WHERE `Pacient`.`bedId`= ?',[bedId], function(err, result, fields) {
+        Patient  WHERE `Patient`.`bedId`= ?',[bedId], function(err, result, fields) {
           if (err|| result.length==0) {
               console.log("error")
           }
           else{
-            pacientLocal=result[0].patientId;  
+            patientLocal=result[0].patientId;  
             pool.query('SELECT userId from   \
             User  WHERE `User`.`username`= ?',[username], function(err, result, fields) {
               if (err|| result.length==0) {
@@ -179,7 +179,7 @@ else {
               else{
                         userId=result[0].userId;  
                         pool.query('SELECT logEventId from  LogEvents \
-                        WHERE `LogEvents`.`patientId`= ? ORDER BY logEventId DESC LIMIT 1',[pacientLocal], function(err, result, fields) {
+                        WHERE `LogEvents`.`patientId`= ? ORDER BY logEventId DESC LIMIT 1',[patientLocal], function(err, result, fields) {
                         if (err|| result.length==0) {
                             console.log("error1:",err )
                         }
@@ -402,7 +402,7 @@ client.on('message', async function (topic, message,packet) {
   } 
 
   /**
-     * removin pacient notes
+     * removin patient notes
      */
   if((message_data._type=== 18)){
     console.log("removing patient note");

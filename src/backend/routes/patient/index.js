@@ -207,8 +207,8 @@ routerPatient.post('/', async function(req, res) {
                                                                             });
                                                                             await pool.query('Select * from PatientSpecTable \
                                                                             JOIN SpecTable on SpecTable.id = PatientSpecTable.specId  \
-                                                                            JOIN Pacient on Pacient.patientId = PatientSpecTable.patientId  \
-                                                                            JOIN Bed on Bed.bedId = Pacient.bedId  \
+                                                                            JOIN Patient on Patient.patientId = PatientSpecTable.patientId  \
+                                                                            JOIN Bed on Bed.bedId = Patient.bedId  \
                                                                             ', function(err, result, fields) {
                                                                                 if (err) {
                                                                                     console.log("error in bedlist 3")
