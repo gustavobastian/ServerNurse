@@ -38,7 +38,7 @@ client.on('connect', function () {
       console.log("error:"+err);
     }
   })*/
-  client.subscribe('/Patient/#', function (err) {
+  client.subscribe('/Pacient/#', function (err) {
     if (err) {      
       console.log("error:"+err);
     }
