@@ -282,6 +282,7 @@ routerBeds.post('/pacient/notes/activation/:id', function(req, res) {
             return;
         }        
         res.send(result).status(200);
+        fillingBeds();
     });
  });
 
