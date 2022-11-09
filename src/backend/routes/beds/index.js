@@ -280,8 +280,7 @@ routerBeds.post('/pacient/notes/activation/:id', function(req, res) {
         if (err) {
             res.send(err).status(400);
             return;
-        }
-        fillingBedPriorities();
+        }        
         res.send(result).status(200);
     });
  });
