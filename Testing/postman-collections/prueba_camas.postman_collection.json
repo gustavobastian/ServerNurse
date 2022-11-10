@@ -1,0 +1,974 @@
+{
+	"info": {
+		"_postman_id": "3a0531f4-a0b4-4218-b7f9-4dc8bb856e69",
+		"name": "prueba_camas",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "18591988"
+	},
+	"item": [
+		{
+			"name": "Logueo admin",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Logueo Inicial\", function () {",
+							"    pm.response.to.have.status(200);",
+							"    pm.response.to.not.be.error;",
+							"    pm.response.to.be.withBody;",
+							"    pm.response.to.be.json;    ",
+							"    pm.expect(pm.response.text()).to.include(\"token\"); ",
+							"    var data = pm.response.json();    ",
+							"    pm.globals.set(\"Token\",data.token);    ",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Origin",
+						"value": "http://localhost:8000",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"username\":\"carlosadmin\",\n  \"password\":\"1234\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/api/authentication",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"authentication"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "obtengo estado de las camas",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"test de obtencion de lista de estados de camas\", function () {",
+							"    pm.response.to.have.status(200);",
+							"    pm.response.to.not.be.error;",
+							"    pm.response.to.be.withBody;",
+							"    pm.response.to.be.json;    ",
+							"    pm.expect(pm.response.json().message).not.eql(\"No Auth\");    ",
+							"    ",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"",
+							"var origin = pm.globals.get('origin')",
+							"",
+							"pm.sendRequest({",
+							"    url:\"http://localhost:8000/api/authentication\",",
+							"    method:\"POST\",",
+							"    header:{",
+							"        \"Content-Type\":\"application/json\",",
+							"        \"Origin\":origin",
+							"    },",
+							"    body:{",
+							"        mode:\"raw\",",
+							"        raw:JSON.stringify({username:\"carlosadmin\",",
+							"        password:\"1234\"})",
+							"    }",
+							"}),",
+							"function(err,response){",
+							"    pm.environment.set(\"Token\",response.json()[\"result\"][\"Token\"]);",
+							"",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "authorization",
+						"value": "Bearer {{Token}}",
+						"type": "text"
+					},
+					{
+						"key": "Origin",
+						"value": "http://localhost:8000",
+						"type": "text"
+					},
+					{
+						"key": "",
+						"value": "",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8000/api/beds/state",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"beds",
+						"state"
+					],
+					"query": [
+						{
+							"key": "",
+							"value": null,
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "obtengo las camas",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"test de obtencion de lista de camas\", function () {",
+							"    pm.response.to.have.status(200);",
+							"    pm.response.to.not.be.error;",
+							"    pm.response.to.be.withBody;",
+							"    pm.response.to.be.json;    ",
+							"    pm.expect(pm.response.json().message).not.eql(\"No Auth\");",
+							"    ",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"",
+							"var origin = pm.globals.get('origin')",
+							"",
+							"pm.sendRequest({",
+							"    url:\"http://localhost:8000/api/authentication\",",
+							"    method:\"POST\",",
+							"    header:{",
+							"        \"Content-Type\":\"application/json\",",
+							"        \"Origin\":origin",
+							"    },",
+							"    body:{",
+							"        mode:\"raw\",",
+							"        raw:JSON.stringify({username:\"carlosadmin\",",
+							"        password:\"1234\"})",
+							"    }",
+							"}),",
+							"function(err,response){",
+							"    pm.environment.set(\"Token\",response.json()[\"result\"][\"Token\"]);",
+							"",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "authorization",
+						"value": "Bearer {{Token}}",
+						"type": "text"
+					},
+					{
+						"key": "Origin",
+						"value": "http://localhost:8000",
+						"type": "text"
+					},
+					{
+						"key": "",
+						"value": "",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8000/api/beds/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"beds",
+						""
+					],
+					"query": [
+						{
+							"key": "",
+							"value": null,
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "obtengo la cama 1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"test de obtencion de lista de camas _v2\", function () {",
+							"    pm.response.to.have.status(200);",
+							"    pm.response.to.not.be.error;",
+							"    pm.response.to.be.withBody;",
+							"    pm.response.to.be.json;    ",
+							"    pm.expect(pm.response.json().message).not.eql(\"No Auth\");",
+							"    pm.expect(pm.response.json()[0].bedId).eql(1);",
+							"    pm.expect(pm.response.json()[0].callerId).eql(1);",
+							"    pm.expect(pm.response.json()[0].floorId).eql(1);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"",
+							"var origin = pm.globals.get('origin')",
+							"",
+							"pm.sendRequest({",
+							"    url:\"http://localhost:8000/api/authentication\",",
+							"    method:\"POST\",",
+							"    header:{",
+							"        \"Content-Type\":\"application/json\",",
+							"        \"Origin\":origin",
+							"    },",
+							"    body:{",
+							"        \"username\":\"carlosadmin\",",
+							"        \"password\":\"1234\"",
+							"   }",
+							"}),",
+							"function (err,response){",
+							"    pm.environment.set(\"Token\",response.json()[\"result\"][\"Token\"]);",
+							"",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "authorization",
+						"value": "Bearer {{Token}}",
+						"type": "text"
+					},
+					{
+						"key": "Origin",
+						"value": "http://localhost:8000",
+						"type": "text"
+					},
+					{
+						"key": "",
+						"value": "",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8000/api/beds/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"beds",
+						"1"
+					],
+					"query": [
+						{
+							"key": "",
+							"value": null,
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "obtengo prioridad de la cama 1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"test de obtencion de lista de prioridad de camas\", function () {",
+							"    pm.response.to.have.status(200);",
+							"    pm.response.to.not.be.error;",
+							"    pm.response.to.be.withBody;",
+							"    pm.response.to.be.json;    ",
+							"    pm.expect(pm.response.json().message).not.eql(\"No Auth\");",
+							"    pm.expect(pm.response.json().message).not.eql(\"No Auth\");",
+							"    pm.expect(pm.response.json()[0].priority).eql(1);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"",
+							"var origin = pm.globals.get('origin')",
+							"",
+							"pm.sendRequest({",
+							"    url:\"http://localhost:8000/api/authentication\",",
+							"    method:\"POST\",",
+							"    header:{",
+							"        \"Content-Type\":\"application/json\",",
+							"        \"Origin\":origin",
+							"    },",
+							"    body:{",
+							"        \"username\":\"carlosadmin\",",
+							"        \"password\":\"1234\"",
+							"    }",
+							"}),",
+							"function(err,response){",
+							"    pm.environment.set(\"Token\",response.json()[\"result\"][\"Token\"]);",
+							"",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "authorization",
+						"value": "Bearer {{Token}}",
+						"type": "text"
+					},
+					{
+						"key": "Origin",
+						"value": "http://localhost:8000",
+						"type": "text"
+					},
+					{
+						"key": "",
+						"value": "",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8000/api/beds/priority/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"beds",
+						"priority",
+						"1"
+					],
+					"query": [
+						{
+							"key": "",
+							"value": null,
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "obtengo notas de la cama 3",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"test de obtencion de notas de cama nro 3\", function () {",
+							"    pm.response.to.have.status(200);",
+							"    pm.response.to.not.be.error;",
+							"    pm.response.to.be.withBody;",
+							"    pm.response.to.be.json;    ",
+							"    pm.expect(pm.response.json().message).not.eql(\"No Auth\");",
+							"    pm.expect(pm.response.json().message).not.eql(\"No Auth\");    ",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"",
+							"var origin = pm.globals.get('origin')",
+							"",
+							"pm.sendRequest({",
+							"    url:\"http://localhost:8000/api/authentication\",",
+							"    method:\"POST\",",
+							"    header:{",
+							"        \"Content-Type\":\"application/json\",",
+							"        \"Origin\":origin",
+							"    },",
+							"    body:{",
+							"        \"username\":\"carlosadmin\",",
+							"        \"password\":\"1234\"",
+							"    }",
+							"}),",
+							"function(err,response){",
+							"    pm.environment.set(\"Token\",response.json()[\"result\"][\"Token\"]);",
+							"",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "authorization",
+						"value": "Bearer {{Token}}",
+						"type": "text"
+					},
+					{
+						"key": "Origin",
+						"value": "http://localhost:8000",
+						"type": "text"
+					},
+					{
+						"key": "",
+						"value": "",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8000/api/beds/pacient/notes/3",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"beds",
+						"pacient",
+						"notes",
+						"3"
+					],
+					"query": [
+						{
+							"key": "",
+							"value": null,
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "modifico prioridad de la cama 1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"test de modificación de prioridad de la cama 1\", function () {",
+							"    pm.response.to.have.status(200);",
+							"    pm.response.to.not.be.error;",
+							"    pm.response.to.be.withBody;",
+							"    pm.response.to.be.json;    ",
+							"    pm.expect(pm.response.json().message).not.eql(\"No Auth\");",
+							"    pm.expect(pm.response.json().message).not.eql(\"No Auth\");",
+							"    pm.expect(pm.response.json().affectedRows).eql(1);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"",
+							"var origin = pm.globals.get('origin')",
+							"",
+							"pm.sendRequest({",
+							"    url:\"http://localhost:8000/api/authentication\",",
+							"    method:\"POST\",",
+							"    header:{",
+							"        \"Content-Type\":\"application/json\",",
+							"        \"Origin\":\"http://localhost:8000\"",
+							"    },",
+							"    body:{",
+							"        \"username\":\"carlosadmin\",",
+							"        \"password\":\"1234\"",
+							"    }",
+							"}),",
+							"function(err,response){",
+							"    pm.globals.set(\"Token\",response.json()[\"result\"][\"Token\"]);",
+							"",
+							"},",
+							"pm.sendRequest({",
+							"    url:\"http://localhost:8000/api/beds/priority/1\",",
+							"    method:\"PUT\",",
+							"    header:{",
+							"        \"Content-Type\":\"application/json\",",
+							"        \"Origin\":\"http://localhost:8000\"",
+							"    },",
+							"    body:{",
+							"        \"username\":\"carlosadmin\",",
+							"        \"password\":\"1234\"",
+							"    }",
+							"})",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "authorization",
+						"value": "Bearer {{Token}}",
+						"type": "text"
+					},
+					{
+						"key": "Origin",
+						"value": "http://localhost:8000",
+						"type": "text"
+					},
+					{
+						"key": "",
+						"value": "",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "[{\"priority\":\"1\"}]",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/api/beds/priority/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"beds",
+						"priority",
+						"1"
+					],
+					"query": [
+						{
+							"key": "",
+							"value": null,
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "modifico prioridad de la cama 100 inexistente",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"test de modificacion de prioridad de cama inexistente 100\", function () {",
+							"    pm.response.to.have.status(200);",
+							"    pm.response.to.not.be.error;",
+							"    pm.response.to.be.withBody;",
+							"    pm.response.to.be.json;    ",
+							"    pm.expect(pm.response.json().message).not.eql(\"No Auth\");",
+							"    pm.expect(pm.response.json().message).not.eql(\"No Auth\");",
+							"    pm.expect(pm.response.json().affectedRows).eql(0);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"",
+							"var origin = pm.globals.get('origin')",
+							"",
+							"pm.sendRequest({",
+							"    url:\"http://localhost:8000/api/authentication\",",
+							"    method:\"POST\",",
+							"    header:{",
+							"        \"Content-Type\":\"application/json\",",
+							"        \"Origin\":\"http://localhost:8000\"",
+							"    },",
+							"    body:{",
+							"        \"username\":\"carlosadmin\",",
+							"        \"password\":\"1234\"",
+							"    }",
+							"}),",
+							"function(err,response){",
+							"    pm.globals.set(\"Token\",response.json()[\"result\"][\"Token\"]);",
+							"",
+							"},",
+							"pm.sendRequest({",
+							"    url:\"http://localhost:8000/api/beds/priority/1\",",
+							"    method:\"PUT\",",
+							"    header:{",
+							"        \"Content-Type\":\"application/json\",",
+							"        \"Origin\":\"http://localhost:8000\"",
+							"    },",
+							"    body:{",
+							"        \"username\":\"carlosadmin\",",
+							"        \"password\":\"1234\"",
+							"    }",
+							"})",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "authorization",
+						"value": "Bearer {{Token}}",
+						"type": "text"
+					},
+					{
+						"key": "Origin",
+						"value": "http://localhost:8000",
+						"type": "text"
+					},
+					{
+						"key": "",
+						"value": "",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "[{\"priority\":\"3\"}]",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/api/beds/priority/100",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"beds",
+						"priority",
+						"100"
+					],
+					"query": [
+						{
+							"key": "",
+							"value": null,
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Agrego nueva cama",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"test de agregado de nueva cama \", function () {",
+							"    pm.response.to.have.status(200);",
+							"    pm.response.to.not.be.error;",
+							"    pm.response.to.be.withBody;",
+							"    pm.response.to.be.json;    ",
+							"    pm.expect(pm.response.json().message).not.eql(\"No Auth\");",
+							"    pm.expect(pm.response.json().message).not.eql(\"No Auth\");",
+							"    pm.expect(pm.response.json().affectedRows).eql(1);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"",
+							"var origin = pm.globals.get('origin')",
+							"",
+							"pm.sendRequest({",
+							"    url:\"http://localhost:8000/api/authentication\",",
+							"    method:\"POST\",",
+							"    header:{",
+							"        \"Content-Type\":\"application/json\",",
+							"        \"Origin\":\"http://localhost:8000\"",
+							"    },",
+							"    body:{",
+							"        \"username\":\"carlosadmin\",",
+							"        \"password\":\"1234\"",
+							"    }",
+							"}),",
+							"function(err,response){",
+							"    pm.globals.set(\"Token\",response.json()[\"result\"][\"Token\"]);",
+							"",
+							"},",
+							"pm.sendRequest({",
+							"    url:\"http://localhost:8000/api/beds/priority/1\",",
+							"    method:\"PUT\",",
+							"    header:{",
+							"        \"Content-Type\":\"application/json\",",
+							"        \"Origin\":\"http://localhost:8000\"",
+							"    },",
+							"    body:{",
+							"        \"username\":\"carlosadmin\",",
+							"        \"password\":\"1234\"",
+							"    }",
+							"})",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "authorization",
+						"value": "Bearer {{Token}}",
+						"type": "text"
+					},
+					{
+						"key": "Origin",
+						"value": "http://localhost:8000",
+						"type": "text"
+					},
+					{
+						"key": "",
+						"value": "",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "[{\"roomId\":33,\n  \"callerId\":33,\n  \"floorId\":\"1\"}]",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/api/beds/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"beds",
+						""
+					],
+					"query": [
+						{
+							"key": "",
+							"value": null,
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Elimino cama inexistente",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"test de eliminación de cama inexistente\", function () {",
+							"    pm.response.to.have.status(200);",
+							"    pm.response.to.not.be.error;",
+							"    pm.response.to.be.withBody;",
+							"    pm.response.to.be.json;    ",
+							"    pm.expect(pm.response.json().affectedRows).eql(0);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"",
+							"var origin = pm.globals.get('origin')",
+							"",
+							"pm.sendRequest({",
+							"    url:\"http://localhost:8000/api/authentication\",",
+							"    method:\"POST\",",
+							"    header:{",
+							"        \"Content-Type\":\"application/json\",",
+							"        \"Origin\":\"http://localhost:8000\"",
+							"    },",
+							"    body:{",
+							"        \"username\":\"carlosadmin\",",
+							"        \"password\":\"1234\"",
+							"    }",
+							"}),",
+							"function(err,response){",
+							"    pm.globals.set(\"Token\",response.json()[\"result\"][\"Token\"]);",
+							"",
+							"},",
+							"pm.sendRequest({",
+							"    url:\"http://localhost:8000/api/beds/priority/1\",",
+							"    method:\"PUT\",",
+							"    header:{",
+							"        \"Content-Type\":\"application/json\",",
+							"        \"Origin\":\"http://localhost:8000\"",
+							"    },",
+							"    body:{",
+							"        \"username\":\"carlosadmin\",",
+							"        \"password\":\"1234\"",
+							"    }",
+							"})",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "authorization",
+						"value": "Bearer {{Token}}",
+						"type": "text"
+					},
+					{
+						"key": "Origin",
+						"value": "http://localhost:8000",
+						"type": "text"
+					},
+					{
+						"key": "",
+						"value": "",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "[{\"roomId\":33,\n  \"callerId\":33,\n  \"floorId\":\"1\"}]",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/api/beds/17",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"beds",
+						"17"
+					],
+					"query": [
+						{
+							"key": "",
+							"value": null,
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

@@ -1,0 +1,314 @@
+{
+	"info": {
+		"_postman_id": "f0df5013-8c28-4571-a2cc-3b96c00a9815",
+		"name": "prueba_estadística",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "18591988"
+	},
+	"item": [
+		{
+			"name": "solicita numero de visita de enfermeros",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var origin = pm.globals.get('origin')",
+							"",
+							"pm.sendRequest({",
+							"    url:\"http://localhost:8000/api/authentication\",",
+							"    method:\"POST\",",
+							"    header:{",
+							"        \"Content-Type\":\"application/json\",",
+							"        \"Origin\":origin",
+							"    },",
+							"    body:{",
+							"        \"username\":\"carlosadmin\",",
+							"        \"password\":\"1234\"",
+							"    }",
+							"}),",
+							"function(err,response){",
+							"    pm.environment.set(\"Token\",response.json()[\"result\"][\"Token\"]);",
+							"",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"test de obtención nro de visitas de enfermeros\", function () {",
+							"    pm.response.to.have.status(200);",
+							"    pm.response.to.not.be.error;",
+							"    pm.response.to.be.withBody;",
+							"    pm.response.to.be.json;    ",
+							"    pm.expect(pm.response.json().message).not.eql(\"No Auth\");",
+							"    ",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "authorization",
+						"value": "Bearer {{Token}}",
+						"type": "text"
+					},
+					{
+						"key": "Origin",
+						"value": "http://localhost:8000",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8000/api/Statistics/promNurse",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"Statistics",
+						"promNurse"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "solicita numero visita por paciente",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var origin = pm.globals.get('origin')",
+							"",
+							"pm.sendRequest({",
+							"    url:\"http://localhost:8000/api/authentication\",",
+							"    method:\"POST\",",
+							"    header:{",
+							"        \"Content-Type\":\"application/json\",",
+							"        \"Origin\":origin",
+							"    },",
+							"    body:{",
+							"        \"username\":\"carlosadmin\",",
+							"        \"password\":\"1234\"",
+							"    }",
+							"}),",
+							"function(err,response){",
+							"    pm.environment.set(\"Token\",response.json()[\"result\"][\"Token\"]);",
+							"",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"test de obtención de numero de visitas por pacientes\", function () {",
+							"    pm.response.to.have.status(200);",
+							"    pm.response.to.not.be.error;",
+							"    pm.response.to.be.withBody;",
+							"    pm.response.to.be.json;    ",
+							"    pm.expect(pm.response.json().message).not.eql(\"No Auth\");",
+							"    ",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "authorization",
+						"value": "Bearer {{Token}}",
+						"type": "text"
+					},
+					{
+						"key": "Origin",
+						"value": "http://localhost:8000",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8000/api/Statistics/promPatient",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"Statistics",
+						"promPatient"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "solicita numero de enfermeros con especialidades",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var origin = pm.globals.get('origin')",
+							"",
+							"pm.sendRequest({",
+							"    url:\"http://localhost:8000/api/authentication\",",
+							"    method:\"POST\",",
+							"    header:{",
+							"        \"Content-Type\":\"application/json\",",
+							"        \"Origin\":origin",
+							"    },",
+							"    body:{",
+							"        \"username\":\"carlosadmin\",",
+							"        \"password\":\"1234\"",
+							"    }",
+							"}),",
+							"function(err,response){",
+							"    pm.environment.set(\"Token\",response.json()[\"result\"][\"Token\"]);",
+							"",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"test de obtención de numero de enfermeras con cierta especialidades\", function () {",
+							"    pm.response.to.have.status(200);",
+							"    pm.response.to.not.be.error;",
+							"    pm.response.to.be.withBody;",
+							"    pm.response.to.be.json;    ",
+							"    pm.expect(pm.response.json().message).not.eql(\"No Auth\");",
+							"    ",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "authorization",
+						"value": "Bearer {{Token}}",
+						"type": "text"
+					},
+					{
+						"key": "Origin",
+						"value": "http://localhost:8000",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8000/api/Statistics/promNurseSpec",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"Statistics",
+						"promNurseSpec"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "solicita numero de pacientes con tratamientos",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var origin = pm.globals.get('origin')",
+							"",
+							"pm.sendRequest({",
+							"    url:\"http://localhost:8000/api/authentication\",",
+							"    method:\"POST\",",
+							"    header:{",
+							"        \"Content-Type\":\"application/json\",",
+							"        \"Origin\":origin",
+							"    },",
+							"    body:{",
+							"        \"username\":\"carlosadmin\",",
+							"        \"password\":\"1234\"",
+							"    }",
+							"}),",
+							"function(err,response){",
+							"    pm.environment.set(\"Token\",response.json()[\"result\"][\"Token\"]);",
+							"",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"test de obtención de numero de pacientes agrupados por tratamiento\", function () {",
+							"    pm.response.to.have.status(200);",
+							"    pm.response.to.not.be.error;",
+							"    pm.response.to.be.withBody;",
+							"    pm.response.to.be.json;    ",
+							"    pm.expect(pm.response.json().message).not.eql(\"No Auth\");",
+							"    ",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "authorization",
+						"value": "Bearer {{Token}}",
+						"type": "text"
+					},
+					{
+						"key": "Origin",
+						"value": "http://localhost:8000",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8000/api/Statistics/promTreatment",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"Statistics",
+						"promTreatment"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

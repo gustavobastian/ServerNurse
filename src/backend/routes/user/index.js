@@ -50,7 +50,7 @@ routerUser.get('/state', function(req, res) {
 //API for getting a user information
 routerUser.get('/:id', function(req, res) {
     idAb=req.params.id;    
-    pool.query('Select * from User where userId = ?',idAb, function(err, result, fields) {
+    pool.query('Select * from User where userId = ?',[idAb], function(err, result, fields) {
         if (err) {
             res.send(err).status(400);
             return;

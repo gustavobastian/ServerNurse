@@ -76,14 +76,19 @@ routerBeds.get('/:id', function(req, res) {
 //API for gettin active notes of a pacient by bedId
 routerBeds.get('/pacient/notes/:id', function(req, res) {
     idAb=req.params.id;   
-    //pool.query('Select * from Bed as b JOIN Pacient AS p ON b.bedId=p.bedId JOIN NotesTable AS n ON p.notesTableId=n.notesTableId JOIN Notes AS nn ON n.noteId= n.noteId where b.bedId='+idAb, function(err, result, fields) {
-        pool.query(`Select * from Bed as b JOIN Patient AS p ON b.bedId=p.bedId where b.bedId=?`,[idAb],   function(err, result, fields) {
-      //pool.query('Select notesId,firstname,lastname,note, state from Bed as b JOIN Pacient AS p ON b.bedId=p.bedId JOIN NotesTable AS n ON p.notesTableId=n.notesTableId JOIN Notes AS nn ON n.noteId= nn.notesId WHERE nn.state= "activa" AND b.bedId=?',[idAb], function(err, result, fields) {      
+    pool.query('SELECT DISTINCT notesId,note,state \
+            FROM `Notes` as n JOIN `NotesTable` as nt JOIN `Patient` as p \
+            WHERE n.notesTableId = nt.notesTableId AND p.notesTableId = nt.notesTableId AND p.bedId= ? ORDER BY notesId DESC ',[idAb], function(err, result, fields) {
+    //pool.query('Select * from Bed as b JOIN Patient AS p ON b.bedId=p.bedId JOIN NotesTable AS n  \
+   // ON p.notesTableId=n.notesTableId JOIN Notes AS nn ON n.noteId= n.noteId where b.bedId='+idAb, function(err, result, fields) {
+      //  pool.query(`Select * from Bed as b JOIN Patient AS p ON b.bedId=p.bedId where b.bedId=?`,[idAb],   function(err, result, fields) {
+    //  pool.query('Select notesId,firstname,lastname,note, state from Bed as b JOIN Patient AS p ON b.bedId=p.bedId JOIN NotesTable AS n ON p.notesTableId=n.notesTableId JOIN Notes AS nn ON n.noteId= nn.notesId WHERE nn.state= "activa" AND b.bedId=?',[idAb], function(err, result, fields) {      
         if (err) {
             res.send(err).status(400);
             return;
         }
-        res.send(result);
+        else{
+        res.send(result);}
     });
 });
 
@@ -249,15 +254,15 @@ routerBeds.post('/pacient/notes/activation/:id', function(req, res) {
         pool.query(
             'DELETE FROM PriorityTable\
             WHERE \
-            `Bed`.`bedId` = ?;',[bedId], function(err, result2, fields) {
+            `PriorityTable`.`bedId` = ?;',[bedId], function(err, result2, fields) {
             if (err) {
                 res.send(err).status(400);
                 return;
             }
-            
+            res.send(result).status(200);
             });
         }    
-        res.send(result).status(200);
+        
     });
 
 });

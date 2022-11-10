@@ -1,0 +1,85 @@
+{
+	"info": {
+		"_postman_id": "9c56cf7e-8fc9-4de4-95ba-a13d9cfaf328",
+		"name": "Tabla_lineal_de_usuarios",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "18591988"
+	},
+	"item": [
+		{
+			"name": "Solicitar tabla de usuario",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var origin = pm.globals.get('origin')",
+							"",
+							"pm.sendRequest({",
+							"    url:\"http://localhost:8000/api/authentication\",",
+							"    method:\"POST\",",
+							"    header:{",
+							"        \"Content-Type\":\"application/json\",",
+							"        \"Origin\":origin",
+							"    },",
+							"    body:{",
+							"        \"username\":\"carlosadmin\",",
+							"        \"password\":\"1234\"",
+							"    }",
+							"}),",
+							"function(err,response){",
+							"    pm.environment.set(\"Token\",response.json()[\"result\"][\"Token\"]);",
+							"",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"test de obtencion de lista de tablas de usuarios\", function () {",
+							"    pm.response.to.have.status(200);",
+							"    pm.response.to.not.be.error;",
+							"    pm.response.to.be.withBody;",
+							"    pm.response.to.be.json;    ",
+							"    pm.expect(pm.response.json().message).not.eql(\"No Auth\");",
+							"    pm.expect(pm.response.json()[0].userTableId).eql(1);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Origin",
+						"value": "http://localhost:8000",
+						"type": "text"
+					},
+					{
+						"key": "authorization",
+						"value": "Bearer {{Token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8000/api/usersTable",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"usersTable"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

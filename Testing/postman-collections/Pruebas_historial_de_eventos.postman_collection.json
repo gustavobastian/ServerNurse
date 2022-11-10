@@ -1,0 +1,388 @@
+{
+	"info": {
+		"_postman_id": "088b796a-ee0f-44af-96ab-784a4ec59f0f",
+		"name": "Pruebas_historial_de_eventos",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "18591988"
+	},
+	"item": [
+		{
+			"name": "consulta eventos",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var origin = pm.globals.get('origin')",
+							"",
+							"pm.sendRequest({",
+							"    url:\"http://localhost:8000/api/authentication\",",
+							"    method:\"POST\",",
+							"    header:{",
+							"        \"Content-Type\":\"application/json\",",
+							"        \"Origin\":origin",
+							"    },",
+							"    body:{",
+							"        \"username\":\"carlosadmin\",",
+							"        \"password\":\"1234\"",
+							"    }",
+							"}),",
+							"function(err,response){",
+							"    pm.environment.set(\"Token\",response.json()[\"result\"][\"Token\"]);",
+							"",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"test de obtención de lista de eventos\", function () {",
+							"    pm.response.to.have.status(200);",
+							"    pm.response.to.not.be.error;",
+							"    pm.response.to.be.withBody;",
+							"    pm.response.to.be.json;    ",
+							"    pm.expect(pm.response.json().message).not.eql(\"No Auth\");",
+							"    ",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "authorization",
+						"value": "Bearer {{Token}}",
+						"type": "text"
+					},
+					{
+						"key": "Origin",
+						"value": "http://localhost:8000",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8000/api/logEvents",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"logEvents"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "consulta eventos por paciente",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var origin = pm.globals.get('origin')",
+							"",
+							"pm.sendRequest({",
+							"    url:\"http://localhost:8000/api/authentication\",",
+							"    method:\"POST\",",
+							"    header:{",
+							"        \"Content-Type\":\"application/json\",",
+							"        \"Origin\":origin",
+							"    },",
+							"    body:{",
+							"        \"username\":\"carlosadmin\",",
+							"        \"password\":\"1234\"",
+							"    }",
+							"}),",
+							"function(err,response){",
+							"    pm.environment.set(\"Token\",response.json()[\"result\"][\"Token\"]);",
+							"",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"test de obtención de lista de eventos del paciente 1\", function () {",
+							"    pm.response.to.have.status(200);",
+							"    pm.response.to.not.be.error;",
+							"    pm.response.to.be.withBody;",
+							"    pm.response.to.be.json;    ",
+							"    pm.expect(pm.response.json().message).not.eql(\"No Auth\");    ",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "authorization",
+						"value": "Bearer {{Token}}",
+						"type": "text"
+					},
+					{
+						"key": "Origin",
+						"value": "http://localhost:8000",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8000/api/logEvents/patient/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"logEvents",
+						"patient",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "consulta eventos por enfermero",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var origin = pm.globals.get('origin')",
+							"",
+							"pm.sendRequest({",
+							"    url:\"http://localhost:8000/api/authentication\",",
+							"    method:\"POST\",",
+							"    header:{",
+							"        \"Content-Type\":\"application/json\",",
+							"        \"Origin\":origin",
+							"    },",
+							"    body:{",
+							"        \"username\":\"carlosadmin\",",
+							"        \"password\":\"1234\"",
+							"    }",
+							"}),",
+							"function(err,response){",
+							"    pm.environment.set(\"Token\",response.json()[\"result\"][\"Token\"]);",
+							"",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"test de obtención de eventos de enfermero nro 8\", function () {",
+							"    pm.response.to.have.status(200);",
+							"    pm.response.to.not.be.error;",
+							"    pm.response.to.be.withBody;",
+							"    pm.response.to.be.json;    ",
+							"    pm.expect(pm.response.json().message).not.eql(\"No Auth\");",
+							"    ",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "authorization",
+						"value": "Bearer {{Token}}",
+						"type": "text"
+					},
+					{
+						"key": "Origin",
+						"value": "http://localhost:8000",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8000/api/logEvents/userId/8",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"logEvents",
+						"userId",
+						"8"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "consulta eventos por id",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var origin = pm.globals.get('origin')",
+							"",
+							"pm.sendRequest({",
+							"    url:\"http://localhost:8000/api/authentication\",",
+							"    method:\"POST\",",
+							"    header:{",
+							"        \"Content-Type\":\"application/json\",",
+							"        \"Origin\":origin",
+							"    },",
+							"    body:{",
+							"        \"username\":\"carlosadmin\",",
+							"        \"password\":\"1234\"",
+							"    }",
+							"}),",
+							"function(err,response){",
+							"    pm.environment.set(\"Token\",response.json()[\"result\"][\"Token\"]);",
+							"",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"test de obtención de evento por nro de evento(5)\", function () {",
+							"    pm.response.to.have.status(200);",
+							"    pm.response.to.not.be.error;",
+							"    pm.response.to.be.withBody;",
+							"    pm.response.to.be.json;    ",
+							"    pm.expect(pm.response.json().message).not.eql(\"No Auth\");",
+							"    ",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "authorization",
+						"value": "Bearer {{Token}}",
+						"type": "text"
+					},
+					{
+						"key": "Origin",
+						"value": "http://localhost:8000",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8000/api/logEvents/event/5",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"logEvents",
+						"event",
+						"5"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "insertar evento (debe dar error)",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var origin = pm.globals.get('origin')",
+							"",
+							"pm.sendRequest({",
+							"    url:\"http://localhost:8000/api/authentication\",",
+							"    method:\"POST\",",
+							"    header:{",
+							"        \"Content-Type\":\"application/json\",",
+							"        \"Origin\":origin",
+							"    },",
+							"    body:{",
+							"        \"username\":\"carlosadmin\",",
+							"        \"password\":\"1234\"",
+							"    }",
+							"}),",
+							"function(err,response){",
+							"    pm.environment.set(\"Token\",response.json()[\"result\"][\"Token\"]);",
+							"",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"test de inserción de eventos (da error, solo puede insertar el sistema) \", function () {",
+							"    pm.response.to.have.status(401);",
+							"    pm.response.to.be.error;   ",
+							"    ",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{Token}}",
+						"type": "text"
+					},
+					{
+						"key": "Origin",
+						"value": "http://localhost:8000",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8000/api/logEvents/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"logEvents",
+						""
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
