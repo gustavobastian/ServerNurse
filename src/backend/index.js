@@ -8,6 +8,9 @@ var auth = require('./middleware/authentication');
 var BedsList = require('./Monitoring/Bed-mon');
 const cookieParser = require('cookie-parser')
 
+//setting timezone
+process.env.TZ = "America/Argentina/Buenos_Aires";
+
 
 //require('dotenv').config({path:'./.env'});
 

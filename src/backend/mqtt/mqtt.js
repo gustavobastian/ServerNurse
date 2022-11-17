@@ -63,7 +63,8 @@ client.on('connect', function () {
  // console.log("publishing state");
   var now = new Date();
  // convert date to a string in UTC timezone format:
-   console.log(now);
+   console.log(now.toTimeString());
+   
   let topic= "/Beds/status";
   var response = BedsList.getBedStats();
   client.publish(topic, response);    
@@ -240,15 +241,13 @@ client.on('message', async function (topic, message,packet) {
 
   let message_data=JSON.parse(message);
   
-  console.log("***********************************");
-  console.log(topic);
+  //console.log("***********************************");
+  //console.log(topic);
   //console.log((message));
   //console.log(packet.payload.toString()); 
-  console.log("***********************************");
-  console.log(message_data._content); 
+  //console.log("***********************************");
+  //console.log(message_data._content); 
 
-  //console.log(message_data._bedId); 
-  //console.log("Message type:"+message_data._type); 
   //received an alarm from a caller device, update state of bed
   if(topic==="/Beds/Caller-events"){
     //message_content {"_bedId":2,"_content":"alert","_time":"today","_username":"system"}
