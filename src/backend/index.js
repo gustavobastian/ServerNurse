@@ -16,15 +16,7 @@ process.env.TZ = "America/Argentina/Buenos_Aires";
 
 //const connection = require('./mysql-connector');
 var app     = express();
-//var utils   = require('./mysql-connector');
-
 var UserList = require('./Monitoring/User-mon');
-
-
-
-
-
-
 
 var cors = require('cors');
 var corsOptions={origin:'*' , optionsSuccessStatus:200};
@@ -42,13 +34,9 @@ app.use(cookieParser())
 //for letting api to work with cors
 app.use(cors(corsOptions));
 //configuring cors for sending credentials at login
-
-
 // to parse received data
 var bodyParser = require('body-parser');
 const { request } = require('express');
-
-
 
 // looking for router
 
@@ -83,32 +71,6 @@ app.use('/api/authentication',routerAuthenticate);
 app.use('/api/specTable',auth.isAuthenticated,routerSpecTable);
 app.use('/api/nurseSpecTable',auth.isAuthenticated,routerNurseSpecTable);
 app.use('/api/treatment',auth.isAuthenticated,routerPatientSpecTable);
-
-//without aut...for development
-/*
-app.use('/api/patient',routerPatient);
-app.use('/api/user',routerUser);
-app.use('/api/messages',routerMessages);
-app.use('/api/notes',routerNotes);
-app.use('/api/beds',routerBeds);
-app.use('/api/usersTable',routerUsersTable);
-app.use('/api/medicalTable',routerMedicalTable);
-app.use('/api/QR',routerQR);
-app.use('/api/events',routerEvents);
-app.use('/api/logEvents',routerLogEvents);
-app.use('/api/Statistics',routerStatistics);
-app.use('/api/authentication',routerAuthenticate);
-app.use('/api/specTable',routerSpecTable);
-app.use('/api/nurseSpecTable',routerNurseSpecTable);
-app.use('/api/treatment',routerPatientSpecTable);*/
-
-
-//=======[ Initialization of beds and user States]================================
-
-
-/**
- * playing with bedlist
- */ 
 
 
 //=======[ Main module code ]==================================================
