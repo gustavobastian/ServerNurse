@@ -1,9 +1,6 @@
 var express = require('express');
 var routerMedicalTable = express.Router();
 var pool = require('../../mysql');
-
-
-
 //adding a doctor to tables of a pacient from the hospital
 	/**
 	 * body format:
@@ -75,8 +72,7 @@ routerMedicalTable.get('/:id', function(req, res)
 //Returns all users tables from one userTableId
 routerMedicalTable.get('/single/', function(req, res) 
 {
-	
-    let received= JSON.stringify(req.body);
+	let received= JSON.stringify(req.body);
     let received2 = JSON.parse(received)
     let userId= parseInt(received2[0].userID);
     let userTableId=parseInt(received2[0].userTableID);
