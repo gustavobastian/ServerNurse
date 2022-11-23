@@ -4,8 +4,10 @@
  * 1:caller
  * 2:calendar
  */
- class  BedsUserList  {    
-    constructor() {
+class  BedsUserList  
+{   
+    constructor() 
+    {
          this.beduserlist=[{bedId:0,userId:0,type:0}];                        
     }
   /**
@@ -13,19 +15,22 @@
    * @param {} id bedId
    * @returns 1
    */
-    addBedUser(bedid,userid,typeP) {
-         this.beduserlist.push({bedId:bedid,userId:userid,type:typeP});
-         return 1;
+    addBedUser(bedid,userid,typeP) 
+    {
+        this.beduserlist.push({bedId:bedid,userId:userid,type:typeP});
+        return 1;
     }
     
     /**
      * for testing porpuses
      * @returns 
      */
-    printBedUserlist(){
-         this.beduserlist.forEach(element => {
-            console.log("bedId:"+element.bedId,"|userId:"+element.userId,"|type:"+element.type);
-        });
+    printBedUserlist()
+    {
+        this.beduserlist.forEach(element => 
+            {
+                console.log("bedId:"+element.bedId,"|userId:"+element.userId,"|type:"+element.type);
+            });
         return 1;
     }
     
@@ -33,40 +38,50 @@
     * Get the id of the nurse attending
     * @param {} bedId 
     */
-   getId(bedId){
-    
-    var index=this.beduserlist.findIndex(item=>item.bedId===bedId);           
-    if(index>0){
-    return this.beduserlist[index].userId;}
-    else{return this.beduserlist[0].userId;}
-    
+    getId(bedId)
+    {    
+        var index=this.beduserlist.findIndex(item=>item.bedId===bedId);           
+        if(index>0)
+        {
+            return this.beduserlist[index].userId;
+        }
+        else
+        {
+            return this.beduserlist[0].userId;
+        }    
     }
     /**
     * Get the kind of event
     * @param {} bedId 
     */
-   getId(bedId){
-    
-    var index=this.beduserlist.findIndex(item=>item.bedId===bedId);           
-    if(index>0){
-    return this.beduserlist[index].type;}
-    else{return this.beduserlist[0].type;}
-    
+    getTypeId(bedId)
+    {
+        var index=this.beduserlist.findIndex(item=>item.bedId===bedId);           
+        if(index>0)
+        {            
+            return this.beduserlist[index].type;
+        }
+        else
+        {
+            return this.beduserlist[0].type;
+        }    
     }
 
-   removeData(bedId){
+    removeData(bedId)
+    {
         var index=this.beduserlist.findIndex(item=>item.bedId===bedId);   
-        if (index > -1) { 
+        if (index > -1) 
+        { 
             this.beduserlist.splice(index, 1);
-          }        
-        console.log(JSON.stringify(this.beduserlist))
-        
-        }
+        }        
+        console.log(JSON.stringify(this.beduserlist));        
+    }
     
     /**
      * 
      */
-    getBedUserStats(){
+    getBedUserStats()
+    {
         return JSON.stringify(this.beduserlist);
     }
 };  

@@ -10,16 +10,19 @@ var pool = require('../mysql/index');
  * status==6 solicita ayuda
  * status==7 done=>1
  */
- class  BedsList  {    
-    constructor() {
-         this.bedlist=[{id:0,st:0,spec:0}];                        
+class  BedsList  
+{    
+    constructor() 
+    {
+            this.bedlist=[{id:0,st:0,spec:0}];                        
     }
   /**
    * This function adds a bed to the status list, it is used only when adding a bed
    * @param {} id bedId
    * @returns 1
    */
-    addBed(id) {
+    addBed(id) 
+    {
          this.bedlist.push({id:id,st:0,spec:0});
          return 1;
     }
@@ -27,10 +30,12 @@ var pool = require('../mysql/index');
      * for testing porpuses
      * @returns 
      */
-    printBedlist(){
-         this.bedlist.forEach(element => {
-            console.log("id:"+element.id,"|st:"+element.st+"|spec:"+element.spec);
-        });
+    printBedlist()
+    {
+        this.bedlist.forEach(element => 
+            {
+                console.log("id:"+element.id,"|st:"+element.st+"|spec:"+element.spec);
+            });
         return 1;
     }
     /**
@@ -38,43 +43,53 @@ var pool = require('../mysql/index');
      * @param {} bedId 
      * @param {*} statusP 
      */
-    setStatus(bedId,statusP){
+    setStatus(bedId,statusP)
+    {
         var index=this.bedlist.findIndex(item=>item.id===bedId);       
-        if(index>=0){
-        this.bedlist[index].st=statusP;}
-        else{return}
-
-       this.printBedlist();
-   }
+        if(index>=0)
+        {
+            this.bedlist[index].st=statusP;
+        }
+        else
+        {
+            return;
+        }
+        this.printBedlist();
+    }
    /**
      * Alters the treatment of the bed
      * @param {} bedId 
      * @param {*} treatmentP 
      */
-    setTreat(bedId,treatP){
+    setTreat(bedId,treatP)
+    {
         var index=this.bedlist.findIndex(item=>item.id===bedId);       
-        if(index>=0){
-        this.bedlist[index].spec=treatP;}
-        else{return}
-
-       this.printBedlist();
-   }
+        if(index>=0)
+        {
+            this.bedlist[index].spec=treatP;
+        }
+        else
+        {   
+            return;
+        }
+        this.printBedlist();
+    }
    /**
     * Get the current status of the bed
     * @param {} bedId 
     */
-   getStatus(bedId){
-    var index=this.bedlist.findIndex(item=>item.id===bedId);           
-    return this.bedlist[index].st
-    //this.printBedlist();
+    getStatus(bedId)
+    {
+        var index=this.bedlist.findIndex(item=>item.id===bedId);           
+        return this.bedlist[index].st    
     }
     /**
      * 
      */
-    getBedStats(){
+    getBedStats()
+    {
         return JSON.stringify(this.bedlist);
-    }
-          
+    }     
 };  
 
 module.exports = BedsList;

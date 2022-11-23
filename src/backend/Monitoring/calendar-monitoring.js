@@ -5,11 +5,11 @@ var pool = require('../mysql/index');
  * it is supossed to be cleaned right after the event is closed.
  * 
  */
- class  CalendarList  {
-    
-    constructor() {
-         this.CalendarList=[{calendarId:0,bedId:0,note:null}];                
-        
+class  CalendarList  
+{
+    constructor() 
+    {
+         this.CalendarList=[{calendarId:0,bedId:0,note:null}];                        
     }
   /**
    * This function adds a event to the calendar list, it is used only when adding a event
@@ -18,7 +18,8 @@ var pool = require('../mysql/index');
    * @param {} noteP :note of the event
    * @returns 1
    */
-    addCalendar(calendarIdP,bedIdP,noteP) {
+    addCalendar(calendarIdP,bedIdP,noteP) 
+    {
          this.CalendarList.push({calendarId:calendarIdP,bedId:bedIdP,note:noteP});
          this.printCalendarList();
          return 1;
@@ -27,73 +28,85 @@ var pool = require('../mysql/index');
      * for testing porpuses
      * @returns 
      */
-    printCalendarList(){
-         this.CalendarList.forEach(element => {
+    printCalendarList()
+    {
+        this.CalendarList.forEach(element => 
+            {
             console.log("id:"+element.calendarId,"|bedID:"+element.bedId,"note:"+element.note);
-        });
+            });
         return 1;
     }
    /**
     * Get the note of the event
     * @param {} calendarId 
     */
-   getNote(calendarIdP){
-    var index=this.CalendarList.findIndex(item=>item.calendarId===calendarIdP);    
-
-    return this.CalendarList[index].note;
-    
+    getNote(calendarIdP)
+    {
+        var index=this.CalendarList.findIndex(item=>item.calendarId===calendarIdP);    
+        return this.CalendarList[index].note;    
     }
 
     /**
     * Get the note of the event
     * @param {} calendarId 
     */
-   getNoteBed(bedIdP){
-    var index=this.CalendarList.findIndex(item=>item.bedId===bedIdP);    
-    if(index==-1){return "none";}       
-    else {return this.CalendarList[index].note;}
-    
+   getNoteBed(bedIdP)
+   {
+        var index=this.CalendarList.findIndex(item=>item.bedId===bedIdP);    
+        if(index==-1)
+        {
+            return "none";
+        }       
+        else 
+        {
+            return this.CalendarList[index].note;
+        }    
     }
 
     /**
     * Get the calendarIp
     * @param {} calendarId 
     */
-   getCalendarId(bedIdP){
-    
-    var index=this.CalendarList.findIndex(item=>item.bedId===bedIdP);      
-    if(index==-1){return -1;}           
-    else{return this.CalendarList[index].calendarId;}
-    
+    getCalendarId(bedIdP)
+    {    
+        var index=this.CalendarList.findIndex(item=>item.bedId===bedIdP);      
+        if(index==-1)
+        {
+            return -1;
+        }           
+        else
+        {
+            return this.CalendarList[index].calendarId;
+        }
     }
-
     /**
     * remove the calendar event from list
     * @param {} calendarId 
     */
-    removeCalendar(calendarIdP){
+    removeCalendar(calendarIdP)
+    {
         var index=this.CalendarList.findIndex(item=>item.calendarId===calendarIdP);           
         this.CalendarList.splice(index,1);
         this.printCalendarList();
-        }
+    }
     
     /**
     * remove the calendar event from list
     * @param {} bedId 
     */
-     removeCalendarBed(bedIdP){
+    removeCalendarBed(bedIdP)
+    {
         var index=this.CalendarList.findIndex(item=>item.bedId===bedIdP);           
         this.CalendarList.splice(index,1);
-        
-        }    
+    }    
 
     /**
      * get the list of the calendar events 
      */
-    getCalendarList(){
+    getCalendarList()
+    {
         return JSON.stringify(this.CalendarList);
     }
 };  
-
 module.exports = CalendarList;
 
