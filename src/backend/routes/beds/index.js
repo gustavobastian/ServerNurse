@@ -3,59 +3,71 @@ var routerBeds = express.Router();
 var pool = require('../../mysql');
 var BedsList = require('../../Monitoring/Bed-mon');
 
-
 //filling the bedList ordered by priority
 
-async function fillingBeds(){
-  await   pool.query('select * from Bed join PriorityTable using (bedId) ORDER BY PriorityTable.priority DESC', async function(err, result, fields) {
+async function fillingBeds()
+{
+    await   pool.query('select * from Bed join PriorityTable using (bedId) ORDER BY PriorityTable.priority DESC', async function(err, result, fields) 
+    {
         console.log("filling beds")
-        if (err) {
+        if (err) 
+        {
             console.log("Error in bedlist1");
             return;
         }
-        await result.forEach(element => {  
+        await result.forEach(element => 
+        {  
             BedsList.addBed(element.bedId);                  
         });
         await pool.query('Select * from PatientSpecTable \
         JOIN SpecTable on SpecTable.id = PatientSpecTable.specId  \
         JOIN Patient on Patient.patientId = PatientSpecTable.patientId  \
         JOIN Bed on Bed.bedId = Patient.bedId  \
-        ', function(err, result, fields) {
-            if (err) {
+        ', function(err, result, fields) 
+        {
+            if (err) 
+            {
                 console.log("error in bedlist 3")
                 return;
             }                    
-            result.forEach(element => {  
-                //console.log(element)               
+            result.forEach(element => 
+            {  
                 BedsList.setStatus(element.bedId,1);      
                 BedsList.setTreat(element.bedId,element.specId);
             });            
         });       
     });
-
     BedsList.printBedlist();  
- return;   
+    return;   
 }
 
 fillingBeds();
 /**
  * Send to client all beds status information
 */
-routerBeds.get('/state/', function(req, res) {    
+routerBeds.get('/state/', function(req, res) 
+{    
     var response = BedsList.getBedStats();    
     res.send(response).status(201);
- });
+});
 
 /**
  * Send to client all beds information
 */
-routerBeds.get('/', function(req, res) {
-    pool.query('Select * from Bed', function(err, result, fields) {
-        if (err) {
+routerBeds.get('/', function(req, res) 
+{
+    pool.query('Select * from Bed', function(err, result, fields) 
+    {
+        if (err) 
+        {
             res.send(err).status(400);
             return;
         }
-        res.send(result).status(201);
+        else
+        {
+            res.send(result).status(201);
+            return;
+        }
     });
 });
 
@@ -74,24 +86,26 @@ routerBeds.get('/:id', function(req, res) {
 });
 
 //API for gettin active notes of a pacient by bedId
-routerBeds.get('/pacient/notes/:id', function(req, res) {
+routerBeds.get('/pacient/notes/:id', function(req, res) 
+{
     idAb=req.params.id;   
     pool.query('SELECT DISTINCT notesId,note,state \
-            FROM `Notes` as n JOIN `NotesTable` as nt JOIN `Patient` as p \
-            WHERE n.notesTableId = nt.notesTableId AND p.notesTableId = nt.notesTableId AND p.bedId= ? ORDER BY notesId DESC ',[idAb], function(err, result, fields) {
-    //pool.query('Select * from Bed as b JOIN Patient AS p ON b.bedId=p.bedId JOIN NotesTable AS n  \
-   // ON p.notesTableId=n.notesTableId JOIN Notes AS nn ON n.noteId= n.noteId where b.bedId='+idAb, function(err, result, fields) {
-      //  pool.query(`Select * from Bed as b JOIN Patient AS p ON b.bedId=p.bedId where b.bedId=?`,[idAb],   function(err, result, fields) {
-    //  pool.query('Select notesId,firstname,lastname,note, state from Bed as b JOIN Patient AS p ON b.bedId=p.bedId JOIN NotesTable AS n ON p.notesTableId=n.notesTableId JOIN Notes AS nn ON n.noteId= nn.notesId WHERE nn.state= "activa" AND b.bedId=?',[idAb], function(err, result, fields) {      
-        if (err) {
+    FROM `Notes` as n JOIN `NotesTable` as nt JOIN `Patient` as p \
+    WHERE n.notesTableId = nt.notesTableId AND \
+    p.notesTableId = nt.notesTableId AND p.bedId= ? ORDER BY notesId DESC ',[idAb], function(err, result, fields) 
+    {
+        if (err) 
+        {
             res.send(err).status(400);
             return;
         }
-        else{
-        res.send(result);}
+        else
+        {
+            res.send(result);
+            return;
+        }
     });
 });
-
 
 //API for post active notes of a pacient by bedId 
 /**
@@ -132,73 +146,78 @@ routerBeds.post('/pacient/notes/activation/:id', function(req, res) {
  * "callerId":1,
  * "floorId":"1"}]
  */
- routerBeds.post('/', function(req, res) {    
+routerBeds.post('/', function(req, res) 
+{    
     console.log("req:"+JSON.stringify(req.body))
     console.log(req.body[0]);    
     let received=(JSON.stringify(req.body));       
     let received2=JSON.parse(received);
-    
     let roomId=parseInt(received2[0].roomId);
     let callerId=parseInt(received2[0].callerId);
     let floorId =parseInt( received2[0].floorId);
-    
-    
     pool.query(
         'INSERT INTO Bed(`roomId`, `callerId`, `floorId`) \
-        VALUES (?,?,?)',[roomId,callerId,floorId], function(err, result, fields) {
-        if (err) {
-            res.send(err).status(400);
-            return;
-        }
-        else{
-        console.log(result.insertId);   
-        bedId=result.insertId;
-        pool.query(
-            'INSERT INTO PriorityTable(`bedId`, `priority`) \
-            VALUES (?,?)',[bedId,0], async function(err, result2, fields) {
-            if (err) {
+        VALUES (?,?,?)',[roomId,callerId,floorId], function(err, result, fields) 
+        {
+            if (err) 
+            {
                 res.send(err).status(400);
                 return;
-                }
-
-            else{
-                //updating bedlist status
-                BedsList.bedlist=[{id:0,st:0,spec:0}];                        
-                await   pool.query('select * from Bed join PriorityTable using (bedId) ORDER BY PriorityTable.priority DESC', async function(err, result, fields) {
-                    console.log("filling beds")
-                    if (err) {
-                        console.log("Error in bedlist1");
-                        return;
-                    }
-                    await result.forEach(element => {  
-                        BedsList.addBed(element.bedId);                  
-                    });
-                    await pool.query('Select * from PatientSpecTable \
-                    JOIN SpecTable on SpecTable.id = PatientSpecTable.specId  \
-                    JOIN Patient on Patient.patientId = PatientSpecTable.patientId  \
-                    JOIN Bed on Bed.bedId = Pacient.bedId  \
-                    ', function(err, result, fields) {
-                        if (err) {
-                            console.log("error in bedlist 3")
+            }
+            else
+            {
+                console.log(result.insertId);   
+                bedId=result.insertId;
+                pool.query(
+                    'INSERT INTO PriorityTable(`bedId`, `priority`) \
+                    VALUES (?,?)',[bedId,0], async function(err, result2, fields) 
+                    {
+                        if (err) 
+                        {
+                            res.send(err).status(400);
                             return;
-                        }                    
-                        result.forEach(element => {  
-                            //console.log(element)               
-                            BedsList.setStatus(element.bedId,1);      
-                            BedsList.setTreat(element.bedId,element.specId);
-                        });            
-                    });       
-                });
-            }    
-            
-            });
-
-        res.send(result).status(201);
-        console.log("done");   }
-    });
-    
-    //res.status(202);
-
+                        }
+                        else
+                        {   
+                            //updating bedlist status
+                            BedsList.bedlist=[{id:0,st:0,spec:0}];                        
+                            await   pool.query('select * from Bed join PriorityTable using (bedId) \
+                            ORDER BY PriorityTable.priority DESC', async function(err, result, fields) 
+                            {
+                                console.log("filling beds")
+                                if (err) 
+                                {
+                                    console.log("Error in bedlist1");
+                                    return;
+                                }
+                                await result.forEach(element => 
+                                {  
+                                    BedsList.addBed(element.bedId);                  
+                                });
+                                await pool.query('Select * from PatientSpecTable \
+                                JOIN SpecTable on SpecTable.id = PatientSpecTable.specId  \
+                                JOIN Patient on Patient.patientId = PatientSpecTable.patientId  \
+                                JOIN Bed on Bed.bedId = Pacient.bedId  \
+                                ', function(err, result, fields) 
+                                {
+                                    if (err) 
+                                    {
+                                        console.log("error in bedlist 3")
+                                        return;
+                                    }                    
+                                    result.forEach(element => 
+                                    {                                  
+                                        BedsList.setStatus(element.bedId,1);      
+                                        BedsList.setTreat(element.bedId,element.specId);
+                                    });            
+                                });       
+                            });
+                        }    
+                    });
+                res.send(result).status(201);
+                console.log("done");   
+            }
+        });
 });
 
 //API for editing beds 
