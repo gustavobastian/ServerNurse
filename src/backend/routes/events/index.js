@@ -208,7 +208,7 @@ eventsTable.get('/:id', function(req, res)
 
  eventsTable.post('/', function(req, res) 
  { 
-    console.log(" post event"   )
+    console.log(" post event")
     console.log("req:"+JSON.stringify(req.body))
     console.log(req.body);    
     let received=(JSON.stringify(req.body));       

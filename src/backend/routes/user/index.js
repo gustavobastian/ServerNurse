@@ -5,57 +5,69 @@ const bcrypt = require("bcrypt");
 
 var UserList = require('../../Monitoring/User-mon');
 
-
-
-
 //filling the userList
-async function fillingUserSt(){
+async function fillingUserSt()
+{
     UserList.UserList=[{id:0,st:0}]; 
-pool.query('Select * from User', function(err, result, fields) {
-    if (err) {
-        res.send(err).status(400);
-        return;
-    }
-    result.forEach(element => {
-        UserList.addUser(element.userId);
-    });    
-    //UserList.printUserList();
-   
-});
-
+    pool.query('Select * from User', function(err, result, fields) 
+    {
+        if (err) {
+            res.send(err).status(400);
+            return;
+        }
+        else
+        {
+            result.forEach(element => 
+            {
+                UserList.addUser(element.userId);
+            });    
+        }
+    });
 }
 //filling users Status
 fillingUserSt();
 //API for getting all users information
-routerUser.get('/', function(req, res) {
-    
-    pool.query('Select * from User', function(err, result, fields) {
-        if (err) {
+routerUser.get('/', function(req, res) 
+{
+    pool.query('Select * from User', function(err, result, fields) 
+    {
+        if (err) 
+        {
             res.send(err).status(400);
             return;
         }        
-        UserList.printUserList();
-        res.send(result);
+        else
+        {
+            UserList.printUserList();
+            res.send(result);
+            return;
+        }    
     });
 });
 
 
 //API for getting the list of userStates
-routerUser.get('/state', function(req, res) {
-    
+routerUser.get('/state', function(req, res) 
+{
         let result=UserList.getUserStats();
         res.send(result);
-    });
+});
 
 //API for getting a user information
-routerUser.get('/:id', function(req, res) {
+routerUser.get('/:id', function(req, res) 
+{
     idAb=req.params.id;    
-    pool.query('Select * from User where userId = ?',[idAb], function(err, result, fields) {
+    pool.query('Select * from User where userId = ?',[idAb], function(err, result, fields) 
+    {
         if (err) {
             res.send(err).status(400);
             return;
         }
-        res.send(result);
+        else
+        {
+            res.send(result);
+            return;
+        }
     });
 });
 
@@ -70,7 +82,8 @@ routerUser.get('/:id', function(req, res) {
  * "state":"1",
  * "password":"123456"}
  */
-routerUser.post('/', async function(req, res) {
+routerUser.post('/', async function(req, res) 
+{
     console.log("here");
     console.log(req.body);
     let d= JSON.stringify(req.body);
@@ -90,30 +103,24 @@ routerUser.post('/', async function(req, res) {
     let occupation=user._occupation;
     let state = user._state;
     let password2=user._password;
-
-     
-
-
-     let password = await bcrypt.hash(password2, 12);
-  /*  console.log(userId);
-    console.log(occupation);
-    console.log(lastname);*/
+    let password = await bcrypt.hash(password2, 12);
 
     await pool.query(
         'INSERT INTO User( `username`, `firstname`, `lastname`, `occupation`, `state`, `password`) \
-        VALUES (?,?,?,?,?,?)',[username,firstname,lastname,occupation,state,password], function(err, result, fields) {
-        if (err) {
-            res.send(err).status(400);
-            console.log("error:"+err);
-            return;
-        }
-        else{
-        res.send(result).status(202);
-        fillingUserSt();
-        }
-    });
-
-    
+        VALUES (?,?,?,?,?,?)',[username,firstname,lastname,occupation,state,password], function(err, result, fields) 
+        {
+            if (err) 
+            {
+                res.send(err).status(400);
+                console.log("error:"+err);
+                return;
+            }
+            else
+            {
+                res.send(result).status(202);
+                fillingUserSt();
+            }
+        });
 });
 
 
@@ -129,7 +136,8 @@ routerUser.post('/', async function(req, res) {
  * "password":"123456"}
  */
 
-routerUser.put('/:id', async function(req, res) {
+routerUser.put('/:id', async function(req, res)
+{
     console.log("altering User")
     let d= JSON.stringify(req.body);
     console.log("body:"+d);  
@@ -146,30 +154,28 @@ routerUser.put('/:id', async function(req, res) {
     
     //hashing password
     let password = await bcrypt.hash(password2, 12);
-
-    
-   
-
     pool.query(
-        'UPDATE User SET\
-        `username` = ?,   \
-        `firstname` = ?, \
-        `lastname` = ?, \
-        `occupation` = ?, \
-        `state` = ?, \
-        `password`= ? \
-         WHERE \
-         `User`.`userId` = ?;',[username,firstname,lastname,occupation,state,password,userId], function(err, result, fields) {
-        if (err) {
+    'UPDATE User SET\
+    `username` = ?,   \
+    `firstname` = ?, \
+    `lastname` = ?, \
+    `occupation` = ?, \
+    `state` = ?, \
+    `password`= ? \
+    WHERE \
+    `User`.`userId` = ?;',[username,firstname,lastname,occupation,state,password,userId], function(err, result, fields) 
+    {
+        if (err) 
+        {
             res.send(err).status(400);
             return;
         }
-        else{
-        res.send(result).status(202);}
+        else
+        {
+            res.send(result).status(202);
+            return;
+        }
     });
-
-    
-   // res.send(202);
 });
 
 
@@ -178,25 +184,27 @@ routerUser.put('/:id', async function(req, res) {
  * body format: 
  * any
  */
- routerUser.delete('/:id', function(req, res) {
+ routerUser.delete('/:id', function(req, res) 
+ {
     console.log(req.body);
-    //console.log(req.body[0].messageId);
     let userId=parseInt(req.params.id);
         
     pool.query(
-        'DELETE FROM User \
-        WHERE \
-         `User`.`userId` = ?;',[userId], function(err, result, fields) {
-        if (err) {
-            res.send(err).status(400);
-            return;
+    'DELETE FROM User \
+    WHERE \
+    `User`.`userId` = ?;',[userId], function(err, result, fields) 
+    {
+        if (err) 
+        {
+                res.send(err).status(400);
+                return;
         }
-        else{
-        res.send(result).status(202);
-        fillingUserSt();
+        else
+        {
+            res.send(result).status(202);
+            fillingUserSt();
         }
     });
-
 });
 
 module.exports = routerUser;

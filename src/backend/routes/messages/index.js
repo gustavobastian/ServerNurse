@@ -65,11 +65,13 @@ routerMessages.post('/', function(req, res)
     'INSERT INTO Messages(`messageId`, `userIdLastName`, `userIdSender`, `patientId`, `content`, `dateTime`, `audiolink`, `userTableId`) \
     VALUES (?,?,?,?,?,NOW(),?,?)',[messageId,userIdLastName,userIdSender,patientId,content,audiolink,userTableId], function(err, result, fields) 
     {
-        if (err) {
+        if (err) 
+        {
             res.send(err).status(400);
             return;
         }
-        else{
+        else
+        {
             res.send(result).status(202);
             return;
         }

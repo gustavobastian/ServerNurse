@@ -225,7 +225,8 @@ routerBeds.post('/', function(req, res)
  * body format: 
  * [{"roomId":"2", "callerId":"17", "floorId":"1"}]
  */
- routerBeds.put('/:id', function(req, res) {
+ routerBeds.put('/:id', function(req, res) 
+ {
     console.log(req.body);    
     console.log(JSON.stringify(req.body));   
     let bedId=parseInt(req.params.id);
@@ -234,22 +235,24 @@ routerBeds.post('/', function(req, res)
     let floorId =parseInt( req.body.floorId);
         
     pool.query(
-        'UPDATE Bed SET \
-        `roomId` = ?,   \
-        `callerId` = ?, \
-        `floorId` = ? \
-        WHERE \
-         `Bed`.`bedId` = ?;',[roomId,callerId,floorId, bedId], function(err, result, fields) {
-        if (err) {
+    'UPDATE Bed SET \
+    `roomId` = ?,   \
+    `callerId` = ?, \
+    `floorId` = ? \
+    WHERE \
+    `Bed`.`bedId` = ?;',[roomId,callerId,floorId, bedId], function(err, result, fields) 
+    {
+        if (err) 
+        {
             res.send(err).status(400);
             return;
         }
-        res.send(result).status(200);
+        else
+        {
+            res.send(result).status(200);
+            return;
+        }        
     });
-
-    
-
-
 });
 
 //API for deleting beds
@@ -257,56 +260,72 @@ routerBeds.post('/', function(req, res)
  * body format: 
  * any
  */
- routerBeds.delete('/:id', function(req, res) {
+routerBeds.delete('/:id', function(req, res) 
+{
     console.log(req.body);        
     let bedId=parseInt(req.params.id);
 // first deleting the bed in bed Table, then in the priority table        
     pool.query(
-        'DELETE FROM Bed \
-        WHERE \
-         `Bed`.`bedId` = ?;',[bedId], function(err, result, fields) {
-        if (err) {
+    'DELETE FROM Bed \
+    WHERE \
+    `Bed`.`bedId` = ?;',[bedId], function(err, result, fields) 
+    {
+        if (err) 
+        {
             res.send(err).status(400);
             return;
         }
-        else{
-        pool.query(
+        else
+        {
+            pool.query(
             'DELETE FROM PriorityTable\
             WHERE \
-            `PriorityTable`.`bedId` = ?;',[bedId], function(err, result2, fields) {
-            if (err) {
-                res.send(err).status(400);
-                return;
-            }
-            res.send(result).status(200);
+            `PriorityTable`.`bedId` = ?;',[bedId], function(err, result2, fields) 
+            {
+                if (err) 
+                {
+                    res.send(err).status(400);
+                    return;
+                }
+                else
+                {
+                    res.send(result).status(200);
+                    return;
+                }
             });
         }    
-        
     });
-
 });
 
 //API for setting the priority of the bed
 /**
  * params body: example 1:{[{"priority":"1"}]
  */
- routerBeds.put('/priority/:id', function(req, res) {
+ routerBeds.put('/priority/:id', function(req, res) 
+ {
     console.log(req.body)
     let bedId=parseInt(req.params.id);
     let priority=parseInt(req.body[0].priority);
     console.log(priority);
     
     pool.query(
-        'UPDATE PriorityTable SET \
-        `priority` = ?   \
-        WHERE \
-         `PriorityTable`.`bedId` = ?;',[priority, bedId], function(err, result, fields) {
-        if (err) {
+    'UPDATE PriorityTable SET \
+    `priority` = ?   \
+    WHERE \
+    `PriorityTable`.`bedId` = ?;',[priority, bedId], function(err, result, fields) 
+    {
+        if (err) 
+        {
             res.send(err).status(400);
             return;
-        }        
+        }
+        else
+        {        
         res.send(result).status(200);
         fillingBeds();
+        return;
+        }
+        
     });
  });
 
@@ -315,7 +334,8 @@ routerBeds.post('/', function(req, res)
 /**
  * 
  */
- routerBeds.get('/priority/:id', function(req, res) {
+routerBeds.get('/priority/:id', function(req, res) 
+{
     let bedId=parseInt(req.params.id);
     console.log(req.body)
     pool.query('Select * from PriorityTable where bedId=?',[bedId], function(err, result, fields) {
@@ -323,11 +343,12 @@ routerBeds.post('/', function(req, res)
             res.send(err).status(400);
             return;
         }
-        res.send(result).status(200);
+        else
+        {
+            res.send(result).status(200);
+            return;
+        }
     });
-    
  });
-
-
 
 module.exports = routerBeds;
