@@ -6,7 +6,7 @@ This server is part of a system that includes a mobile messaging application and
 We are using a MySQL database. The database diagrams is:
 <img src="./docs/baseDeDatos/base_de_datos.png" style="padding-left:5%;width:100%">
 
-In order to precharge the database, after clonning the repository extract the demo-database in the directory "./db". The demo-database file can be download from: 
+The system needs to precharge the database, after clonning the repository extract the demo-database file in the directory "./db". The demo-database file can be download from: 
 https://drive.google.com/file/d/1eWSW7uG1hFr87aKrVnCOLjj4MOsV8Xzu/view?usp=sharing. 
 
 Instruction:
@@ -26,7 +26,8 @@ JWT_SECRET = 'holamundo';
 JWT_EXP_TIM = 7d
 
 ##MQTT CONFIGURATION
-##setting por for using websockets(ip and port must be the same in the mobile clients and the front page)
+##setting por for using websockets(ip and port must 
+##be the same in the mobile clients and the front page)
 MQTT_CONNECTION = 'ws://192.168.1.100:9001'
 
 ##server
@@ -37,7 +38,9 @@ PORT_LOCAL    = 3000
 TZ = America/Argentina/Buenos_Aires 
 ```
 
-After these modifications, run:
+As the system uses calendar events, the timezone must be set to America/Argentina/Buenos_Aires.
+
+After all these steps, run:
 ```
 docker-compose up
 ```
@@ -55,15 +58,15 @@ docker-compose down
 
 ## How to run some test on the application
 <br>
-The system must have installed postman:
+The system must have installed postman, newman and newman-reporter-htmlextra:
+
 ```
 snap install postman
 ``` 
-The system must have installed newman and 
 
 ```
-npm i newman
-npm i newman-reporter-htmlextra
+npm i -g newman
+npm i -g newman-reporter-htmlextra
 ``` 
 
 With the application running in background or in another window, open a new window and in the directory ServerNurse run:
@@ -72,8 +75,9 @@ cd Testing
 cd postman-collections
 newman run ./logueo_usuario.postman_collection.json −r cli,htmlextra
 ```
+The report will be displayed in the console and the html stored in "./Testing/postman-collections/newman".
 
-
+There are other test inside the directory "Testing/postman-collections".
 
 ### NodeJs application description 
 
