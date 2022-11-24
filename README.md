@@ -3,8 +3,10 @@ Server for Nurse Messaging System based in MQTT
 ## System Description
 This server is part of a system that includes a mobile messaging application and a administration web page. It provides a simple interface to a database an a Mosquitto mqtt brocker.
 ## Database Description
-We are using a MySQL database. The database diagrams is:\
-[picture]  
+We are using a MySQL database. The database diagrams is:
+
+<img src="./Doc/baseDeDatos/base_de_datos.png" style="padding-left:25%; "width="30%">
+
 The bed entity has 4 columns: bedId(number), a callerId(number of the caller device), roomId(number of the room) and floorId(number of the floor).
 ## NodeJs application description
 [picture]
