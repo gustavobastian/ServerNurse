@@ -101,7 +101,7 @@ The system publishes information of the beds status in a topic "/Beds/status" ev
 It also interacts with the administration page (https://github.com/gustavobastian/AdminPageNurse) , with the mobile application (https://github.com/gustavobastian/ClientNurse) and the bed caller (https://github.com/gustavobastian/BedCaller).
 
 
-There are to kinds of clients for this applications:
+There are two kinds of clients for this applications:
 <ul>
 <li> HTTP clients are served by the express submodule and its routes. The subsystem endpoints are stored in the directory "./src/backend/routes"</li>
 <li> MQTT clients can ask the system with a specified protocol.
