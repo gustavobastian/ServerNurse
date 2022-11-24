@@ -92,7 +92,7 @@ newman run ./logueo_usuario.postman_collection.json −r cli,htmlextra
 ```
 The report will be displayed in the console and the html stored in "./Testing/postman-collections/newman".
 
-There are others test inside the directory "Testing/postman-collections".
+There are other tests inside the directory "Testing/postman-collections".
 
 ### NodeJs application description 
 
