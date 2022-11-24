@@ -1,12 +1,26 @@
 # ServerNurse
 Server for Nurse Messaging System based in MQTT
+<br>
 ## System Description
-This server is part of a system that includes a mobile messaging application and a administration web page. It provides a simple interface to a database an a Mosquitto mqtt brocker.
+This server is part of a system that includes a mobile messaging application, a MQTT broker and a administration web page. 
+<br>
+<br>
+
+<img src="./docs/system-diagram.png" style="padding-left:5%;width:80%">
+
+<br>
+
 ## Database Description
-We are using a MySQL database. The database diagrams is:
+<br>
+The system uses a MySQL Relational database for storing patients and users information, event logs, and beds information. The database diagrams is:
+
+<br>
 <img src="./docs/baseDeDatos/base_de_datos.png" style="padding-left:5%;width:100%">
 
-The system needs to precharge the database, after clonning the repository extract the demo-database file in the directory "./db". The demo-database file can be download from: 
+<br>
+
+The system needs to precharge a demo database, after clonning the repository extract the demo-database file in the directory "./db". \
+The demo-database file can be download from: 
 https://drive.google.com/file/d/1eWSW7uG1hFr87aKrVnCOLjj4MOsV8Xzu/view?usp=sharing. 
 
 Instruction:
@@ -50,7 +64,7 @@ docker-compose up -d
 ```
 <br>
 
-In order to stop the running:
+In order to stop the container execution:
 ```
 docker-compose down
 ```
@@ -58,7 +72,8 @@ docker-compose down
 
 ## How to run some test on the application
 <br>
-The system must have installed postman, newman and newman-reporter-htmlextra:
+
+The test provided is a partial test, some features are not tested. The system must have installed postman, newman and newman-reporter-htmlextra:
 
 ```
 snap install postman
@@ -77,13 +92,13 @@ newman run ./logueo_usuario.postman_collection.json −r cli,htmlextra
 ```
 The report will be displayed in the console and the html stored in "./Testing/postman-collections/newman".
 
-There are other test inside the directory "Testing/postman-collections".
+There are others test inside the directory "Testing/postman-collections".
 
 ### NodeJs application description 
 
 <br>
 The system publishes information of the beds status in a topic "/Beds/status" every 1:30 seconds and the user status in "/User/status" every 1 seconds (see file "./src/backend/mqtt.js"). <br>
-It also interacts with the administration page (https://github.com/gustavobastian/AdminPageNurse) , with the mobile application (https://github.com/gustavobastian/ClientNurse) and the beds caller (https://github.com/gustavobastian/BedCaller).
+It also interacts with the administration page (https://github.com/gustavobastian/AdminPageNurse) , with the mobile application (https://github.com/gustavobastian/ClientNurse) and the bed caller (https://github.com/gustavobastian/BedCaller).
 
 
 There are to kinds of clients for this applications:
