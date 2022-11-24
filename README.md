@@ -104,8 +104,7 @@ It also interacts with the administration page (https://github.com/gustavobastia
 There are two kinds of clients for this applications:
 <ul>
 <li> HTTP clients are served by the express submodule and its routes. The subsystem endpoints are stored in the directory "./src/backend/routes"</li>
-<li> MQTT clients can ask the system with a specified protocol.
-The subsystem modules are stored in the directory "./src/backend/mqtt"
+<li> MQTT clients can interact with the system with a specified protocol. The subsystem modules are stored in the directory "./src/backend/mqtt"
 </li>
 </ul>
 
