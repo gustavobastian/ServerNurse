@@ -4,17 +4,95 @@ Server for Nurse Messaging System based in MQTT
 This server is part of a system that includes a mobile messaging application and a administration web page. It provides a simple interface to a database an a Mosquitto mqtt brocker.
 ## Database Description
 We are using a MySQL database. The database diagrams is:
+<img src="./docs/baseDeDatos/base_de_datos.png" style="padding-left:5%;width:100%">
 
-<img src="./Doc/baseDeDatos/base_de_datos.png" style="padding-left:25%; "width="30%">
+In order to precharge the database, after clonning the repository extract the demo-database in the directory "./db". The demo-database file can be download from: 
+https://drive.google.com/file/d/1eWSW7uG1hFr87aKrVnCOLjj4MOsV8Xzu/view?usp=sharing. 
 
-The bed entity has 4 columns: bedId(number), a callerId(number of the caller device), roomId(number of the room) and floorId(number of the floor).
-## NodeJs application description
-[picture]
+Instruction:
+```
+cd db
+sudo tar xvfj <filepath>
+```
 
-## MQTT topics
-[picture]
+## How to run NodeJs application 
 
-## Endpoints specification
+In order to run the application, after the database is extracted, the user must create a environment file "./.env" with the following content:
+``` 
+##SECURITY
+#secret pass must be correlated with the front page
+JWT_SECRET = 'holamundo';
+#token expiration time
+JWT_EXP_TIM = 7d
+
+##MQTT CONFIGURATION
+##setting por for using websockets(ip and port must be the same in the mobile clients and the front page)
+MQTT_CONNECTION = 'ws://192.168.1.100:9001'
+
+##server
+PORT_LOCAL    = 3000
+
+##timezone
+
+TZ = America/Argentina/Buenos_Aires 
+```
+
+After these modifications, run:
+```
+docker-compose up
+```
+or (if you want to run it on the background):
+```
+docker-compose up -d
+```
+<br>
+
+In order to stop the running:
+```
+docker-compose down
+```
+<br>
+
+## How to run some test on the application
+<br>
+The system must have installed postman:
+```
+snap install postman
+``` 
+The system must have installed newman and 
+
+```
+npm i newman
+npm i newman-reporter-htmlextra
+``` 
+
+With the application running in background or in another window, open a new window and in the directory ServerNurse run:
+```
+cd Testing
+cd postman-collections
+newman run ./logueo_usuario.postman_collection.json −r cli,htmlextra
+```
+
+
+
+### NodeJs application description 
+
+<br>
+The system publishes information of the beds status in a topic "/Beds/status" every 1:30 seconds and the user status in "/User/status" every 1 seconds (see file "./src/backend/mqtt.js"). <br>
+It also interacts with the administration page (https://github.com/gustavobastian/AdminPageNurse) , with the mobile application (https://github.com/gustavobastian/ClientNurse) and the beds caller (https://github.com/gustavobastian/BedCaller).
+
+
+There are to kinds of clients for this applications:
+<ul>
+<li> HTTP clients are served by the express submodule and its routes. The subsystem endpoints are stored in the directory "./src/backend/routes"</li>
+<li> MQTT clients can ask the system with a specified protocol.
+The subsystem modules are stored in the directory "./src/backend/mqtt"
+</li>
+</ul>
+
+<br>
+
+## HTTP Endpoints specification (under construction)
 ### Beds Management
 
 GET methods:
@@ -181,5 +259,5 @@ Example of return:\
 [{"messageId":1,"firstname":"Jose","lastname":"laurm","patientId":"1","content":"Se levanto bien"}]
 
 
-based in https://github.com/gotoiot/app-fullstack-base
+This work is based in https://github.com/gotoiot/app-fullstack-base
 by Agustin Bassi https://github.com/agustinBassi ,Ernesto Gigliotti https://github.com/ernesto-g and Brian Ducca https://github.com/brianducca
