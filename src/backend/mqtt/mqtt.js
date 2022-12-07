@@ -157,7 +157,8 @@ async function saveNewEvent(typeofEvent, bedId, username, note, note2){
     });  
   }
   else 
-  { 
+  {     
+    note_log=note2.toString();
     let type=1;      
     let calendarId =await CalendarList.getCalendarId(bedId);        
     if(calendarId!=-1)
@@ -179,7 +180,8 @@ async function saveNewEvent(typeofEvent, bedId, username, note, note2){
         pool.query('SELECT userId from   \
         User  WHERE `User`.`username`= ?',[username], function(err, result, fields) {
           if (err|| result.length==0) {
-              console.log("error")
+              console.log("error");
+              return;
           }
           else
           {
@@ -210,7 +212,7 @@ async function saveNewEvent(typeofEvent, bedId, username, note, note2){
                     userIdLocal=userId;
                   }                  
                   pool.query('UPDATE `LogEvents` SET `type`= ?,`finish` =?,`userId`=?, `Note2`=? , `Note`=? \
-                  WHERE `LogEvents`.`logEventId` = ?',[type,mySQLDateString, userIdLocal , note2 , note , logId ], function(err, result, fields) 
+                  WHERE `LogEvents`.`logEventId` = ?',[type,mySQLDateString, userIdLocal , note_log , " " , logId ], function(err, result, fields) 
                   {
                     if (err|| result.length==0) 
                     {
