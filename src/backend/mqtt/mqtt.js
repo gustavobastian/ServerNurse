@@ -125,6 +125,8 @@ async function saveNewEvent(typeofEvent, bedId, username, note, note2){
 */
   if(typeofEvent!=3)
   {
+    console.log("starting an event")
+    console.log("bedId:"+bedId);
     userIdLocal=0;
     note=" ";
     note2=" ";
@@ -138,10 +140,14 @@ async function saveNewEvent(typeofEvent, bedId, username, note, note2){
       else
       {
         let patientIdLocal=result[0].patientId;
-        console.log(result[0].patientId)
+        console.log(result[0].patientId);
+        const isoDate = new Date();
+        isoDate.setHours(isoDate.getHours() - 3);//argentine
+        const mySQLDateString = isoDate.toJSON().slice(0, 19).replace('T', ' ');
+        console.log(mySQLDateString)
       
         pool.query('INSERT INTO `LogEvents`   \
-              (`type`,`patientId`,`userId`,`Note`,`Note2`) VALUES(?,?,?,?,?)',[typeofEvent,patientIdLocal,userIdLocal,'','' ], 
+              (`type`,`patientId`,`userId`,`init`,`Note`,`Note2`) VALUES(?,?,?,?,?,?)',[typeofEvent,patientIdLocal,userIdLocal,mySQLDateString,'','' ], 
               function(err, result, fields) {
               if (err|| result.length==0) {
                   console.log("error",err)
@@ -191,7 +197,11 @@ async function saveNewEvent(typeofEvent, bedId, username, note, note2){
                   console.log(result[0].logEventId)
                   console.log("closing event log")
                   const isoDate = new Date();
+                  isoDate.setHours(isoDate.getHours() - 3);//argentine
                   const mySQLDateString = isoDate.toJSON().slice(0, 19).replace('T', ' ');
+                  console.log(mySQLDateString)
+                  
+                  
                   if(isNaN(userId))
                   {
                     userIdLocal=0;
@@ -256,12 +266,27 @@ client.on('message', async function (topic, message,packet)
    * Disconnection(MQTT last will testament)
    */
  
-  if(topic==="/User/Disconnection")
+  if(topic.indexOf('CalendarNote')!=-1)
   {
     console.log("aqui");
-    console.log(packet.payload.toString());
-    User.loginOut(message_data._user,client,UserList)      
+    let parsetTopic=topic.split("/")    
+    console.log(parsetTopic[2]);
+    saveNewEvent(2,parseInt(parsetTopic[2]),"system","","");
   }
+
+  /**
+   * Initiate a calendar event
+   */
+ 
+   if(topic==="/User/Disconnection")
+   {
+     console.log("aqui");
+     console.log(packet.payload.toString());
+     User.loginOut(message_data._user,client,UserList)      
+   }
+
+
+
   /**
    * login/logout functions
    */
@@ -293,12 +318,16 @@ client.on('message', async function (topic, message,packet)
   }
   if((message_data._type=== 4))
   {
+	  console.log(packet.payload.toString());
 	  console.log("asking info")  
+	  console.log(message_data._content)  
     Patient.getPatientInfopatientId((message_data._content),client);
   }
   if((message_data._type=== 5))
   {
+	  console.log(packet.payload.toString());
 	  console.log("asking notes")  
+	  console.log(message_data._content)  
     Patient.getPatientNotesPatientId(message_data._content,client);
   }
   /**

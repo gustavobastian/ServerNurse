@@ -2,7 +2,7 @@ var pool = require('../mysql/index');
 /**
  * class bedList contains information about states of beds
  * status==0 empty
- * status==1 with a pacient(pending)
+ * status==1 with a patient(pending)
  * status==2 with a call
  * status==3 accepted call
  * status==4 in progress
