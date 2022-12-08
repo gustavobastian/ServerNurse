@@ -7,6 +7,7 @@ var BedsList = require('../../Monitoring/Bed-mon');
 
 async function fillingBeds()
 {
+    BedsList.clearBedList();      
     await   pool.query('select * from Bed join PriorityTable using (bedId) ORDER BY PriorityTable.priority DESC', async function(err, result, fields) 
     {
         console.log("filling beds")

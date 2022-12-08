@@ -90,6 +90,14 @@ class  BedsList
     {
         return JSON.stringify(this.bedlist);
     }     
+
+    /**
+     * 
+     */
+     clearBedList()
+     {
+        this.bedlist=[{id:0,st:0,spec:0}];                        
+     }     
 };  
 
 module.exports = BedsList;
