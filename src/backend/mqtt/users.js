@@ -35,7 +35,7 @@ const userList = require('../Monitoring/User-mon');
                     let estado = UserList.getStatus(result[0].userId);
                     console.log("Estado:" + estado);
                     UserList.setStatus(result[0].userId, 1);
-                    if (estado < 1) 
+                    if (estado < 1 && result[0].password!=null) 
                     { ///The user is not already logged
                         bcrypt.compare(password, result[0].password, (err, resultComp) => 
                         {
@@ -56,10 +56,15 @@ const userList = require('../Monitoring/User-mon');
                                 logeado = false;
                             }
                         });
-                    }
-                    if ((estado < 1)) 
-                    {
                         response_conform = { idNumber: result[0].userId, mode: result[0].occupation };
+                    }
+                    else{
+
+                        console.log("error:" + err);
+                        var response = JSON.stringify(response_conform);
+                        console.log(response);
+                        client.publish('/Session/' + d[1] + '/response', response);
+                        return;
                     }
                 }
                 var response = JSON.stringify(response_conform);
@@ -78,21 +83,24 @@ const userList = require('../Monitoring/User-mon');
     {
         pool.query('Select * from User WHERE username=?',[username], function(err, result, fields) 
         {
-            if (err) 
+            if (err || result[0]==null) 
             {
-                console.log(error)
+                console.log(err)
                 return;
             }   
+            
             let response_conform={idNumber:result[0].userId, mode:"ok"};
             var response = JSON.stringify(response_conform);
             console.log(response);
             client.publish('/User/'+username+'/response', response);  
             let data=result[0].userId;
+            
             console.log("data:"+data);
             UserList.setStatus(data,0);
             let topic= "/User/status";
             var response = UserList.getUserStats();
             client.publish(topic, response);  
+        
         });
     }
     /***
