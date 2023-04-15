@@ -52,8 +52,8 @@ services:
         
         ports: 
             -                    "8000:3000"
-        command:                 bash -c " npm install node@12.22.12 && npm set registry https://registry.npmjs.org/ &&
-                                 npm install --save randomstring cookie-parser dotenv mqtt bcrypt express-jwt jsonwebtoken@8.5.1 node-schedule --save &&
+        command:                 bash -c " npm install node@12.22.12 &&sleep 50 && npm set registry https://registry.npmjs.org/ &&
+                                 npm install --save randomstring cookie-parser dotenv@10.0.0 mqtt bcrypt express-jwt jsonwebtoken@8.5.1 node-schedule --save &&
                                  npm config set engine-strict true
                                  npm audit fix && 
                                  sleep 50  && 
