@@ -17,7 +17,7 @@ The system uses a MySQL Relational database for storing patients and users infor
 The system needs to precharge a demo database, after clonning the repository extract the demo-database file in the directory "./db". \
 The demo-database file can be download from:
 
-<https://drive.google.com/file/d/1qHvermJvgu1X6tJpM6MA_h9OiJNN0NBF/view?usp=share_link>
+<https://drive.google.com/file/d/1eWSW7uG1hFr87aKrVnCOLjj4MOsV8Xzu/view?usp=share_link>
 
 Instruction:
 
@@ -109,8 +109,6 @@ There are other tests inside the directory "Testing/postman-collections".
 
 ### NodeJs application description
 
-
-
 The system publishes information of the beds status in a topic "/Beds/status" every 1:30 seconds and the user status in "/User/status" every 1 seconds (see file "./src/backend/mqtt.js").
 
 It also interacts with the administration page (https://github.com/gustavobastian/AdminPageNurse) , with the mobile application (https://github.com/gustavobastian/ClientNurse) and the bed caller (https://github.com/gustavobastian/BedCaller).
@@ -137,12 +135,14 @@ GET methods:
 * "localhost:8000/api/beds/:id" : returns the information of a bed a Json format: 
 `[{"bedId":1,"roomId":1,"callerId":1,"floorId":0}]`
 
-PUT methods:\
+PUT methods:
+
 In order to edit a bed information
 * "localhost:8000/api/beds/:id" : needs the body to have the new information in a Json format. The bedId is passed as parameter. Example of body:
 `[{"roomId":1,"callerId":1,"floorId":0}]`
 
-POST method:\
+POST method:
+
 Adding a new bed. the bedId is created by the system in a incremental way.
 * "localhost:8000/api/beds/" : needs the body to have information in a Json format. The bedId is passed as parameter. Example of body:
 `[{"roomId":1,"callerId":1,"floorId":0}]` 
@@ -170,6 +170,7 @@ Body example:
  "password":"123456"}
 
 PUT methods:
+
 * "localhost:8000/api/user/:id": used for editing a user information: needs information passed by the body parameter in JSON format.
 Example:   
  {
@@ -182,6 +183,7 @@ Example:
 
 
 DELETE method:
+
 * "localhost:8000/api/user/:id": used for removing a user information from the database.
 
 ### Authentication
@@ -218,7 +220,6 @@ POST methods:
 
 * "localhost:8000/api/specTable/": this method is used to add a new treatment/spec to the table. The body must have: \
 [{Spec: "Enfermeria de salud mental"}]
-
 
 DELETE methods:
 
