@@ -3,15 +3,24 @@
 Server for Nurse Messaging System based in MQTT
 
 ## System Description
+<<<<<<< HEAD
+=======
+
+This server is part of a system that includes a mobile messaging application, a MQTT broker and a administration web page.
+>>>>>>> 3524188a0fada1e59999997863bc66ea4ed09d99
 
 This server is part of a system that includes a mobile messaging application, a MQTT broker and a administration web page.
 
+<<<<<<< HEAD
 ![./docs/system-diagram.png](./docs/system-diagram.png)
 
+=======
+>>>>>>> 3524188a0fada1e59999997863bc66ea4ed09d99
 ## Database Description
 
 The system uses a MySQL Relational database for storing patients and users information, event logs, and beds information. The database diagrams is:
 
+<<<<<<< HEAD
 ![./docs/baseDeDatos/base_de_datos.png](./docs/baseDeDatos/base_de_datos.png)
 
 The system needs to precharge a demo database, after clonning the repository extract the demo-database file in the directory "./db". \
@@ -21,6 +30,19 @@ The demo-database file can be download from:
 Instructions:
 
 ```\
+=======
+<img src="./docs/baseDeDatos/base_de_datos.png" style="padding-left:5%;width:100%">
+
+The system needs to precharge a demo database, after clonning the repository extract the demo-database file in the directory "./db". \
+The demo-database file can be download from:
+
+<https://drive.google.com/file/d/1eWSW7uG1hFr87aKrVnCOLjj4MOsV8Xzu/view?usp=share_link>
+
+Instruction:
+
+```bash
+
+>>>>>>> 3524188a0fada1e59999997863bc66ea4ed09d99
 cd db
 sudo tar xvfj <filepath>
 ```
@@ -29,7 +51,12 @@ sudo tar xvfj <filepath>
 
 In order to run the application, after the database is extracted, the user must create a environment file "./.env" with the following content:
 
+<<<<<<< HEAD
 ```\
+=======
+```bash
+
+>>>>>>> 3524188a0fada1e59999997863bc66ea4ed09d99
 ##SECURITY
 #secret pass must be correlated with the front page
 JWT_SECRET = 'holamundo';
@@ -53,12 +80,18 @@ As the system uses calendar events, the timezone must be set to America/Argentin
 
 After all these steps, run:
 
+<<<<<<< HEAD
 ```\
+=======
+```bash
+
+>>>>>>> 3524188a0fada1e59999997863bc66ea4ed09d99
 docker-compose up
 ```
 
 or (if you want to run it on the background):
 
+<<<<<<< HEAD
 ```\
 docker-compose up -d
 ```
@@ -68,26 +101,58 @@ In order to stop the container execution:
 ```\
 docker-compose down
 ```
+=======
+```bash
+
+docker-compose up -d
+```
+
+
+In order to stop the container execution:
+
+```bash
+
+docker-compose down
+```
+
+>>>>>>> 3524188a0fada1e59999997863bc66ea4ed09d99
 
 ## How to run some test on the application
 
 The test provided is a partial test, some features are not tested. The system must have installed postman, newman and newman-reporter-htmlextra:
 
+<<<<<<< HEAD
 ```\
 snap install postman
 ```
 
 ```\
+=======
+```bash
+
+snap install postman
+
+```
+
+```bash
+
+>>>>>>> 3524188a0fada1e59999997863bc66ea4ed09d99
 npm i -g newman
 npm i -g newman-reporter-htmlextra
 ```
 
 With the application running in background or in another window, open a new window and in the directory ServerNurse run:
 
+<<<<<<< HEAD
 ```\
+=======
+```bash
+
+>>>>>>> 3524188a0fada1e59999997863bc66ea4ed09d99
 cd Testing
 cd postman-collections
 newman run ./logueo_usuario.postman_collection.json −r cli,htmlextra
+
 ```
 
 The report will be displayed in the console and the html stored in "./Testing/postman-collections/newman".
@@ -95,6 +160,7 @@ The report will be displayed in the console and the html stored in "./Testing/po
 There are other tests inside the directory "Testing/postman-collections".
 
 ### NodeJs application description
+<<<<<<< HEAD
 
 The system publishes information of the beds status in a topic "/Beds/status" every 1:30 seconds and the user status in "/User/status" every 1 seconds (see file "./src/backend/mqtt.js").\
 It also interacts with the administration page [https://github.com/gustavobastian/AdminPageNurse](https://github.com/gustavobastian/AdminPageNurse) , with the mobile application [https://github.com/gustavobastian/ClientNurse](https://github.com/gustavobastian/ClientNurse) and the bed caller [https://github.com/gustavobastian/BedCaller](https://github.com/gustavobastian/BedCaller).
@@ -104,6 +170,21 @@ There are two kinds of clients for this applications:
 * HTTP clients are served by the express submodule and its routes. The subsystem endpoints are stored in the directory "./src/backend/routes"
 * MQTT clients can interact with the system with a specified protocol. The subsystem modules are stored in the directory "./src/backend/mqtt"
 
+=======
+
+The system publishes information of the beds status in a topic "/Beds/status" every 1:30 seconds and the user status in "/User/status" every 1 seconds (see file "./src/backend/mqtt.js").
+
+It also interacts with the administration page (https://github.com/gustavobastian/AdminPageNurse) , with the mobile application (https://github.com/gustavobastian/ClientNurse) and the bed caller (https://github.com/gustavobastian/BedCaller).
+
+There are two kinds of clients for this applications:
+
+<ul>
+<li> HTTP clients are served by the express submodule and its routes. The subsystem endpoints are stored in the directory "./src/backend/routes"</li>
+<li> MQTT clients can interact with the system with a specified protocol. The subsystem modules are stored in the directory "./src/backend/mqtt"
+</li>
+</ul>
+
+>>>>>>> 3524188a0fada1e59999997863bc66ea4ed09d99
 ## HTTP Endpoints specification (under construction)
 
 ### Beds Management
@@ -117,13 +198,15 @@ GET methods:
 * "localhost:8000/api/beds/:id" : returns the information of a bed a Json format:
 `[{"bedId":1,"roomId":1,"callerId":1,"floorId":0}]`
 
-PUT methods:\
+PUT methods:
+
 In order to edit a bed information
 
 * "localhost:8000/api/beds/:id" : needs the body to have the new information in a Json format. The bedId is passed as parameter. Example of body:
 `[{"roomId":1,"callerId":1,"floorId":0}]`
 
-POST method:\
+POST method:
+
 Adding a new bed. the bedId is created by the system in a incremental way.
 
 * "localhost:8000/api/beds/" : needs the body to have information in a Json format. The bedId is passed as parameter. Example of body:
@@ -138,7 +221,11 @@ DELETE method:
 GET methods:
 
 * "localhost:8000/api/user/": returns all the users registered in the system in JSON format.
+<<<<<<< HEAD
 * "localhost:8000/api/user/:id": returns the user's information registered in the system in JSON format. Example:
+=======
+* "localhost:8000/api/user/:id": returns the user's information registered in the system in JSON format. Example: 
+>>>>>>> 3524188a0fada1e59999997863bc66ea4ed09d99
 `[{"userId":1,"username":"Josesito","firstname":"Jose","lastname":"laurm","occupation":"administrador","state":1,"password":"1234"}]`
 
 POST methods:
@@ -250,7 +337,9 @@ Body example:
   "bedId":"3",
   "notesTableId":"1",
   "userTableId":"1"}
+
 PUT methods:
+
 * "localhost:8000/api/patient/:id": used for editing a patient information: needs information passed by the body parameter in JSON format.
 Example:\
  [{"firstname":"peter",
@@ -292,5 +381,10 @@ Example of return:\
 Example of return:\
 [{"messageId":1,"firstname":"Jose","lastname":"laurm","patientId":"1","content":"Se levanto bien"}]
 
+<<<<<<< HEAD
 This work is based in [https://github.com/gotoiot/app-fullstack-base](https://github.com/gotoiot/app-fullstack-base)
 by Agustin Bassi [https://github.com/agustinBassi](https://github.com/agustinBassi) ,Ernesto Gigliotti [https://github.com/ernesto-g](https://github.com/ernesto-g) and Brian Ducca [https://github.com/brianducca](https://github.com/brianducca).
+=======
+This work is based in https://github.com/gotoiot/app-fullstack-base
+by Agustin Bassi https://github.com/agustinBassi ,Ernesto Gigliotti https://github.com/ernesto-g and Brian Ducca https://github.com/brianducca
+>>>>>>> 3524188a0fada1e59999997863bc66ea4ed09d99
