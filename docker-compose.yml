@@ -38,7 +38,7 @@ services:
             -                    "8001:80"
 
     node-backend:
-        image:                   abassi/nodejs-server:10.0-dev
+        image:                   gustavus/nurse-server:1.0-dev
         volumes:
             -                    ./src/backend:/home/node/app/src   
             -                    /etc/localtime:/etc/localtime:ro
@@ -52,11 +52,8 @@ services:
         
         ports: 
             -                    "8000:3000"
-        command:                 bash -c " npm install node@12.22.12 && npm set registry https://registry.npmjs.org/ &&
-                                 npm install --save randomstring cookie-parser dotenv mqtt bcrypt express-jwt jsonwebtoken@8.5.1 node-schedule --save &&
-                                 npm config set engine-strict true
-                                 npm audit fix && 
-                                 sleep 50  && 
+        command:                 bash -c " sleep 50  && 
+                                 
                                  nodemon /home/node/app/src/index.js "
     
 
