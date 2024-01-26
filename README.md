@@ -1,5 +1,4 @@
-# ServerNurse
-Server for Nurse Messaging System based in MQTT
+# ServerNurse - Server for Nurse Messaging System based in MQTT
 
 <div align="center">
 <br />
