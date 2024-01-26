@@ -4,7 +4,8 @@
 <div align="center">
 <br />
 
-[![license]([https://img.shields.io/github/license/gustavobastian/ServerNurse?style=flat-square](https://img.shields.io/github/license/gustavobastian/<ServerNurse>))](LICENSE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 
 </div>
 
