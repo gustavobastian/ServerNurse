@@ -1,12 +1,9 @@
-# ServerNurse - Server for Nurse Messaging System based in MQTT
+# ServerNurse 
+Server for Nurse Messaging System based in MQTT
 
-<div align="center">
-<br />
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-<br />
-</div>
 
 
 
