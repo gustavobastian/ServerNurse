@@ -1,5 +1,13 @@
 # ServerNurse
 
+
+<div align="center">
+<br />
+
+[![license]([https://img.shields.io/github/license/gustavobastian/ServerNurse?style=flat-square](https://img.shields.io/github/license/gustavobastian/<ServerNurse>))](LICENSE)
+
+</div>
+
 Server for Nurse Messaging System based in MQTT
 
 ## System Description
