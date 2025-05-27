@@ -1,7 +1,7 @@
-var express = require('express');
-var routerBeds = express.Router();
-var pool = require('../../mysql');
-var BedsList = require('../../Monitoring/Bed-mon');
+let express = require('express');
+let routerBeds = express.Router();
+let pool = require('../../mysql');
+let BedsList = require('../../Monitoring/Bed-mon');
 
 //filling the bedList ordered by priority
 
@@ -23,8 +23,7 @@ async function fillingBeds()
         await pool.query('Select * from PatientSpecTable \
         JOIN SpecTable on SpecTable.id = PatientSpecTable.specId  \
         JOIN Patient on Patient.patientId = PatientSpecTable.patientId  \
-        JOIN Bed on Bed.bedId = Patient.bedId  \
-        ', function(err, result, fields) 
+        JOIN Bed on Bed.bedId = Patient.bedId   ', function(err, result, fields) 
         {
             if (err) 
             {
@@ -195,8 +194,7 @@ routerBeds.post('/', function(req, res)
                                 {  
                                     BedsList.addBed(element.bedId);                  
                                 });
-                                await pool.query('Select * from PatientSpecTable \
-                                JOIN SpecTable on SpecTable.id = PatientSpecTable.specId  \
+                                await pool.query('Select * from PatientSpecTable JOIN SpecTable on SpecTable.id = PatientSpecTable.specId  \
                                 JOIN Patient on Patient.patientId = PatientSpecTable.patientId  \
                                 JOIN Bed on Bed.bedId = Pacient.bedId  \
                                 ', function(err, result, fields) 

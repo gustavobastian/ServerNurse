@@ -1,20 +1,20 @@
 const { json } = require('express');
 require('dotenv').config({ encoding: 'latin1' });
-var mqtt=require('mqtt');
+let mqtt=require('mqtt');
 const bcrypt = require("bcrypt");
-var BedsList = require('../Monitoring/Bed-mon');
-var UserList = require('../Monitoring/User-mon');
-var BedUserList = require('../Monitoring/Bed-user-mon');
-var CalendarList = require('../Monitoring/Calendar-mon');
-var Nurse = require('./nurse')
-var Patient = require('./patient')
-var Beds = require('./beds')
-var Calendar = require('./calendar')
-var User = require('./users')
+let BedsList = require('../Monitoring/Bed-mon');
+let UserList = require('../Monitoring/User-mon');
+let BedUserList = require('../Monitoring/Bed-user-mon');
+let CalendarList = require('../Monitoring/Calendar-mon');
+let Nurse = require('./nurse')
+let Patient = require('./patient')
+let Beds = require('./beds')
+let Calendar = require('./calendar')
+let User = require('./users')
 
 
 //=======[ Data ]================================
-var pool = require('../mysql');
+let pool = require('../mysql');
 
 /**
  * 
@@ -22,8 +22,10 @@ var pool = require('../mysql');
  */ 
 
 
-var client = mqtt.connect(process.env.MQTT_CONNECTION)
+let client = mqtt.connect(process.env.MQTT_CONNECTION)
 //listening to  messages
+console.log("connecting")
+
 client.on('connect', function () 
 {
   client.subscribe('/User/#', function (err) 
@@ -59,11 +61,12 @@ client.on('connect', function ()
  */
 function publishBedStates()
 {
-  var now = new Date();
+  let now = new Date();
   // convert date to a string in UTC timezone format:
   console.log(now.toTimeString());   
   let topic= "/Beds/status";
-  var response = BedsList.getBedStats();
+  let response = BedsList.getBedStats();
+  console.log("publishing")
   client.publish(topic, response);    
 }
 
@@ -75,7 +78,7 @@ function publishBedStates()
 function publishUserStates()
 {
    let topic= "/User/status";
-   var response = UserList.getUserStats();
+   let response = UserList.getUserStats();
    client.publish(topic, response);     
 }
 /**
@@ -84,31 +87,28 @@ function publishUserStates()
  */
 function compareQR(message,_bedId)
  {
-  //console.log("bed:"+JSON.parse(bedId));
+  
   console.log(message);
   console.log(JSON.stringify(_bedId)); 
-  bedIdLocal=JSON.stringify(_bedId);
+  let bedIdLocal=JSON.stringify(_bedId);
 	let topic="/Beds/"+bedIdLocal+"/QRresponse";
-  pool.query('SELECT QR  \
-  FROM `QRbed` as b \
-  WHERE b.bedId = ?',[_bedId], function(err, result, fields) {
+  pool.query('SELECT QR FROM `QRbed` as b WHERE b.bedId = ?',[_bedId], function(err, result, fields) {
     if (err|| result.length==0) {
         console.log("error")    
         client.publish(topic, JSON.stringify("Error"));                  
+      return;
     }
-    else{    
-          if(message==JSON.stringify(result[0].QR)){
-			  console.log("QR ok");
-			  client.publish(topic, JSON.stringify("QR Ok")); 
-			  BedsList.setStatus(_bedId,4);    
-			               
-			  }
-			  
-          else{
-			  console.log("QR invalid");			  
-			  client.publish(topic, JSON.stringify("QR invalid"));          
-			  } 
-          }
+     
+    if(message==JSON.stringify(result[0].QR)){
+      console.log("QR ok");
+      client.publish(topic, JSON.stringify("QR Ok")); 
+      BedsList.setStatus(_bedId, 4);
+    }
+    else {
+      console.log("QR invalid");			  
+      client.publish(topic, JSON.stringify("QR invalid"));          
+    } 
+    
   });
 	
   
@@ -127,11 +127,10 @@ async function saveNewEvent(typeofEvent, bedId, username, note, note2){
   {
     console.log("starting an event")
     console.log("bedId:"+bedId);
-    userIdLocal=0;
-    note=" ";
-    note2=" ";
-    pool.query('SELECT patientId from   \
-    Patient  WHERE `Patient`.`bedId`= ?',[bedId], function(err, result, fields) 
+    let userIdLocal=0;
+    let note=" ";
+    let note2=" ";
+    pool.query('SELECT patientId from  Patient  WHERE `Patient`.`bedId`= ?',[bedId], function(err, result, fields) 
     {
       if (err|| result.length==0) 
       {
@@ -146,8 +145,7 @@ async function saveNewEvent(typeofEvent, bedId, username, note, note2){
         const mySQLDateString = isoDate.toJSON().slice(0, 19).replace('T', ' ');
         console.log(mySQLDateString)
       
-        pool.query('INSERT INTO `LogEvents`   \
-              (`type`,`patientId`,`userId`,`init`,`Note`,`Note2`) VALUES(?,?,?,?,?,?)',[typeofEvent,patientIdLocal,userIdLocal,mySQLDateString,'','' ], 
+        pool.query('INSERT INTO `LogEvents`(`type`,`patientId`,`userId`,`init`,`Note`,`Note2`) VALUES(?,?,?,?,?,?)',[typeofEvent,patientIdLocal,userIdLocal,mySQLDateString,note,note2 ], 
               function(err, result, fields) {
               if (err|| result.length==0) {
                   console.log("error",err)
@@ -158,7 +156,7 @@ async function saveNewEvent(typeofEvent, bedId, username, note, note2){
   }
   else 
   {     
-    note_log=note2.toString();
+    let note_log = note2.toString();
     let type=1;      
     let calendarId =await CalendarList.getCalendarId(bedId);        
     if(calendarId!=-1)
@@ -167,8 +165,7 @@ async function saveNewEvent(typeofEvent, bedId, username, note, note2){
       type=2;
       CalendarList.removeCalendar(calendarId);   
     }
-    pool.query('SELECT patientId from   \
-    Patient  WHERE `Patient`.`bedId`= ?',[bedId], function(err, result, fields) 
+    pool.query('SELECT patientId from Patient  WHERE `Patient`.`bedId`= ?',[bedId], function(err, result, fields) 
     {
       if (err|| result.length==0) 
       {
@@ -176,18 +173,15 @@ async function saveNewEvent(typeofEvent, bedId, username, note, note2){
       }
       else
       {
-        patientLocal=result[0].patientId;  
-        pool.query('SELECT userId from   \
-        User  WHERE `User`.`username`= ?',[username], function(err, result, fields) {
+        let patientLocal=result[0].patientId;  
+        pool.query('SELECT userId from User  WHERE `User`.`username`= ?',[username], function(err, result, fields) {
           if (err|| result.length==0) {
               console.log("error");
               return;
           }
-          else
-          {
-            userId=result[0].userId;  
-            pool.query('SELECT logEventId from  LogEvents \
-            WHERE `LogEvents`.`patientId`= ? ORDER BY logEventId DESC LIMIT 1',[patientLocal], function(err, result, fields) 
+          
+          let userId=result[0].userId;  
+          pool.query('SELECT logEventId from  LogEvents WHERE `LogEvents`.`patientId`= ? ORDER BY logEventId DESC LIMIT 1',[patientLocal], function(err, result, fields) 
             {
               if (err|| result.length==0) 
               {
@@ -195,7 +189,7 @@ async function saveNewEvent(typeofEvent, bedId, username, note, note2){
               }
               else
               {
-                  logId= result[0].logEventId; 
+                  let logId= result[0].logEventId; 
                   console.log(result[0].logEventId)
                   console.log("closing event log")
                   const isoDate = new Date();
@@ -203,16 +197,13 @@ async function saveNewEvent(typeofEvent, bedId, username, note, note2){
                   const mySQLDateString = isoDate.toJSON().slice(0, 19).replace('T', ' ');
                   console.log(mySQLDateString)
                   
-                  
+                  let userIdLocal=userId;
                   if(isNaN(userId))
                   {
-                    userIdLocal=0;
+                     userIdLocal=0;
                   }   
-                  else{
-                    userIdLocal=userId;
-                  }                  
-                  pool.query('UPDATE `LogEvents` SET `type`= ?,`finish` =?,`userId`=?, `Note2`=? , `Note`=? \
-                  WHERE `LogEvents`.`logEventId` = ?',[type,mySQLDateString, userIdLocal , note_log , " " , logId ], function(err, result, fields) 
+                  pool.query('UPDATE `LogEvents` SET `type`= ?,`finish` =?,`userId`=?, `Note2`=? , `Note`=? WHERE `LogEvents`.`logEventId` = ?', [type, mySQLDateString, userIdLocal, note_log, " ", logId],
+                  function (err, result ) 
                   {
                     if (err|| result.length==0) 
                     {
@@ -221,7 +212,7 @@ async function saveNewEvent(typeofEvent, bedId, username, note, note2){
                   })
               }
             })
-        }
+        
         })
       }
     })      
@@ -237,16 +228,15 @@ async function getBedIdCaller(callerId){
         console.log("error:"+err)
         return; 
     }
-    else
-    {
-      console.log("Caller data is correct")
-      let bedId=result[0].bedId;
-      console.log(bedId)
-      BedsList.setStatus(bedId,2);
-      publishBedStates();      
-      saveNewEvent(1,bedId,"system","","");
-      return ;
-    }
+    
+    console.log("Caller data is correct")
+    let bedId=result[0].bedId;
+    console.log(bedId)
+    BedsList.setStatus(bedId,2);
+    publishBedStates();      
+    saveNewEvent(1,bedId,"system","","");
+    
+    
   })
 }
 /**
@@ -320,9 +310,9 @@ client.on('message', async function (topic, message,packet)
   }
   if((message_data._type=== 4))
   {
-	  console.log(packet.payload.toString());
-	  console.log("asking info")  
-	  console.log(message_data._content)  
+    console.log(packet.payload.toString());
+    console.log("asking info")  
+    console.log(message_data._content)  
     Patient.getPatientInfopatientId((message_data._content),client);
   }
   if((message_data._type=== 5))
@@ -463,7 +453,7 @@ client.on('message', async function (topic, message,packet)
  */
   if(message_data._type=== 23)
   {
-     data=message_data._content.split("Ç");
+     let data=message_data._content.split("Ç");
    // uncomment next lines for enabling pass modifications from MQTT clients 
    //  if(message_data._username==data[1]){
    //  User.updatePass(message_data._username,data[0],client)    ; }

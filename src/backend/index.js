@@ -1,29 +1,32 @@
 //=======[ Settings, Imports & Data ]==========================================
 require('dotenv').config({ encoding: 'latin1' })
-var PORT    = process.env.PORT_LOCAL;
-var mqtt=require('mqtt')
-var express = require('express');
-var jwt = require('express-jwt');
-var auth = require('./middleware/authentication');
-var BedsList = require('./Monitoring/Bed-mon');
+let PORT    = process.env.PORT_LOCAL;
+let mqtt=require('mqtt')
+let express = require('express');
+let jwt = require('express-jwt');
+let auth = require('./middleware/authentication');
+let BedsList = require('./Monitoring/Bed-mon');
 const cookieParser = require('cookie-parser')
 
 //setting timezone
 process.env.TZ = "America/Argentina/Buenos_Aires";
 
 
-//require('dotenv').config({path:'./.env'});
+require('dotenv').config({path:'../.env'});
 
 //const connection = require('./mysql-connector');
-var app     = express();
-var UserList = require('./Monitoring/User-mon');
+let app     = express();
+let UserList = require('./Monitoring/User-mon');
 
-var cors = require('cors');
-var corsOptions={origin:'*' , optionsSuccessStatus:200};
+let cors = require('cors');
+let corsOptions={origin:'*' , optionsSuccessStatus:200};
 console.log(PORT)
 
-var mqttClientLocal = require('./mqtt/mqtt')
-var MQTT_TOPIC = "test"
+let mqttClientLocal = require('./mqtt/mqtt')
+
+console.log(mqttClientLocal.connected)
+
+let MQTT_TOPIC = "test"
 
 
 
@@ -35,26 +38,26 @@ app.use(cookieParser())
 app.use(cors(corsOptions));
 //configuring cors for sending credentials at login
 // to parse received data
-var bodyParser = require('body-parser');
+let bodyParser = require('body-parser');
 const { request } = require('express');
 
 // looking for router
 
-var routerPatient = express = require('./routes/patient');
-var routerUser = express = require('./routes/user');
-var routerMessages = express = require('./routes/messages');
-var routerNotes = express = require('./routes/notes');
-var routerBeds = express = require('./routes/beds');
-var routerUsersTable = express = require('./routes/usersTable');
-var routerMedicalTable = express = require('./routes/medicalTable');
-var routerQR = express = require('./routes/qr');
-var routerEvents = express = require('./routes/events');
-var routerLogEvents = express = require('./routes/logEvents');
-var routerStatistics = express = require('./routes/Statistics');
-var routerAuthenticate = express = require('./routes/authenticate');
-var routerSpecTable = express = require('./routes/SpecTable');
-var routerNurseSpecTable = express = require('./routes/nurseSpecTable');
-var routerPatientSpecTable = express = require('./routes/patientTreatment');
+let routerPatient = express = require('./routes/patient');
+let routerUser = express = require('./routes/user');
+let routerMessages = express = require('./routes/messages');
+let routerNotes = express = require('./routes/notes');
+let routerBeds = express = require('./routes/beds');
+let routerUsersTable = express = require('./routes/usersTable');
+let routerMedicalTable = express = require('./routes/medicalTable');
+let routerQR = express = require('./routes/qr');
+let routerEvents = express = require('./routes/events');
+let routerLogEvents = express = require('./routes/logEvents');
+let routerStatistics = express = require('./routes/Statistics');
+let routerAuthenticate = express = require('./routes/authenticate');
+let routerSpecTable = express = require('./routes/SpecTable');
+let routerNurseSpecTable = express = require('./routes/nurseSpecTable');
+let routerPatientSpecTable = express = require('./routes/patientTreatment');
 
 app.use('/api/patient',auth.isAuthenticated,routerPatient);
 app.use('/api/user',auth.isAuthenticated,routerUser);

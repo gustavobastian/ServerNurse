@@ -148,8 +148,22 @@ CREATE TABLE `MedicalTable` (
   FOREIGN KEY (`userId`) REFERENCES User(userId)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+--
+-- Table structure for table `LogEvents`
+-- This table contains the all the information of the events
+--
 
 
+CREATE TABLE `NurseSystemDB`.`LogEvents` (
+  `logEventId` INT NOT NULL AUTO_INCREMENT ,
+   `type` INT NOT NULL ,
+   `init` DATETIME NOT NULL ,
+   `finish` DATETIME NOT NULL ,
+   `patientId` INT NOT NULL ,
+   `userId` INT NOT NULL ,
+   `Note` VARCHAR(255) NOT NULL ,
+   `Note2` VARCHAR(255) NOT NULL ,
+    PRIMARY KEY (`logEventId`)) ENGINE = InnoDB;
 
 --
 -- Table structure for table `Pacient`
@@ -170,6 +184,7 @@ CREATE TABLE `Patient` (
   FOREIGN KEY (`notesTableId`)  REFERENCES NotesTable(notesTableId),   
   FOREIGN KEY (`userTableId`)  REFERENCES UsersTable(userTableId)   
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
 
 
 
@@ -209,12 +224,14 @@ CREATE TABLE `PriorityTable` (
 -- Table structure for showing treatment or specializations
 -- 
 --
+
 CREATE TABLE `SpecTable` (
-  `id` INT NOT NULL AUTO_INCREMENT ,    
-  `name` VARCHAR NOT NULL ,
-   UNIQUE `id` (`id`)
-   ) ENGINE = InnoDB DEFAULT CHARSET=latin1;
-   
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(255) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
 
 --
 -- Table structure for showing relations between nurses and treatment
@@ -280,17 +297,17 @@ INSERT INTO `MedicalTable` (`MedicalTableId`,`userTableId`, `userId`) VALUES
 
 
 
-INSERT INTO `NotesTable` (`notesTableId`) VALUES
-(1),
-(2);
-
-
 --
 -- Table structure for pacient notes
 --
 INSERT INTO `Notes` (`note`,`state`,`notesTableId`) VALUES
 ("dormir a las 22","activa",1),
 ("tomar remedio a las 12","activa",2);
+
+
+INSERT INTO `NotesTable` (`notesTableId`) VALUES
+(1),
+(2);
 
 --
 -- Dumping data for table `pacient`
@@ -305,17 +322,6 @@ INSERT INTO `Patient` (`patientId`, `firstName`,`lastName`,`BedId`,`notesTableId
 INSERT INTO `Messages` (`messageId`, `userIdLastName`, `userIdSender`, `patientId`, `content`, `dateTime`, `audiolink`, `userTableId`) VALUES ('1', '1', '1', '1', 'Se levanto bien', CURRENT_TIMESTAMP, NULL, '1');
 
 
-
-CREATE TABLE `NurseSystemDB`.`LogEvents` (
-  `logEventId` INT NOT NULL AUTO_INCREMENT ,
-   `type` INT NOT NULL ,
-   `init` DATETIME NOT NULL ,
-   `finish` DATETIME NOT NULL ,
-   `patientId` INT NOT NULL ,
-   `userId` INT NOT NULL ,
-   `Note` VARCHAR(255) NOT NULL ,
-   `Note2` VARCHAR(255) NOT NULL ,
-    PRIMARY KEY (`logEventId`)) ENGINE = InnoDB;
 
 --
 -- AUTO_INCREMENT for dumped tables

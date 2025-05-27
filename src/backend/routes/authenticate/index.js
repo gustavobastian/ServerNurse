@@ -1,7 +1,7 @@
 const express = require('express');
 const util = require('util')
-var pool = require('../../mysql');
-var routerAuthenticate = express.Router();
+let pool = require('../../mysql');
+let routerAuthenticate = express.Router();
 const jwt = require('jsonwebtoken');
 const bcrypt = require("bcrypt");
 require('dotenv').config({ encoding: 'latin1' })
@@ -12,24 +12,22 @@ console.log("*****************************")
 
 // DECLARE JWT-secret
 
-var testUser = { username: 'test', password: '1234' };
+let testUser = { username: 'test', password: '1234' };
 
 routerAuthenticate.post('/', async function(req, res) 
 {
     console.log("auth")
     if (req.body) 
     {
-        var user = req.body;    
-        await pool.query('Select username,password,occupation from User \
-        WHERE username=?',[user.username], async function(err, result, fields) 
+        let user = req.body;    
+        await pool.query('Select username,password,occupation from User WHERE username=?',[user.username], async function(err, result, fields) 
         {
             if (err) 
             {
                 console.log("error:"+err)
-                var response = JSON.stringify(response_conform);
+                let response = JSON.stringify(response_conform);
                 console.log(response);            
-                res.status(403).send({errorMessage: 'Auth required!'});
-                return;    
+                res.status(403).send({errorMessage: 'Auth required!'});               
             }
             else
             {
@@ -38,15 +36,17 @@ routerAuthenticate.post('/', async function(req, res)
                     testUser.username=result[0].username;
                     testUser.password=result[0].password;
                 }catch (e)
-                    {res.status(403).send({errorMessage: 'Auth required!'});
+                {   
+                    console.log("auth error:"+e)
+                    res.status(403).send({ errorMessage: 'Auth required!' });
                     return;    
                     }
                 
                 await bcrypt.compare(user.password, result[0].password, (err, resultComp)=> 
                 {
-                    if ((resultComp==true  ) &&(result[0].occupation=="Administrador") )
+                    if ((resultComp) &&(result[0].occupation=="Administrador") )
                     {
-                        var token = jwt.sign(user, process.env.JWT_SECRET,
+                        let token = jwt.sign(user, process.env.JWT_SECRET,
                             {
                                 expiresIn: process.env.JWT_EXP_TIM
                             });                            
@@ -71,7 +71,7 @@ routerAuthenticate.post('/', async function(req, res)
 })
 
 //remove logged user
-logout = async(reg,res,next)=>
+let logout = async(reg,res,next)=>
 {
     return next()
 }

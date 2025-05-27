@@ -1,4 +1,4 @@
-BedsList2 = require('./bed-monitoring');
-var BedsList=new BedsList2();
+let BedsList2 = require('./bed-monitoring');
+let BedsList=new BedsList2();
 
 module.exports= BedsList;

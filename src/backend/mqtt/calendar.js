@@ -1,11 +1,11 @@
-var pool = require('../mysql/index');
+let pool = require('../mysql/index');
 
 /**
   *In this class we save all the calendar related functions
   */
 class CalendarClass
 {
-  constructor() {  }
+  
   async getCalendarNotes(bedId,client,CalendarList)
   {
     let topic= "/Beds/"+bedId+"/CalendarNote";
@@ -17,5 +17,5 @@ class CalendarClass
   }
 }
 
-var Calendar= new CalendarClass();
+let Calendar= new CalendarClass();
 module.exports= Calendar;

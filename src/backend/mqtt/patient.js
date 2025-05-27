@@ -4,8 +4,7 @@ var pool = require('../mysql/index');
   *In this class we save all the Patient functions
   */
  class PatientClass
- {
-    constructor() { }
+ {    
 
     /**
      * Function that publish the pacient id to topic
@@ -15,10 +14,8 @@ var pool = require('../mysql/index');
     {
         console.log("bed:"+JSON.parse(bedId));
         let topic= "/Beds/"+bedId+"/Pacient";
-        pool.query('SELECT patientId  \
-        FROM `Bed` as b JOIN `Patient` as P\
-        USING (bedId) \
-        WHERE b.bedId = ?',[bedId], function(err, result, fields) 
+        pool.query('SELECT patientId FROM `Bed` as b JOIN `Patient` as P USING (bedId) WHERE b.bedId = ?',
+            [bedId], function (err, result, fields) 
         {
             if (err|| result.length==0) 
             {
@@ -40,11 +37,7 @@ var pool = require('../mysql/index');
     {        
         console.log("Doctor:"+message);
         let topiclocal= "/User/"+message+"/Pacients";
-        pool.query('\
-        SELECT DISTINCT bedId,patientId \
-        FROM `Patient` as p JOIN `MedicalTable` as Mt JOIN `User` as u JOIN `UsersTable` as uT \
-        WHERE p.userTableId = uT.userTableId AND Mt.userTableId=uT.userTableId  AND u.userId = Mt.userId AND u.userId=? \
-        ',[message], function(err, result, fields) 
+        pool.query('SELECT DISTINCT bedId,patientId FROM `Patient` as p JOIN `MedicalTable` as Mt JOIN `User` as u JOIN `UsersTable` as uT WHERE p.userTableId = uT.userTableId AND Mt.userTableId=uT.userTableId  AND u.userId = Mt.userId AND u.userId=? ',[message], function(err, result, fields) 
         {
             if (err || result.length==0) 
             {
@@ -91,11 +84,7 @@ var pool = require('../mysql/index');
         console.log("asking for notes:");
         // system publising last 2 notes only
         let topic= "/Pacient/"+patientId+"/notes";
-        pool.query('SELECT DISTINCT notesId,note,state \
-        FROM `Notes` as n JOIN `NotesTable` as nt JOIN `Patient` as p \
-        WHERE n.notesTableId = nt.notesTableId AND \
-        p.notesTableId = nt.notesTableId AND patientId = ? \
-        ORDER BY notesId DESC ',patientId, function(err, result, fields) 
+        pool.query('SELECT DISTINCT notesId,note,state FROM `Notes` as n JOIN `NotesTable` as nt JOIN `Patient` as p WHERE n.notesTableId = nt.notesTableId AND p.notesTableId = nt.notesTableId AND patientId = ? ORDER BY notesId DESC ',patientId, function(err, result, fields) 
         {
             if (err || result.length==0) 
             {
@@ -148,47 +137,41 @@ var pool = require('../mysql/index');
                         connection.release();
                         //Failure
                     });
+                    return;
                 } 
-                else 
+                
+                console.log("aqui estoy")
+                connection.query('INSERT INTO `Notes` (`note`,`state`,`notesTableId`) VALUES (?,?,?)', [note,"activa",patientId], function(err, results) 
                 {
-                    console.log("aqui estoy")
-                    connection.query('INSERT INTO `Notes` (`note`,`state`,`notesTableId`)\
-                    VALUES (?,?,?)', [note,"activa",patientId], function(err, results) 
-                    {
-                        if (err) 
-                        {          //Query Error (Rollback and release connection)
-                            console.log(err);
-                            connection.rollback(function() 
-                            {
-                                connection.release();
-                                //Failure
+                    if (err) 
+                    {          //Query Error (Rollback and release connection)
+                        console.log(err);
+                        connection.rollback(
+                            function (){
+                                connection.release();     //Failure
                             });
-                        } 
-                        else 
+                        return
+                    } 
+                    
+                    connection.commit(function(err) 
                         {
-                            connection.commit(function(err) 
+                            if (err) 
                             {
-                                if (err) 
-                                {
-                                    connection.rollback(function() 
-                                    {
-                                        connection.release();
-                                        //Failure
-                                    });
-                                } 
-                                else 
+                                connection.rollback(function() 
                                 {
                                     connection.release();
-                                    //Success
-                                }
-                            });
-                        }
-                    });
-                }
-            });
+                                    //Failure
+                                });
+                            } 
+                            connection.release();                                
+                        });
+                    }
+                );
+            }
+            );
         });    
     }
 
 }
-var Patient= new PatientClass();
+let Patient= new PatientClass();
 module.exports= Patient;

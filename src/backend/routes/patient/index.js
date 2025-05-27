@@ -1,7 +1,7 @@
-var express = require('express');
-var routerPatient = express.Router();
-var pool = require('../../mysql');
-var BedsList = require('../../Monitoring/Bed-mon');
+let express = require('express');
+let routerPatient = express.Router();
+let pool = require('../../mysql');
+let BedsList = require('../../Monitoring/Bed-mon');
 
 //API for getting all Pacients information
 routerPatient.get('/', function(req, res) 
@@ -10,13 +10,11 @@ routerPatient.get('/', function(req, res)
     {
         if (err) 
         {
-            res.send(err).status(400);
-            return;
+            res.send(err).status(400);            
         }
         else
         {
-            res.send(result);
-            return;
+            res.send(result);            
 		}
     });
 });
@@ -27,13 +25,11 @@ routerPatient.get('/numbers', function(req, res)
     {
         if (err) 
         {
-            res.send(err).status(400);
-            return;
+            res.send(err).status(400);            
         }
         else
         {
-            res.send(result);
-            return;
+            res.send(result);            
 		}
     });
 });

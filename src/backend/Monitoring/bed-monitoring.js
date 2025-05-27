@@ -1,4 +1,4 @@
-var pool = require('../mysql/index');
+let pool = require('../mysql/index');
 /**
  * class bedList contains information about states of beds
  * status==0 empty
@@ -45,7 +45,7 @@ class  BedsList
      */
     setStatus(bedId,statusP)
     {
-        var index=this.bedlist.findIndex(item=>item.id===bedId);       
+        let index=this.bedlist.findIndex(item=>item.id===bedId);       
         if(index>=0)
         {
             this.bedlist[index].st=statusP;
@@ -63,7 +63,7 @@ class  BedsList
      */
     setTreat(bedId,treatP)
     {
-        var index=this.bedlist.findIndex(item=>item.id===bedId);       
+        let index=this.bedlist.findIndex(item=>item.id===bedId);       
         if(index>=0)
         {
             this.bedlist[index].spec=treatP;
@@ -80,7 +80,7 @@ class  BedsList
     */
     getStatus(bedId)
     {
-        var index=this.bedlist.findIndex(item=>item.id===bedId);           
+        let index=this.bedlist.findIndex(item=>item.id===bedId);           
         return this.bedlist[index].st    
     }
     /**

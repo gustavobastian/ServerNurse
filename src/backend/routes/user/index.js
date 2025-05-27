@@ -1,9 +1,9 @@
-var express = require('express');
-var routerUser = express.Router();
-var pool = require('../../mysql');
+let express = require('express');
+let routerUser = express.Router();
+let pool = require('../../mysql');
 const bcrypt = require("bcrypt");
 
-var UserList = require('../../Monitoring/User-mon');
+let UserList = require('../../Monitoring/User-mon');
 
 //filling the userList
 async function fillingUserSt()
@@ -12,7 +12,7 @@ async function fillingUserSt()
     pool.query('Select * from User', function(err, result, fields) 
     {
         if (err) {
-            res.send(err).status(400);
+            //res.send(err).status(400);
             return;
         }
         else
@@ -33,14 +33,12 @@ routerUser.get('/', function(req, res)
     {
         if (err) 
         {
-            res.send(err).status(400);
-            return;
+            res.send(err).status(400);            
         }        
         else
         {
             UserList.printUserList();
-            res.send(result);
-            return;
+            res.send(result);            
         }    
     });
 });
@@ -56,17 +54,15 @@ routerUser.get('/state', function(req, res)
 //API for getting a user information
 routerUser.get('/:id', function(req, res) 
 {
-    idAb=req.params.id;    
+    let idAb=req.params.id;    
     pool.query('Select * from User where userId = ?',[idAb], function(err, result, fields) 
     {
         if (err) {
-            res.send(err).status(400);
-            return;
+            res.send(err).status(400);        
         }
         else
         {
-            res.send(result);
-            return;
+            res.send(result);        
         }
     });
 });
@@ -112,8 +108,7 @@ routerUser.post('/', async function(req, res)
             if (err) 
             {
                 res.send(err).status(400);
-                console.log("error:"+err);
-                return;
+                console.log("error:"+err);                
             }
             else
             {
@@ -167,13 +162,11 @@ routerUser.put('/:id', async function(req, res)
     {
         if (err) 
         {
-            res.send(err).status(400);
-            return;
+            res.send(err).status(400);            
         }
         else
         {
-            res.send(result).status(202);
-            return;
+            res.send(result).status(202);            
         }
     });
 });
@@ -196,8 +189,7 @@ routerUser.put('/:id', async function(req, res)
     {
         if (err) 
         {
-                res.send(err).status(400);
-                return;
+                res.send(err).status(400);                
         }
         else
         {

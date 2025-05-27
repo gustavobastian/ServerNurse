@@ -3,8 +3,7 @@ var pool = require('../mysql/index');
 /**
   *In this class we save all the bed related functions
   */
-class BedClass{
-  constructor() {}
+class BedClass{  
 
 /**
  * Function that publish the bed info to topic
@@ -16,9 +15,7 @@ class BedClass{
     // system publising last 2 notes only
     let topic= "/Beds/"+bedId+"/info";
   
-    pool.query('SELECT *  \
-    FROM `Bed` as b \
-    WHERE b.bedId = ?',[bedId], function(err, result, fields) 
+    pool.query('SELECT *  FROM `Bed` as b WHERE b.bedId = ?',[bedId], function(err, result, fields) 
     {
       if (err|| result.length==0) 
       {
@@ -42,10 +39,7 @@ class BedClass{
   getBedMedicalTableInfo(bedId,client)
   {     
     let topic= "/Beds/"+bedId+"/MDT";        
-    pool.query('SELECT User.lastname, User.userId from   \
-    MedicalTable JOIN Patient USING (userTableId) \
-    JOIN User USING (userId) \
-    WHERE `Patient`.`bedId`= ?',[bedId], function(err, result, fields) 
+    pool.query('SELECT User.lastname, User.userId from MedicalTable JOIN Patient USING (userTableId) JOIN User USING (userId) WHERE `Patient`.`bedId`= ?',[bedId], function(err, result, fields) 
     {
       if (err|| result.length==0) 
       {
@@ -58,5 +52,5 @@ class BedClass{
     });  
   }
 }
-var Beds= new BedClass();
+let Beds= new BedClass();
 module.exports= Beds;

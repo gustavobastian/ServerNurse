@@ -40,7 +40,7 @@ class  BedsUserList
     */
     getId(bedId)
     {    
-        var index=this.beduserlist.findIndex(item=>item.bedId===bedId);           
+        let index=this.beduserlist.findIndex(item=>item.bedId===bedId);           
         if(index>0)
         {
             return this.beduserlist[index].userId;
@@ -56,7 +56,7 @@ class  BedsUserList
     */
     getTypeId(bedId)
     {
-        var index=this.beduserlist.findIndex(item=>item.bedId===bedId);           
+        let index=this.beduserlist.findIndex(item=>item.bedId===bedId);           
         if(index>0)
         {            
             return this.beduserlist[index].type;
@@ -69,7 +69,7 @@ class  BedsUserList
 
     removeData(bedId)
     {
-        var index=this.beduserlist.findIndex(item=>item.bedId===bedId);   
+        let index=this.beduserlist.findIndex(item=>item.bedId===bedId);   
         if (index > -1) 
         { 
             this.beduserlist.splice(index, 1);
